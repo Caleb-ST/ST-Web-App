@@ -41,6 +41,7 @@
       margin: 0;
       max-width: 500px;
       width: 100%;
+      background-color: #333; /* Added background to see the list */
     }
 
     .brand-list li {
@@ -82,12 +83,12 @@
     <input type="text" id="searchInput" placeholder="Search brands...">
   </div>
 
-  <ul class="brand-list" id="brandList">
-  </ul>
+  <ul class="brand-list" id="brandList"></ul>
 
   <a href="index.html" class="back-button">← Back to Home</a>
 
   <script>
+    // List of brands
     const brandsRaw = [
       "3M", "888 Tools", "Abbott & Ashby", "Accud", "AGP", "Air Boy", "Airtec", "Ajax", "Alco", "Amkus",
       "Ampfibian", "Ankame", "Apach", "Apex", "Arbortech", "Asada", "Austsaw", "Badger", "Bailey", "Ballistol",
@@ -107,14 +108,17 @@
       "Aeris Guard", "Air BPD", "Alemlube", "Armor Shield", "Artline", "Atlas Copco", "Aussie Gardener", "Autoglym"
     ];
 
+    // Normalize brand names
     const normalize = str => str.trim().toLowerCase().replace(/\s+/g, '');
 
+    // Convert to Title Case
     const toTitleCase = str => str
       .toLowerCase()
       .split(' ')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
 
+    // Remove duplicates and sort the list of brands
     const brands = Array.from(
       new Map(
         brandsRaw.map(b => [normalize(b), toTitleCase(b.trim())])
@@ -125,9 +129,10 @@
     const searchInput = document.getElementById("searchInput");
 
     function renderList(filter = "") {
-      listContainer.innerHTML = "";
+      console.log("Rendering list..."); // Debugging line
+      listContainer.innerHTML = ""; // Clear current list
       brands
-        .filter(brand => brand.toLowerCase().includes(filter.toLowerCase()))
+        .filter(brand => brand.toLowerCase().includes(filter.toLowerCase())) // Filter brands based on search input
         .forEach(brand => {
           const li = document.createElement("li");
           li.textContent = brand;
@@ -136,10 +141,12 @@
         });
     }
 
+    // Event listener for search input
     searchInput.addEventListener("input", (e) => {
       renderList(e.target.value);
     });
 
+    // Initial render
     renderList();
   </script>
 </body>
