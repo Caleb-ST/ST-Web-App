@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Barcode Page</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: row;
+      height: 100vh;
+    }
+
+    .left-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: flex-start;
+      padding: 40px;
+      width: 50%;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      font-size: 2rem;
+      color: #fff;
+    }
+
+    .button-barcode {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .nav-button {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 150px;
+      margin-right: 20px;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+
+    .nav-button:hover {
+      background-color: #b91c1c;
+    }
+
+    .barcode {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .barcode img {
+      background-color: white;
+      border-radius: 8px;
+      padding: 8px;
+    }
+
+    .copy-button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 20px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .copy-button:hover {
+      background-color: #45a049;
+    }
+
+    .right-panel {
+      width: 50%;
+      padding: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .back-button {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      padding: 15px 30px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: auto;
+      align-self: center;
+      transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #b91c1c;
+    }
+
+    .copied-icon {
+      color: green;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="left-panel">
+	<h1><b>Refill CO2/Argon Bottle<b><h1>
+    <div class="button-barcode">
+      <button class="nav-button" onclick="toggleBarcode('barcode1')">C</button>
+      <div class="barcode" id="barcode1">
+        <img src="https://barcode.tec-it.com/barcode.ashx?data=115621&code=Code128&translate-esc=false" alt="Barcode 115621" />
+        <button class="copy-button" onclick="copyToClipboard('115621', this)">Copy</button>
+        <span class="copied-icon" id="copied1" style="display: none;">Copied!</span>
+      </div>
+    </div>
+    <div class="button-barcode">
+      <button class="nav-button" onclick="toggleBarcode('barcode2')">D</button>
+      <div class="barcode" id="barcode2">
+        <img src="https://barcode.tec-it.com/barcode.ashx?data=115624&code=Code128&translate-esc=false" alt="Barcode 115624" />
+        <button class="copy-button" onclick="copyToClipboard('115624', this)">Copy</button>
+        <span class="copied-icon" id="copied2" style="display: none;">Copied!</span>
+      </div>
+    </div>
+    <div class="button-barcode">
+      <button class="nav-button" onclick="toggleBarcode('barcode3')">E</button>
+      <div class="barcode" id="barcode3">
+        <img src="https://barcode.tec-it.com/barcode.ashx?data=115922&code=Code128&translate-esc=false" alt="Barcode 115922" />
+        <button class="copy-button" onclick="copyToClipboard('115922', this)">Copy</button>
+        <span class="copied-icon" id="copied3" style="display: none;">Copied!</span>
+      </div>
+    </div>
+    <div class="button-barcode">
+      <button class="nav-button" onclick="toggleBarcode('barcode5')">G</button>
+      <div class="barcode" id="barcode5">
+        <img src="https://barcode.tec-it.com/barcode.ashx?data=115918&code=Code128&translate-esc=false" alt="Barcode 115918" />
+        <button class="copy-button" onclick="copyToClipboard('115918', this)">Copy</button>
+        <span class="copied-icon" id="copied5" style="display: none;">Copied!</span>
+      </div>
+    </div>
+
+    <!-- Centered Back Button at the Bottom -->
+    <button class="back-button" onclick="history.back()">← Back</button>
+  </div>
+
+  <div class="right-panel">
+    <img src="speed-gas-sizes_7.webp" />
+  </div>
+
+  <script>
+    function toggleBarcode(id) {
+      const allBarcodes = document.querySelectorAll('.barcode');
+      allBarcodes.forEach(bar => bar.style.display = 'none');
+      
+      const barcode = document.getElementById(id);
+      barcode.style.display = 'flex';
+    }
+
+    function copyToClipboard(barcode, button) {
+      navigator.clipboard.writeText(barcode).then(function() {
+        // Show the "Copied!" message
+        const copiedMessage = button.nextElementSibling;
+        copiedMessage.style.display = 'inline';
+
+        // Hide the message after 2 seconds
+        setTimeout(() => {
+          copiedMessage.style.display = 'none';
+        }, 2000);
+      });
+    }
+  </script>
+
+</body>
+</html>

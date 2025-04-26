@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Button Navigation App</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background-color: #000000;
+      font-family: Arial, sans-serif;
+      color: white;
+    }
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 40px;
+      color: #ffffff;
+    }
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .nav-button {
+      padding: 30px;
+      font-size: 1.2rem;
+      width: 200px;
+      height: 100px;
+      cursor: pointer;
+      border: none;
+      background-color: #dc2626;
+      color: white;
+      border-radius: 12px;
+      transition: background-color 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .nav-button:hover {
+      background-color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Sydney Tools</h1>
+  <h2>South Australia<h2>
+  <div class="button-grid">
+    <button class="nav-button" onclick="location.href='Warranty.html'">Warranty</button>
+    <button class="nav-button" onclick="location.href='Rep Directory.html'">Rep Contacts</button>
+    <button class="nav-button" onclick="location.href='speedgas.html'">Speedgas</button>
+    <button class="nav-button" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSctAJa0mkcvTphNfYAKpklj0uW82FgRxe52AZMmXuWCjDWlQA/viewform'">Written Off Stock</button>
+    <button class="nav-button" onclick="location.href='nails.html'">Nails</button>
+    <button class="nav-button" onclick="location.href='Coming Soon.html'">Help</button>
+  </div>
+</body>
+</html>

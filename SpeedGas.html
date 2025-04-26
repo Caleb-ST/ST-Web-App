@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gas Types</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 40px;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 20px;
+      width: 100%;
+      max-width: 800px;
+      margin-bottom: 40px;
+    }
+
+    .nav-button {
+      padding: 20px;
+      font-size: 1rem;
+      text-align: center;
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 80px;
+    }
+
+    .nav-button:hover {
+      background-color: #b91c1c;
+    }
+
+    .back-button {
+      margin-top: 20px;
+      text-decoration: none;
+      background-color: #dc2626;
+      padding: 12px 24px;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Gas Types</h1>
+
+  <div class="button-grid">
+    <a class="nav-button" href="GasCo2Argon sub.html">CO₂/Argon</a>
+    <a class="nav-button" href="GasArgon sub.html">Argon</a>
+    <a class="nav-button" href="GasOxygen sub.html">Oxygen</a>
+    <a class="nav-button" href="GasAcetylene sub.html">Acetylene</a>
+    <a class="nav-button" href="GasNitrogen sub.html">Nitrogen</a>
+    <a class="nav-button" href="GasCO2 sub.html">CO₂</a>
+    <a class="nav-button" href="GasBeer sub.html">Beer Gas</a>
+  </div>
+
+  <a href="index.html" class="back-button">← Back to Home</a>
+</body>
+</html>

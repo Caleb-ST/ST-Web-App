@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Warranty</title>
+  <style>
+    body {
+      background-color: #000;
+      color: white;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .search-box {
+      margin-bottom: 20px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .brand-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    .brand-list li {
+      background-color: #dc2626;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      transition: background-color 0.3s;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .brand-list li:hover {
+      background-color: #b91c1c;
+    }
+
+    .back-button {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      text-decoration: none;
+      background-color: #dc2626;
+      padding: 15px 30px;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      transition: background-color 0.3s;
+    }
+
+    .back-button:hover {
+      background-color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Brand Warranties</h1>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search brands...">
+  </div>
+
+  <ul class="brand-list" id="brandList">
+  </ul>
+
+  <a href="index.html" class="back-button">← Back to Home</a>
+
+  <script>
+    const brandsRaw = [
+      "3M", "888 Tools", "Abbott & Ashby", "Accud", "AGP", "Air Boy", "Airtec", "Ajax", "Alco", "Amkus",
+      "Ampfibian", "Ankame", "Apach", "Apex", "Arbortech", "Asada", "Austsaw", "Badger", "Bailey", "Ballistol",
+      "Bar", "Barfell", "Baron", "Beaver", "Beehhive Vinyl", "Bernzomatic", "Bessey", "Bianco Pumpz", "Bluetongue",
+      "BlueTTI", "Bordo", "Borum", "Bossweld", "Bostik", "Bostitch", "Boxo", "Bramley", "Bremen", "Bromic", "Buckaroo",
+      "Busy Bob", "Cabac", "Capral", "Cardi", "Cel-Fi", "ChemTig", "Chemtools", "Chicago Pneumatic", "Cladmate",
+      "ClayTech", "CleanLink", "Coast", "Columbia", "Companion", "CRC", "Crescent", "Crosbe", "Curv-o-mark",
+      "Cyclone", "Davey", "Dawn", "Diamond Back", "Drager", "DTA", "Durashield", "Dust Light", "EcoFlow", "EDCO",
+      "EFO", "EHI", "Eibenstock", "Elsea", "Enecharger", "Epoca", "eSafety Supplies", "Eslon", "Esselte", "Estwing",
+      "EverSoak", "Eyres", "Fanmaster", "Fasty", "Festool", "Felo", "Fendi", "Ferret", "Flextool", "Flir", "Fluke",
+      "flex", "Garrick", "Gearwrench", "GME", "Gorilla", "Grabo", "Hikoki", "Husqvarna", "Industek", "Imports", "ITM",
+      "Jamec PEM", "Karcher", "Kelso", "Kemppi", "Klein", "Knipex", "Kyoristu", "Leica", "Lincoln Electric",
+      "Little Giant", "Lufkin", "Macnaught", "Makita", "Makinex", "Matson", "Metabo", "Milano", "Milwaukee",
+      "Paslode", "Plumb Boss", "Radio Detection", "Ramset", "Ridgid", "Rupes", "Simpson", "Smith Reels", "SP Tools",
+      "Stabila", "Stanley", "Star", "T & E", "Toledo", "TopCon", "TradeFlame", "TradeQuip", "Uniden", "Unimig",
+      "Warren & Brown", "Weka", "Weller", "West Air", "West Mix", "Wiha", "Wiss", "Yamaha", "3-in-One", "Advanced",
+	  "Aeris Guard", "Air BPD", "Alemlube", "Armor Shield", "Artline", "Atlas Copco", "Aussie Gardener",
+	  "Autoglym", "
+    ];
+
+    const normalize = str => str.trim().toLowerCase().replace(/\s+/g, '');
+
+    const toTitleCase = str => str
+      .toLowerCase()
+      .split(' ')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+
+    const brands = Array.from(
+      new Map(
+        brandsRaw.map(b => [normalize(b), toTitleCase(b.trim())])
+      ).values()
+    ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+    const listContainer = document.getElementById("brandList");
+    const searchInput = document.getElementById("searchInput");
+
+    function renderList(filter = "") {
+      listContainer.innerHTML = "";
+      brands
+        .filter(brand => brand.toLowerCase().includes(filter.toLowerCase()))
+        .forEach(brand => {
+          const li = document.createElement("li");
+          li.textContent = brand;
+          li.onclick = () => location.href = "Coming Soon.html";
+          listContainer.appendChild(li);
+        });
+    }
+
+    searchInput.addEventListener("input", (e) => {
+      renderList(e.target.value);
+    });
+
+    renderList();
+  </script>
+</body>
+</html>
