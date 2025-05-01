@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rep Directory</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      height: 100vh;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      width: 300px;
+    }
+    table {
+      width: 100%;
+      max-width: 1000px;
+      border-collapse: collapse;
+      background-color: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    th {
+      background-color: #dc2626;
+    }
+    tr:hover {
+      background-color: #333;
+    }
+    tr.duplicate {
+      background-color: #b45309 !important;
+    }
+    .back-button {
+      padding: 10px 20px;
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .back-button:hover {
+      background-color: #9b1c1c;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+  <h1>Rep Directory</h1>
+  <input type="text" id="searchInput" placeholder="Search by name, company, or role..." />
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Role</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="repTableBody"></tbody>
+  </table>
+
+  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
+
+    let repsData = [];
+
+    function highlightDuplicates(reps) {
+      const nameCount = reps.reduce((acc, rep) => {
+        const name = rep.name.trim().toLowerCase();
+        acc[name] = (acc[name] || 0) + 1;
+        return acc;
+      }, {});
+      return reps.map(rep => ({
+        ...rep,
+        isDuplicate: nameCount[rep.name.trim().toLowerCase()] > 1
+      }));
+    }
+
+    function renderTable(reps) {
+      const tableBody = document.getElementById("repTableBody");
+      tableBody.innerHTML = "";
+      reps.forEach(rep => {
+        const row = document.createElement("tr");
+        if (rep.isDuplicate) row.classList.add("duplicate");
+        row.innerHTML = `
+          <td>${rep.company}</td>
+          <td>${rep.role}</td>
+          <td>${rep.name}</td>
+          <td>${rep.phone}</td>
+          <td>${rep.email}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function searchTable() {
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const filteredReps = repsData.filter(rep => {
+        return (
+          rep.name.toLowerCase().includes(searchValue) ||
+          rep.company.toLowerCase().includes(searchValue) ||
+          rep.role.toLowerCase().includes(searchValue)
+        );
+      });
+      renderTable(filteredReps);
+    }
+
+    function parseCSV(csv) {
+      const lines = csv.trim().split("\n");
+      const headers = lines[0].split(",").map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const values = line.split(",").map(v => v.trim());
+        return {
+          company: values[0] || "",
+          role: values[1] || "",
+          name: values[2] || "",
+          phone: values[3] || "",
+          email: values[4] || ""
+        };
+      });
+    }
+
+    fetch(SHEET_URL)
+      .then(response => response.text())
+      .then(data => {
+        repsData = highlightDuplicates(parseCSV(data));
+        renderTable(repsData);
+        document.getElementById("searchInput").addEventListener("input", searchTable);
+      })
+      .catch(error => {
+        console.error("Error loading data:", error);
+      });
+  </script>
+</body>
+</html>
