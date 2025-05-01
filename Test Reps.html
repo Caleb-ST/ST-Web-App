@@ -90,6 +90,16 @@
 
     let repsData = [];
 
+    function removeDuplicates(reps) {
+      const seen = new Set();
+      return reps.filter(rep => {
+        const name = rep.name.trim().toLowerCase();
+        if (seen.has(name)) return false;
+        seen.add(name);
+        return true;
+      });
+    }
+
     function highlightDuplicates(reps) {
       const nameCount = reps.reduce((acc, rep) => {
         const name = rep.name.trim().toLowerCase();
@@ -149,7 +159,9 @@
     fetch(SHEET_URL)
       .then(response => response.text())
       .then(data => {
-        repsData = highlightDuplicates(parseCSV(data));
+        const parsedData = parseCSV(data);
+        const uniqueReps = removeDuplicates(parsedData);
+        repsData = highlightDuplicates(uniqueReps);
         renderTable(repsData);
         document.getElementById("searchInput").addEventListener("input", searchTable);
       })
