@@ -89,11 +89,12 @@
       const tableBody = document.getElementById("bdmTableBody");
       tableBody.innerHTML = "";
       data.forEach(entry => {
+        const isBDMOnly = entry.bdmOnly.toLowerCase() === "true" ? "✓" : "";
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${entry.code}</td>
           <td>${entry.name}</td>
           <td>${entry.terms}</td>
+          <td>${isBDMOnly}</td>
         `;
         tableBody.appendChild(row);
       });
@@ -116,7 +117,7 @@
           code: values[0] || "",
           name: values[1] || "",
           terms: values[2] || "",
-          pricing: values[3] || ""
+          bdmOnly: values[3] || ""
         };
       });
     }
@@ -131,7 +132,7 @@
       .catch(error => {
         console.error("Error loading data:", error);
         const tableBody = document.getElementById("bdmTableBody");
-        tableBody.innerHTML = '<tr><td colspan="4">Failed to load data.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
       });
   </script>
 </body>
