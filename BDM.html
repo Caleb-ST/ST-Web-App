@@ -61,7 +61,7 @@
         const contactList = document.getElementById('contactList');
 
         entries.forEach(entry => {
-          const [customerCode, customerName, specialTerms, bdmPricing] = entry;
+          const [customerName, specialTerms, bdmPricing] = entry;
           const listItem = document.createElement('li');
           listItem.className = 'contact-item';
           listItem.innerHTML = `
