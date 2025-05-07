@@ -68,13 +68,14 @@
 <body>
   <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
   <h1>BDM Directory</h1>
-  <input type="text" id="searchInput" placeholder="Search by code or name..." />
+  <input type="text" id="searchInput" placeholder="Search by name or BDM..." />
   <table>
     <thead>
       <tr>
         <th>Customer Name</th>
-        <th>Actions</th>
-        <th>BDM Only</th>
+        <th>Special Terms</th>
+        <th>BDM</th>
+        <th>Pricing</th>
       </tr>
     </thead>
     <tbody id="bdmTableBody"></tbody>
@@ -89,12 +90,12 @@
       const tableBody = document.getElementById("bdmTableBody");
       tableBody.innerHTML = "";
       data.forEach(entry => {
-        const isBDMOnly = entry.bdmOnly.toLowerCase() === "true" ? "✓" : "";
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${entry.name}</td>
-          <td>${entry.terms}</td>
-          <td>${isBDMOnly}</td>
+          <td>${entry.customerName}</td>
+          <td>${entry.specialTerms}</td>
+          <td>${entry.bdm}</td>
+          <td>${entry.pricing}</td>
         `;
         tableBody.appendChild(row);
       });
@@ -103,8 +104,10 @@
     function searchTable() {
       const searchValue = document.getElementById("searchInput").value.toLowerCase();
       const filtered = bdmData.filter(entry =>
-        entry.code.toLowerCase().includes(searchValue) ||
-        entry.name.toLowerCase().includes(searchValue)
+        entry.customerName.toLowerCase().includes(searchValue) ||
+        entry.specialTerms.toLowerCase().includes(searchValue) ||
+        entry.bdm.toLowerCase().includes(searchValue) ||
+        entry.pricing.toLowerCase().includes(searchValue)
       );
       renderTable(filtered);
     }
@@ -114,10 +117,10 @@
       return lines.slice(1).map(line => {
         const values = line.split(",").map(v => v.trim());
         return {
-          code: values[0] || "",
-          name: values[1] || "",
-          terms: values[2] || "",
-          bdmOnly: values[3] || ""
+          customerName: values[0] || "",
+          specialTerms: values[1] || "",
+          bdm: values[2] || "",
+          pricing: values[3] || ""
         };
       });
     }
@@ -132,7 +135,7 @@
       .catch(error => {
         console.error("Error loading data:", error);
         const tableBody = document.getElementById("bdmTableBody");
-        tableBody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4">Failed to load data.</td></tr>';
       });
   </script>
 </body>
