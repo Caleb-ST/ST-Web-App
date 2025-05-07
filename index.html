@@ -21,6 +21,11 @@
       margin-bottom: 40px;
       color: #ffffff;
     }
+    h2 {
+      margin-top: -30px;
+      margin-bottom: 40px;
+      color: #ffffff;
+    }
     .button-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -41,6 +46,7 @@
       align-items: center;
       justify-content: center;
       text-align: center;
+      text-decoration: none;
     }
 
     .nav-button:hover {
@@ -50,12 +56,12 @@
 </head>
 <body>
   <h1>Sydney Tools</h1>
-  <h2>South Australia<h2>
+  <h2>South Australia</h2>
   <div class="button-grid">
-    <button class="nav-button" onclick="location.href='Rep Directory.html'">Rep Contacts</button>
-    <button class="nav-button" onclick="location.href='SpeedGas.html'">Speedgas</button>
-    <button class="nav-button" onclick="location.href='https://docs.google.com/forms/d/e/1FAIpQLSctAJa0mkcvTphNfYAKpklj0uW82FgRxe52AZMmXuWCjDWlQA/viewform'">Written Off Stock</button>
-    <button class="nav-button" onclick="location.href='BDM.html'">BDM</button>
+    <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
+    <a class="nav-button" href="SpeedGas.html">Speedgas</a>
+    <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSctAJa0mkcvTphNfYAKpklj0uW82FgRxe52AZMmXuWCjDWlQA/viewform" target="_blank" rel="noopener noreferrer">Written Off Stock</a>
+    <a class="nav-button" href="BDM.html">BDM</a>
   </div>
 </body>
 </html>
