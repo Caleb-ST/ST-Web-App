@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -55,6 +55,24 @@
   </style>
 </head>
 <body>
+  <script>
+    const validUsername = "Sydney Tools";
+    const validPassword = "chicago2019";
+
+    // Check if the user has already logged in
+    if (localStorage.getItem("loggedIn") !== "true") {
+      const username = prompt("Enter username:");
+      const password = prompt("Enter password:");
+
+      if (username === validUsername && password === validPassword) {
+        localStorage.setItem("loggedIn", "true");
+      } else {
+        alert("Access denied.");
+        window.location.href = "https://www.google.com";
+      }
+    }
+  </script>
+
   <h1>Sydney Tools</h1>
   <h2>South Australia</h2>
   <div class="button-grid">
