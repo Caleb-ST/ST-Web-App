@@ -2,89 +2,83 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sydney Tools - South Australia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BDM Contacts</title>
   <style>
     body {
       margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      padding: 20px;
       background-color: #000000;
       font-family: Arial, sans-serif;
       color: white;
     }
     h1 {
-      font-size: 4rem;
-      margin-bottom: 20px;
-      color: #ffffff;
-    }
-    h2 {
-      font-size: 2rem;
-      margin-bottom: 40px;
-      color: #ffffff;
-    }
-    .button-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 20px;
-      width: 80%;
-      max-width: 1000px;
-    }
-    .nav-button {
-      padding: 30px;
-      font-size: 1.2rem;
-      width: 100%;
-      height: 100px;
-      cursor: pointer;
-      border: none;
-      background-color: #dc2626;
-      color: white;
-      border-radius: 12px;
-      transition: background-color 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      font-size: 3rem;
       text-align: center;
+      margin-bottom: 20px;
     }
-    .nav-button:hover {
-      background-color: #b91c1c;
+    ul.contact-list {
+      list-style: none;
+      padding: 0;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    li.contact-item {
+      background-color: #1f2937;
+      border-radius: 8px;
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      transition: background-color 0.3s;
+    }
+    li.contact-item:hover {
+      background-color: #374151;
+    }
+    .customer-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .details {
+      font-size: 0.95rem;
+      color: #d1d5db;
     }
   </style>
 </head>
 <body>
-  <h1>Sydney Tools</h1>
-  <h2>South Australia</h2>
-  <div class="button-grid" id="buttonGrid">
-    <!-- Buttons will be populated here -->
-  </div>
+  <h1>BDM Contacts</h1>
+  <ul class="contact-list" id="contactList">
+    <!-- Contacts will be populated here -->
+  </ul>
 
   <script>
-    // Replace this URL with your published CSV link
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/1MbFk-Q5M0aP7cEz46PNVK4QTYu8la2kqA-CIDlDGp7U/edit?usp=sharing';
+    // Replace with your actual published CSV URL
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/1MbFk-Q5M0aP7cEz46PNVK4QTYu8la2kqA-CIDlDGp7U/edit?gid=0#gid=0/pub?output=csv';
 
     fetch(csvUrl)
       .then(response => response.text())
       .then(data => {
-        const rows = data.split('\n').slice(1); // Skip header row
-        const buttonGrid = document.getElementById('buttonGrid');
+        const rows = data.trim().split('\n').map(row => row.split(','));
+        const [header, ...entries] = rows;
+        const contactList = document.getElementById('contactList');
 
-        rows.forEach(row => {
-          const [label, url] = row.split(',');
-
-          if (label && url) {
-            const button = document.createElement('button');
-            button.className = 'nav-button';
-            button.textContent = label.trim();
-            button.onclick = () => window.location.href = url.trim();
-            buttonGrid.appendChild(button);
-          }
+        entries.forEach(entry => {
+          const [customerCode, customerName, specialTerms, bdmPricing] = entry;
+          const listItem = document.createElement('li');
+          listItem.className = 'contact-item';
+          listItem.innerHTML = `
+            <div class="customer-name">${customerName}</div>
+            <div class="details">
+              <strong>Customer Code:</strong> ${customerCode} |
+              <strong>Special Terms:</strong> ${specialTerms} |
+              <strong>BDM Pricing:</strong> ${bdmPricing}
+            </div>
+          `;
+          contactList.appendChild(listItem);
         });
       })
       .catch(error => {
-        console.error('Error fetching CSV data:', error);
+        console.error('Error fetching the CSV data:', error);
+        const contactList = document.getElementById('contactList');
+        contactList.innerHTML = '<li class="contact-item">Failed to load contacts.</li>';
       });
   </script>
 </body>
