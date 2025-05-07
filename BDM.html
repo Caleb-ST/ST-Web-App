@@ -72,10 +72,9 @@
   <table>
     <thead>
       <tr>
-        <th>Customer Code</th>
         <th>Customer Name</th>
-        <th>Special Terms</th>
-        <th>BDM Pricing</th>
+        <th>Actions</th>
+        <th>BDM Only</th>
       </tr>
     </thead>
     <tbody id="bdmTableBody"></tbody>
@@ -95,7 +94,6 @@
           <td>${entry.code}</td>
           <td>${entry.name}</td>
           <td>${entry.terms}</td>
-          <td>${entry.pricing}</td>
         `;
         tableBody.appendChild(row);
       });
