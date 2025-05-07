@@ -68,14 +68,13 @@
 <body>
   <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
   <h1>BDM Directory</h1>
-  <input type="text" id="searchInput" placeholder="Search by name or BDM..." />
+  <input type="text" id="searchInput" placeholder="Search by name or terms..." />
   <table>
     <thead>
       <tr>
         <th>Customer Name</th>
         <th>Special Terms</th>
         <th>BDM</th>
-        <th>Pricing</th>
       </tr>
     </thead>
     <tbody id="bdmTableBody"></tbody>
@@ -94,8 +93,7 @@
         row.innerHTML = `
           <td>${entry.customerName}</td>
           <td>${entry.specialTerms}</td>
-          <td>${entry.bdm}</td>
-          <td>${entry.pricing}</td>
+          <td>${entry.bdm.toLowerCase() === "true" ? "✅" : ""}</td>
         `;
         tableBody.appendChild(row);
       });
@@ -105,9 +103,7 @@
       const searchValue = document.getElementById("searchInput").value.toLowerCase();
       const filtered = bdmData.filter(entry =>
         entry.customerName.toLowerCase().includes(searchValue) ||
-        entry.specialTerms.toLowerCase().includes(searchValue) ||
-        entry.bdm.toLowerCase().includes(searchValue) ||
-        entry.pricing.toLowerCase().includes(searchValue)
+        entry.specialTerms.toLowerCase().includes(searchValue)
       );
       renderTable(filtered);
     }
@@ -119,8 +115,7 @@
         return {
           customerName: values[0] || "",
           specialTerms: values[1] || "",
-          bdm: values[2] || "",
-          pricing: values[3] || ""
+          bdm: values[2] || ""
         };
       });
     }
@@ -135,7 +130,7 @@
       .catch(error => {
         console.error("Error loading data:", error);
         const tableBody = document.getElementById("bdmTableBody");
-        tableBody.innerHTML = '<tr><td colspan="4">Failed to load data.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
       });
   </script>
 </body>
