@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capitol Transport</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      height: 100vh;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      width: 300px;
+    }
+    table {
+      width: 100%;
+      max-width: 1000px;
+      border-collapse: collapse;
+      background-color: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    th {
+      background-color: #dc2626;
+    }
+    tr:hover {
+      background-color: #333;
+    }
+    .back-button {
+      padding: 10px 20px;
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 20px;
+    }
+    .back-button:hover {
+      background-color: #9b1c1c;
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+  <h1>BDM Directory</h1>
+  <input type="text" id="searchInput" placeholder="Search by name or terms..." />
+  <table>
+    <thead>
+      <tr>
+        <th>Store</th>
+        <th>Username</th>
+        <th>Password</th>
+		<th>Recovery Email</th>
+      </tr>
+    </thead>
+    <tbody id="bdmTableBody"></tbody>
+  </table>
+
+  <script>
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo0YZ9wuARRF_-5Y8WM5MK3vLxoc2B2AJ7nc8EJZ43UXwwr8hP6juu1KDZdniTgZx8NboKdhkdUFon/pub?output=csv";
+
+    let bdmData = [];
+
+    function renderTable(data) {
+      const tableBody = document.getElementById("bdmTableBody");
+      tableBody.innerHTML = "";
+      data.forEach(entry => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${entry.Store}</td>
+          <td>${entry.Username}</td>
+          <td>${entry.Password}</td>
+		      <td>${entry.Recovery Email}</td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function searchTable() {
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const filtered = bdmData.filter(entry =>
+        entry.Store.toLowerCase().includes(searchValue) ||
+        entry.Username.toLowerCase().includes(searchValue) ||
+        entry.Password.toLowerCase().includes(searchvalue)
+      );
+      renderTable(filtered);
+    }
+
+    function parseCSV(csv) {
+      const lines = csv.trim().split("\n");
+      return lines.slice(1).map(line => {
+        const values = line.split(",").map(v => v.trim());
+        return {
+          customerName: values[0] || "",
+          specialTerms: values[1] || "",
+          bdm: values[2] || ""
+        };
+      });
+    }
+
+    fetch(SHEET_URL)
+      .then(response => response.text())
+      .then(data => {
+        bdmData = parseCSV(data);
+        renderTable(bdmData);
+        document.getElementById("searchInput").addEventListener("input", searchTable);
+      })
+      .catch(error => {
+        console.error("Error loading data:", error);
+        const tableBody = document.getElementById("bdmTableBody");
+        tableBody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
+      });
+  </script>
+</body>
+</html>
