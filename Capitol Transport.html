@@ -75,7 +75,7 @@
         <th>Store</th>
         <th>Username</th>
         <th>Password</th>
-		<th>Recovery Email</th>
+        <th>Recovery Email</th>
       </tr>
     </thead>
     <tbody id="bdmTableBody"></tbody>
@@ -92,10 +92,10 @@
       data.forEach(entry => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${entry.Store}</td>
-          <td>${entry.Username}</td>
-          <td>${entry.Password}</td>
-		      <td>${entry.Recovery Email}</td>
+          <td>${entry["Store"]}</td>
+          <td>${entry["Username"]}</td>
+          <td>${entry["Password"]}</td>
+          <td>${entry["Recovery Email"]}</td>
         `;
         tableBody.appendChild(row);
       });
@@ -104,22 +104,24 @@
     function searchTable() {
       const searchValue = document.getElementById("searchInput").value.toLowerCase();
       const filtered = bdmData.filter(entry =>
-        entry.Store.toLowerCase().includes(searchValue) ||
-        entry.Username.toLowerCase().includes(searchValue) ||
-        entry.Password.toLowerCase().includes(searchvalue)
+        entry["Store"].toLowerCase().includes(searchValue) ||
+        entry["Username"].toLowerCase().includes(searchValue) ||
+        entry["Password"].toLowerCase().includes(searchValue) ||
+        entry["Recovery Email"].toLowerCase().includes(searchValue)
       );
       renderTable(filtered);
     }
 
     function parseCSV(csv) {
       const lines = csv.trim().split("\n");
+      const headers = lines[0].split(",").map(h => h.trim());
       return lines.slice(1).map(line => {
         const values = line.split(",").map(v => v.trim());
-        return {
-          customerName: values[0] || "",
-          specialTerms: values[1] || "",
-          bdm: values[2] || ""
-        };
+        const entry = {};
+        headers.forEach((header, index) => {
+          entry[header] = values[index] || "";
+        });
+        return entry;
       });
     }
 
@@ -133,7 +135,7 @@
       .catch(error => {
         console.error("Error loading data:", error);
         const tableBody = document.getElementById("bdmTableBody");
-        tableBody.innerHTML = '<tr><td colspan="3">Failed to load data.</td></tr>';
+        tableBody.innerHTML = '<tr><td colspan="4">Failed to load data.</td></tr>';
       });
   </script>
 </body>
