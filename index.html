@@ -1,4 +1,4 @@
-<!DOCTYPE html> 
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -48,31 +48,45 @@
       text-align: center;
       text-decoration: none;
     }
-
     .nav-button:hover {
       background-color: #b91c1c;
+    }
+
+    #login-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    #login-screen input {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1rem;
+    }
+    #login-screen button {
+      padding: 10px 20px;
+      font-size: 1rem;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <script>
-    const validUsername = "Sydney Tools";
-    const validPassword = "chicago2019";
 
-    // Check if the user has already logged in
-    if (localStorage.getItem("loggedIn") !== "true") {
-      const username = prompt("Enter username:");
-      const password = prompt("Enter password:");
+  <div id="login-screen">
+    <h2>Please Log In</h2>
+    <input id="username" type="text" placeholder="Username" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()">Login</button>
+  </div>
 
-      if (username === validUsername && password === validPassword) {
-        localStorage.setItem("loggedIn", "true");
-      } else {
-        alert("Access denied.");
-        window.location.href = "https://www.google.com";
-      }
-    }
-  </script>
-
+  <!-- Main Content -->
   <h1>Sydney Tools</h1>
   <h2>South Australia</h2>
   <div class="button-grid">
@@ -81,5 +95,33 @@
     <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
     <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
   </div>
+
+  <script>
+    const validUsername = "Sydney Tools";
+    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674"; // MD5
+
+    function md5(str) {
+      return CryptoJS.MD5(str).toString();
+    }
+
+    if (localStorage.getItem("loggedIn") === "true") {
+      document.getElementById("login-screen").style.display = "none";
+    }
+
+    function login() {
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+
+      if (username === validUsername && md5(password) === validPasswordHash) {
+        localStorage.setItem("loggedIn", "true");
+        document.getElementById("login-screen").style.display = "none";
+      } else {
+        alert("Access denied.");
+        window.location.href = "https://www.google.com";
+      }
+    }
+  </script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 </body>
 </html>
