@@ -144,7 +144,6 @@
     }
 
     function calculateDelivery() {
-      const store = document.getElementById("store").value;
       const suburb = document.getElementById("suburb").value.trim().toUpperCase();
       const length = parseFloat(document.getElementById("length").value);
       const width = parseFloat(document.getElementById("width").value);
@@ -180,8 +179,16 @@
         return;
       }
 
-      const rate = match[selectedVehicle.label + "_STD"];
-      document.getElementById("result").innerText = `Best Vehicle: ${selectedVehicle.label}\nRate: $${rate}`;
+      const std = match[selectedVehicle.label + "_STD"] || "N/A";
+      const exp = match[selectedVehicle.label + "_EXP"] || "N/A";
+      const vip = match[selectedVehicle.label + "_VIP"] || "N/A";
+
+      document.getElementById("result").innerHTML = `
+        <strong>Best Vehicle:</strong> ${selectedVehicle.label}<br>
+        <strong>Standard (4hr):</strong> $${std}<br>
+        <strong>Express (2.5hr):</strong> $${exp}<br>
+        <strong>VIP (1.5hr):</strong> $${vip}
+      `;
     }
   </script>
 
