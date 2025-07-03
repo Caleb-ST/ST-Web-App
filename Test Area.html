@@ -1,4 +1,4 @@
-very <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -16,10 +16,12 @@ very <!DOCTYPE html>
       flex-direction: column;
       align-items: center;
     }
+
     h1 {
       font-size: 3rem;
       margin-bottom: 20px;
     }
+
     input[type="text"] {
       padding: 10px;
       font-size: 1rem;
@@ -28,6 +30,7 @@ very <!DOCTYPE html>
       margin-bottom: 20px;
       width: 300px;
     }
+
     table {
       width: 100%;
       max-width: 1000px;
@@ -36,6 +39,7 @@ very <!DOCTYPE html>
       border-radius: 8px;
       overflow: hidden;
     }
+
     th, td {
       padding: 12px;
       text-align: left;
@@ -44,12 +48,15 @@ very <!DOCTYPE html>
       overflow: hidden;
       text-overflow: ellipsis;
     }
+
     th {
       background-color: #dc2626;
     }
+
     tr:hover {
       background-color: #333;
     }
+
     .back-button {
       padding: 10px 20px;
       background-color: #dc2626;
@@ -58,13 +65,20 @@ very <!DOCTYPE html>
       border-radius: 8px;
       font-size: 1rem;
       cursor: pointer;
-      margin-bottom: 20px;
-      margin-top: 30px;
+      margin: 10px;
       text-decoration: none;
       display: inline-block;
     }
+
     .back-button:hover {
       background-color: #9b1c1c;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 40px;
     }
   </style>
 </head>
@@ -83,6 +97,11 @@ very <!DOCTYPE html>
     </thead>
     <tbody id="bdmTableBody"></tbody>
   </table>
+
+  <div class="button-container">
+    <a class="back-button" href="Capital Transport Quick Rate Calculator.html">Quick cost guide</a>
+    <a class="back-button" href="https://capitaltransport.com.au/" target="_blank" rel="noopener noreferrer">Make a Booking</a>
+  </div>
 
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTo0YZ9wuARRF_-5Y8WM5MK3vLxoc2B2AJ7nc8EJZ43UXwwr8hP6juu1KDZdniTgZx8NboKdhkdUFon/pub?output=csv";
@@ -141,7 +160,5 @@ very <!DOCTYPE html>
         tableBody.innerHTML = '<tr><td colspan="4">Failed to load data.</td></tr>';
       });
   </script>
-  <a class="back-button" href="Capital Transport Quick Rate Calculator.html" >Delivery Rate Calculator</a>
-  <a class="back-button" href="https://capitaltransport.com.au/" target="_blank" rel="noopener noreferrer">Make a Booking</a>
 </body>
 </html>
