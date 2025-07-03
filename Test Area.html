@@ -152,11 +152,11 @@
       const volume = (length * width * height) / 1000000;
 
       const vehicleOptions = [
-        { label: "Courier", maxWeight: 25, maxLength: 60, maxWidth: 40, maxHeight: 40, maxVolume: 0.1 },
-        { label: "Station Wagon", maxWeight: 40, maxLength: 100, maxWidth: 80, maxHeight: 60, maxVolume: 0.3 },
-        { label: "Half Tonne", maxWeight: 60, maxLength: 150, maxWidth: 100, maxHeight: 100, maxVolume: 0.6 },
-        { label: "1 Tonne", maxWeight: 150, maxLength: 200, maxWidth: 120, maxHeight: 120, maxVolume: 1.0 },
-        { label: "Roof Racks", maxWeight: 150, maxLength: 200, maxWidth: 120, maxHeight: 120, maxVolume: 1.0 }
+        { label: "Courier", maxWeight: 25, maxLength: 50, maxWidth: 50, maxHeight: 50, maxVolume: 0.1 },
+        { label: "Station Wagon", maxWeight: 125, maxLength: 50, maxWidth: 50, maxHeight: 50, maxVolume: 0.3 },
+        { label: "Half Tonne", maxWeight: 500, maxLength: 120, maxWidth: 150, maxHeight: 150, maxVolume: 0.6 },
+        { label: "1 Tonne", maxWeight: 1000, maxLength: 240, maxWidth: 150, maxHeight: 200, maxVolume: 1.0 },
+        { label: "Roof Racks", maxWeight: 1000, maxLength: 650, maxWidth: 50, maxHeight: 50, maxVolume: 1.0 }
       ];
 
       const selectedVehicle = vehicleOptions.find(v =>
