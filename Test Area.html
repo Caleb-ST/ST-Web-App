@@ -174,7 +174,10 @@
       }
 
       const data = window.deliveryData || [];
-      const match = data.find(row => row.Suburb.toUpperCase().trim() === suburb && row.From === store);
+      const match = data.find(row =>
+        row.Suburb.toUpperCase().trim() === suburb &&
+        row.From.toUpperCase().trim() === store.toUpperCase().trim()
+      );
       if (!match) {
         document.getElementById("result").innerText = "Suburb not found in delivery database.";
         return;
