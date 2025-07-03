@@ -153,11 +153,11 @@
       const volume = (length * width * height) / 1000000;
 
       const vehicleOptions = [
-        { code: "SC", maxWeight: 25, maxLength: 60, maxWidth: 40, maxHeight: 40, maxVolume: 0.1 },
-        { code: "SSW", maxWeight: 40, maxLength: 100, maxWidth: 80, maxHeight: 60, maxVolume: 0.3 },
-        { code: "SH", maxWeight: 60, maxLength: 150, maxWidth: 100, maxHeight: 100, maxVolume: 0.6 },
-        { code: "S1", maxWeight: 150, maxLength: 200, maxWidth: 120, maxHeight: 120, maxVolume: 1.0 },
-        { code: "S1R", maxWeight: 150, maxLength: 200, maxWidth: 120, maxHeight: 120, maxVolume: 1.0 }
+        { label: "Courier", maxWeight: 25, maxLength: 60, maxWidth: 40, maxHeight: 40, maxVolume: 0.1 },
+        { label: "Station Wagon", maxWeight: 40, maxLength: 100, maxWidth: 80, maxHeight: 60, maxVolume: 0.3 },
+        { label: "Half Tonne", maxWeight: 60, maxLength: 150, maxWidth: 100, maxHeight: 100, maxVolume: 0.6 },
+        { label: "1 Tonne", maxWeight: 150, maxLength: 200, maxWidth: 120, maxHeight: 120, maxVolume: 1.0 },
+        { label: "Roof Racks", maxWeight: 150, maxLength: 200, maxWidth: 120, maxHeight: 120, maxVolume: 1.0 }
       ];
 
       const selectedVehicle = vehicleOptions.find(v =>
@@ -174,16 +174,14 @@
       }
 
       const data = window.deliveryData || [];
-      const match = data.find(row =>
-        row.Suburb.toUpperCase().trim() === suburb &&
-        row.From.toUpperCase().trim() === store.toUpperCase().trim()
-      );
+      const match = data.find(row => row.Suburb.toUpperCase().trim() === suburb);
       if (!match) {
         document.getElementById("result").innerText = "Suburb not found in delivery database.";
         return;
       }
-      const rate = match[selectedVehicle.code + "_STD"];
-      document.getElementById("result").innerText = `Best Vehicle: ${selectedVehicle.code}\nRate: $${rate}`;
+
+      const rate = match[selectedVehicle.label + "_STD"];
+      document.getElementById("result").innerText = `Best Vehicle: ${selectedVehicle.label}\nRate: $${rate}`;
     }
   </script>
 
