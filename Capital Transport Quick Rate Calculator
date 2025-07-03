@@ -1,1 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Rate Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background-color: #000;
+      color: #fff;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #fff;
+    }
+    .form {
+      background-color: #1a1a1a;
+      padding: 30px;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      padding: 15px;
+      margin-top: 25px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+    #result {
+      margin-top: 20px;
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    #suggestions {
+      position: relative;
+      background: #222;
+      border: 1px solid #444;
+      max-height: 150px;
+      overflow-y: auto;
+      border-radius: 4px;
+      margin-top: 5px;
+    }
+    .suggestion {
+      padding: 8px;
+      cursor: pointer;
+    }
+    .suggestion:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
 
+  <h1>Delivery Rate Calculator</h1>
+
+  <div class="form">
+    <label for="store">From Store:</label>
+    <select id="store">
+      <option>Regency Park</option>
+      <option>Windsor Gardens</option>
+      <option>Parafield</option>
+      <option>Munno Para</option>
+      <option>Seaford</option>
+      <option>Lonsdale</option>
+    </select>
+
+    <label for="suburb">To Suburb:</label>
+    <input type="text" id="suburb" placeholder="Enter destination suburb" oninput="showSuggestions()">
+    <div id="suggestions"></div>
+
+    <label for="length">Length (cm) Max 650:</label>
+    <input type="number" id="length">
+
+    <label for="width">Width (cm) Max 150:</label>
+    <input type="number" id="width">
+
+    <label for="height">Height (cm) Max 200:</label>
+    <input type="number" id="height">
+
+    <label for="weight">Weight (kg) Max 1000:</label>
+    <input type="number" id="weight" step="0.01">
+
+    <button onclick="calculateDelivery()">Calculate</button>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    let allSuburbs = [];
+
+    Papa.parse("https://docs.google.com/spreadsheets/d/e/2PACX-1vRzFEd4GC5O7bJPy2oVpOqFXf5MBmvKn-GbP2F6h3SVtl4r5_NHZMc2eQhlbKrlQGMJ6C4nn-ODuDwj/pub?output=csv", {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const data = results.data;
+        window.deliveryData = data;
+        allSuburbs = Array.from(new Set(data.map(row => row.Suburb?.toUpperCase().trim())));
+      }
+    });
+
+    function showSuggestions() {
+      const input = document.getElementById("suburb").value.toUpperCase();
+      const suggestionsBox = document.getElementById("suggestions");
+      suggestionsBox.innerHTML = "";
+      if (!input || input.length < 2) return;
+      const matches = allSuburbs.filter(s => s && s.startsWith(input)).slice(0, 10);
+      matches.forEach(suburb => {
+        const div = document.createElement("div");
+        div.className = "suggestion";
+        div.textContent = suburb;
+        div.onclick = () => {
+          document.getElementById("suburb").value = suburb;
+          suggestionsBox.innerHTML = "";
+        };
+        suggestionsBox.appendChild(div);
+      });
+    }
+
+    function calculateDelivery() {
+      const store = document.getElementById("store").value.trim();
+      const suburb = document.getElementById("suburb").value.trim().toUpperCase();
+      const length = parseFloat(document.getElementById("length").value);
+      const width = parseFloat(document.getElementById("width").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const weight = parseFloat(document.getElementById("weight").value);
+      const volume = (length * width * height) / 1000000;
+
+      const vehicleOptions = [
+        { label: "Courier", maxWeight: 25, maxLength: 50, maxWidth: 50, maxHeight: 50, maxVolume: 0.1 },
+        { label: "Station Wagon", maxWeight: 125, maxLength: 50, maxWidth: 50, maxHeight: 50, maxVolume: 0.3 },
+        { label: "Half Tonne", maxWeight: 500, maxLength: 120, maxWidth: 150, maxHeight: 150, maxVolume: 0.6 },
+        { label: "1 Tonne", maxWeight: 1000, maxLength: 240, maxWidth: 150, maxHeight: 200, maxVolume: 1.0 },
+        { label: "Roof Racks", maxWeight: 1000, maxLength: 650, maxWidth: 50, maxHeight: 50, maxVolume: 1.0 }
+      ];
+
+      const selectedVehicle = vehicleOptions.find(v =>
+        weight <= v.maxWeight &&
+        length <= v.maxLength &&
+        width <= v.maxWidth &&
+        height <= v.maxHeight &&
+        volume <= v.maxVolume
+      );
+
+      if (!selectedVehicle) {
+        document.getElementById("result").innerText = "No suitable transport method found.";
+        return;
+      }
+
+      const data = window.deliveryData || [];
+      const filtered = data.filter(row => row.Store?.trim().toUpperCase() === store.toUpperCase());
+      const match = filtered.find(row => row.Suburb?.toUpperCase().trim() === suburb);
+
+      if (!match) {
+        document.getElementById("result").innerText = "Suburb not found in delivery database for the selected store.";
+        return;
+      }
+
+      const std = match[selectedVehicle.label + "_STD"] || "N/A";
+      const exp = match[selectedVehicle.label + "_EXP"] || "N/A";
+      const vip = match[selectedVehicle.label + "_VIP"] || "N/A";
+
+      document.getElementById("result").innerHTML = `
+        <strong>Best Vehicle:</strong> ${selectedVehicle.label}<br>
+        <strong>Standard (4hr):</strong> $${std}<br>
+        <strong>Express (2.5hr):</strong> $${exp}<br>
+        <strong>VIP (1.5hr):</strong> $${vip}
+      `;
+    }
+  </script>
+
+</body>
+</html>
