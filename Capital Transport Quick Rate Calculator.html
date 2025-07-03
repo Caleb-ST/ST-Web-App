@@ -17,11 +17,13 @@
       flex-direction: column;
       align-items: center;
     }
+
     h1 {
       font-size: 2.5rem;
       margin-bottom: 20px;
       color: #fff;
     }
+
     .form {
       background-color: #1a1a1a;
       padding: 30px;
@@ -29,11 +31,13 @@
       width: 100%;
       max-width: 500px;
     }
+
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
+
     input, select {
       width: 100%;
       padding: 10px;
@@ -42,23 +46,33 @@
       border: none;
       font-size: 1rem;
     }
-    button {
+
+    button, .back-button {
       width: 100%;
       padding: 15px;
       margin-top: 25px;
-      background-color: #007bff;
+      background-color: #dc2626;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
       font-size: 1.2rem;
       cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
     }
+
+    button:hover, .back-button:hover {
+      background-color: #9b1c1c;
+    }
+
     #result {
       margin-top: 20px;
       background: #222;
       padding: 15px;
       border-radius: 8px;
     }
+
     #suggestions {
       position: relative;
       background: #222;
@@ -68,12 +82,20 @@
       border-radius: 4px;
       margin-top: 5px;
     }
+
     .suggestion {
       padding: 8px;
       cursor: pointer;
     }
+
     .suggestion:hover {
       background-color: #333;
+    }
+
+    .button-container {
+      width: 100%;
+      max-width: 500px;
+      margin-top: 30px;
     }
   </style>
 </head>
@@ -110,6 +132,10 @@
 
     <button onclick="calculateDelivery()">Calculate</button>
     <div id="result"></div>
+  </div>
+
+  <div class="button-container">
+    <a class="back-button" href="index.html">Back to Home</a>
   </div>
 
   <script>
