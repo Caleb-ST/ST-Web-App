@@ -120,8 +120,8 @@
       header: true,
       complete: function(results) {
         const data = results.data;
-        allSuburbs = Array.from(new Set(data.map(row => row.Suburb.toUpperCase().trim())));
         window.deliveryData = data;
+        allSuburbs = Array.from(new Set(data.map(row => row.Suburb?.toUpperCase().trim())));
       }
     });
 
@@ -130,7 +130,7 @@
       const suggestionsBox = document.getElementById("suggestions");
       suggestionsBox.innerHTML = "";
       if (!input || input.length < 2) return;
-      const matches = allSuburbs.filter(s => s.startsWith(input)).slice(0, 10);
+      const matches = allSuburbs.filter(s => s && s.startsWith(input)).slice(0, 10);
       matches.forEach(suburb => {
         const div = document.createElement("div");
         div.className = "suggestion";
@@ -144,6 +144,7 @@
     }
 
     function calculateDelivery() {
+      const store = document.getElementById("store").value.trim();
       const suburb = document.getElementById("suburb").value.trim().toUpperCase();
       const length = parseFloat(document.getElementById("length").value);
       const width = parseFloat(document.getElementById("width").value);
@@ -173,9 +174,11 @@
       }
 
       const data = window.deliveryData || [];
-      const match = data.find(row => row.Suburb.toUpperCase().trim() === suburb);
+      const filtered = data.filter(row => row.Store?.trim().toUpperCase() === store.toUpperCase());
+      const match = filtered.find(row => row.Suburb?.toUpperCase().trim() === suburb);
+
       if (!match) {
-        document.getElementById("result").innerText = "Suburb not found in delivery database.";
+        document.getElementById("result").innerText = "Suburb not found in delivery database for the selected store.";
         return;
       }
 
