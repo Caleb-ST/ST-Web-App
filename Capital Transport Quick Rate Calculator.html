@@ -130,6 +130,11 @@
     <label for="weight">Weight (kg) Max 1000:</label>
     <input type="number" id="weight" step="0.01">
 
+    <label style="margin-top: 20px;">
+      <input type="checkbox" id="dangerousGoods" style="margin-right: 10px;">
+      Contains Dangerous Goods
+    </label>
+
     <button onclick="calculateDelivery()">Calculate</button>
     <div id="result"></div>
   </div>
@@ -176,6 +181,7 @@
       const width = parseFloat(document.getElementById("width").value);
       const height = parseFloat(document.getElementById("height").value);
       const weight = parseFloat(document.getElementById("weight").value);
+      const isDangerous = document.getElementById("dangerousGoods").checked;
       const volume = (length * width * height) / 1000000;
 
       const vehicleOptions = [
@@ -216,7 +222,8 @@
         <strong>Best Vehicle:</strong> ${selectedVehicle.label}<br>
         <strong>Standard (4hr):</strong> $${std}<br>
         <strong>Express (2.5hr):</strong> $${exp}<br>
-        <strong>VIP (1.5hr):</strong> $${vip}
+        <strong>VIP (1.5hr):</strong> $${vip}<br>
+        <strong>Dangerous Goods:</strong> ${isDangerous ? 'Yes' : 'No'}
       `;
     }
   </script>
