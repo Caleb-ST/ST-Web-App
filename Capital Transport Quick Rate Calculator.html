@@ -128,7 +128,6 @@
   </style>
 </head>
 <body>
-
   <h1>Delivery Rate Calculator</h1>
   <div class="description">
     Use this tool to estimate delivery costs <br>
@@ -216,6 +215,12 @@
       const height = parseFloat(document.getElementById("height").value);
       const weight = parseFloat(document.getElementById("weight").value);
       const isDangerous = document.getElementById("dangerousGoods").checked;
+
+      if (!store || !suburb || isNaN(length) || isNaN(width) || isNaN(height) || isNaN(weight)) {
+        document.getElementById("result").innerText = "Please fill in all fields correctly.";
+        return;
+      }
+
       const volume = (length * width * height) / 1000000;
 
       if (isDangerous) {
@@ -269,6 +274,5 @@
       `;
     }
   </script>
-
 </body>
 </html>
