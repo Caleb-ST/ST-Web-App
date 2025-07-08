@@ -247,10 +247,14 @@
         volume <= v.maxVolume
       );
 
-      if (!selectedVehicle) {
-        document.getElementById("result").innerText = "No suitable transport method found.";
-        return;
+     if (!selectedVehicle) {
+      document.getElementById("result").innerHTML = `
+      <strong>No suitable transport method found for the given dimensions and weight.</strong><br>
+      Please book delivery directly through <a href="https://www.capitaltransport.com.au" target="_blank" style="color:#4fc3f7;">Capital Transport</a>.
+      `;
+     return;
       }
+
 
       const data = window.deliveryData || [];
       const filtered = data.filter(row => row.Store?.trim().toUpperCase() === store.toUpperCase());
