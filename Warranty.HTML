@@ -130,7 +130,7 @@
         if (filter && !supplierName.toLowerCase().includes(filter.toLowerCase())) return;
 
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${supplierName}</td><td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>`;
+        tr.innerHTML = `<td>${supplierName}</td><td><button onclick='openModal(${JSON.stringify(item).replace(/'/g, "\'").replace(/"/g, '&quot;')})'>More Info</button></td>`;
 
         const importFlag = item.Import?.trim().toUpperCase() === 'TRUE';
         (importFlag ? importBody : localBody).appendChild(tr);
@@ -141,14 +141,16 @@
 
     function openModal(item) {
       document.getElementById('brandTitle').textContent = item.Brands;
-      document.getElementById('summary').innerHTML = `<p>${item['Warranty Details']}</p>`;
-      currentSteps = [];
+      document.getElementById('summary').innerHTML = `
+        <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty'] || 'N/A'}</p>
+        <p><strong>Corded Warranty:</strong> ${item['Corded warranty'] || 'N/A'}</p>
+        <p><strong>Battery Warranty:</strong> ${item['Battery Warranty'] || 'N/A'}</p>
+        <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
+      `;
 
+      currentSteps = [];
       for (let i = 1; i <= 6; i++) {
-        if (item[`First Up Failure Step ${i}`]) currentSteps.push(`First Up Failure: ${item[`First Up Failure Step ${i}`]}`);
-      }
-      for (let i = 1; i <= 6; i++) {
-        if (item[`Warranty Process Step ${i}`]) currentSteps.push(`Warranty Process: ${item[`Warranty Process Step ${i}`]}`);
+        if (item[`Step ${i}`]) currentSteps.push(item[`Step ${i}`]);
       }
 
       currentStepIndex = 0;
