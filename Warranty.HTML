@@ -1,68 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Supplier Warranty Info</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
-      font-family: 'Roboto', sans-serif;
-      background: #000;
-      color: #fff;
       margin: 0;
-      padding: 20px;
+      padding: 40px;
+      height: 100vh;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
-
     h1 {
-      text-align: center;
-      font-size: 2.5rem;
+      font-size: 3rem;
       margin-bottom: 20px;
     }
-
     table {
       width: 100%;
+      max-width: 1000px;
       border-collapse: collapse;
-      margin-top: 20px;
+      background-color: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
     }
-
     th, td {
-      border: 1px solid #333;
       padding: 12px;
-      text-align: center;
+      text-align: left;
+      border-bottom: 1px solid #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
     th {
-      background: #111;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      background-color: #dc2626;
     }
-
-    td button {
-      background: #444;
-      color: #fff;
+    tr:hover {
+      background-color: #333;
+    }
+    .back-button {
+      padding: 10px 20px;
+      background-color: #dc2626;
+      color: white;
       border: none;
-      padding: 8px 12px;
-      border-radius: 4px;
+      border-radius: 8px;
+      font-size: 1rem;
       cursor: pointer;
+      margin-bottom: 20px;
     }
-
-    td button:hover {
-      background: #666;
+    .back-button:hover {
+      background-color: #9b1c1c;
     }
-
     .modal {
       display: none;
       position: fixed;
-      top: 0; left: 0;
+      top: 0;
+      left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.85);
+      background: rgba(0, 0, 0, 0.85);
       justify-content: center;
       align-items: center;
       z-index: 1000;
     }
-
     .modal-content {
       background: #1a1a1a;
       padding: 20px;
@@ -71,7 +76,6 @@
       max-width: 500px;
       text-align: center;
     }
-
     .close-btn {
       background: red;
       color: #fff;
@@ -81,11 +85,9 @@
       float: right;
       cursor: pointer;
     }
-
     .steps {
       margin: 20px 0;
     }
-
     .modal-content button {
       background: #444;
       color: #fff;
@@ -95,117 +97,111 @@
       margin: 5px;
       cursor: pointer;
     }
-
     .modal-content button:hover {
       background: #666;
     }
-
     #summary p {
       margin: 8px 0;
     }
   </style>
 </head>
 <body>
+  <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+  <h1>Supplier Warranty Information</h1>
+  <table id="supplierTable">
+    <thead>
+      <tr>
+        <th>Brand</th>
+        <th>Cordless Warranty</th>
+        <th>Corded Warranty</th>
+        <th>Battery Warranty</th>
+        <th>Registration</th>
+        <th>Import</th>
+        <th>More Info</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<h1>Supplier Warranty Information</h1>
-
-<table id="supplierTable">
-  <thead>
-    <tr>
-      <th>Brand</th>
-      <th>Cordless Warranty</th>
-      <th>Corded Warranty</th>
-      <th>Battery Warranty</th>
-      <th>Registration</th>
-      <th>Import</th>
-      <th>More Info</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
-<div id="modal" class="modal">
-  <div class="modal-content">
-    <button class="close-btn" onclick="closeModal()">X</button>
-    <h2 id="brandTitle"></h2>
-    <div id="summary"></div>
-    <div class="steps">
-      <div id="stepContent"></div>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <button class="close-btn" onclick="closeModal()">X</button>
+      <h2 id="brandTitle"></h2>
+      <div id="summary"></div>
+      <div class="steps">
+        <div id="stepContent"></div>
+      </div>
+      <button onclick="prevStep()">Previous</button>
+      <button onclick="nextStep()">Next</button>
     </div>
-    <button onclick="prevStep()">Previous</button>
-    <button onclick="nextStep()">Next</button>
   </div>
-</div>
 
-<script>
-const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7prLZ444tgiw57Te-_Vdz1z87euBUwxRC6w5YJdEqJ_PVfeFQtjnFhvJhWEJK3Q8tG8JtAIYaxEaJ/pub?output=csv';
+  <script>
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7prLZ444tgiw57Te-_Vdz1z87euBUwxRC6w5YJdEqJ_PVfeFQtjnFhvJhWEJK3Q8tG8JtAIYaxEaJ/pub?output=csv';
 
-let currentSteps = [];
-let currentStepIndex = 0;
+    let currentSteps = [];
+    let currentStepIndex = 0;
 
-Papa.parse(csvUrl, {
-  download: true,
-  header: true,
-  complete: function(results) {
-    const tbody = document.querySelector('#supplierTable tbody');
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const tbody = document.querySelector('#supplierTable tbody');
 
-    results.data.forEach((item, index) => {
-      const tr = document.createElement('tr');
+        results.data.forEach(item => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${item.Brands}</td>
+            <td>${item['Cordless Warranty']}</td>
+            <td>${item['Corded warranty']}</td>
+            <td>${item['Battery Warranty']}</td>
+            <td>${item['Registration'] === 'TRUE' ? '✔️' : '❌'}</td>
+            <td>${item['Import'] === 'TRUE' ? '✔️' : '❌'}</td>
+            <td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+    });
 
-      tr.innerHTML = `
-        <td>${item.Brands}</td>
-        <td>${item['Cordless Warranty']}</td>
-        <td>${item['Corded warranty']}</td>
-        <td>${item['Battery Warranty']}</td>
-        <td>${item['Registration'] === 'TRUE' ? '✔️' : '❌'}</td>
-        <td>${item['Import'] === 'TRUE' ? '✔️' : '❌'}</td>
-        <td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>
+    function openModal(item) {
+      document.getElementById('brandTitle').textContent = item.Brands;
+      document.getElementById('summary').innerHTML = `
+        <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty']}</p>
+        <p><strong>Corded Warranty:</strong> ${item['Corded warranty']}</p>
+        <p><strong>Battery Warranty:</strong> ${item['Battery Warranty']}</p>
+        <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
+        <p><strong>Import:</strong> ${item['Import'] === 'TRUE' ? 'Yes' : 'No'}</p>
       `;
 
-      tbody.appendChild(tr);
-    });
-  }
-});
+      currentSteps = [item['Step 1'], item['Step 2'], item['Step 3'], item['Step 4'], item['Step 5']];
+      currentStepIndex = 0;
+      showStep();
 
-function openModal(item) {
-  document.getElementById('brandTitle').textContent = item.Brands;
-  document.getElementById('summary').innerHTML = `
-    <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty']}</p>
-    <p><strong>Corded Warranty:</strong> ${item['Corded warranty']}</p>
-    <p><strong>Battery Warranty:</strong> ${item['Battery Warranty']}</p>
-    <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
-    <p><strong>Import:</strong> ${item['Import'] === 'TRUE' ? 'Yes' : 'No'}</p>
-  `;
+      document.getElementById('modal').style.display = 'flex';
+    }
 
-  currentSteps = [item['Step 1'], item['Step 2'], item['Step 3'], item['Step 4'], item['Step 5']];
-  currentStepIndex = 0;
-  showStep();
+    function showStep() {
+      document.getElementById('stepContent').textContent = currentSteps[currentStepIndex] || 'No Information';
+    }
 
-  document.getElementById('modal').style.display = 'flex';
-}
+    function nextStep() {
+      if (currentStepIndex < currentSteps.length - 1) {
+        currentStepIndex++;
+        showStep();
+      }
+    }
 
-function showStep() {
-  document.getElementById('stepContent').textContent = currentSteps[currentStepIndex] || 'No Information';
-}
+    function prevStep() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        showStep();
+      }
+    }
 
-function nextStep() {
-  if (currentStepIndex < currentSteps.length - 1) {
-    currentStepIndex++;
-    showStep();
-  }
-}
-
-function prevStep() {
-  if (currentStepIndex > 0) {
-    currentStepIndex--;
-    showStep();
-  }
-}
-
-function closeModal() {
-  document.getElementById('modal').style.display = 'none';
-}
-</script>
-
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
