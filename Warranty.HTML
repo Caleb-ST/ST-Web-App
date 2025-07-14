@@ -24,9 +24,15 @@
       border: none;
       margin-bottom: 20px;
     }
+    .tables-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
     table {
-      width: 90%;
-      margin: 20px auto;
+      width: 100%;
+      max-width: 500px;
       border-collapse: collapse;
       background-color: #1f1f1f;
     }
@@ -69,11 +75,17 @@
     <input type="text" id="searchInput" placeholder="Search suppliers...">
   </div>
 
-  <h2>Local Suppliers</h2>
-  <table id="localTable"><thead><tr><th>Supplier</th><th>More Info</th></tr></thead><tbody></tbody></table>
+  <div class="tables-container">
+    <div>
+      <h2>Local Suppliers</h2>
+      <table id="localTable"><thead><tr><th>Supplier</th><th>More Info</th></tr></thead><tbody></tbody></table>
+    </div>
 
-  <h2>Imported Suppliers</h2>
-  <table id="importTable"><thead><tr><th>Supplier</th><th>More Info</th></tr></thead><tbody></tbody></table>
+    <div>
+      <h2>Imported Suppliers</h2>
+      <table id="importTable"><thead><tr><th>Supplier</th><th>More Info</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
 
   <div id="modal" class="modal">
     <div class="modal-content">
