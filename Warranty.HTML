@@ -1,219 +1,158 @@
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/Warranty.HTML b/Warranty.HTML
-index 944b0717a1aad67ae9f3d4605fe5cb8db5920235..8c72cac5367e12426c9f17d1fdd1012e08629a65 100644
---- a/Warranty.HTML
-+++ b/Warranty.HTML
-@@ -1,48 +1,60 @@
- <!DOCTYPE html>
- <html lang="en">
- <head>
-   <meta charset="UTF-8" />
-   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   <title>Supplier Warranty Info</title>
-   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-   <style>
-     body {
-       margin: 0;
-       padding: 40px;
-       height: 100vh;
-       background-color: #000;
-       font-family: Arial, sans-serif;
-       color: white;
-       display: flex;
-       flex-direction: column;
-       align-items: center;
-     }
-     h1 {
-       font-size: 3rem;
-       margin-bottom: 20px;
-     }
-+    .search-box {
-+      margin-bottom: 20px;
-+      width: 100%;
-+      max-width: 500px;
-+    }
-+    .search-box input {
-+      width: 100%;
-+      padding: 12px 16px;
-+      border-radius: 8px;
-+      border: none;
-+      font-size: 1rem;
-+    }
-     table {
-       width: 100%;
-       max-width: 1000px;
-       border-collapse: collapse;
-       background-color: #1f1f1f;
-       border-radius: 8px;
-       overflow: hidden;
-     }
-     th, td {
-       padding: 12px;
-       text-align: left;
-       border-bottom: 1px solid #333;
-       white-space: nowrap;
-       overflow: hidden;
-       text-overflow: ellipsis;
-     }
-     th {
-       background-color: #dc2626;
-     }
-     tr:hover {
-       background-color: #333;
-     }
-     .back-button {
-       padding: 10px 20px;
-       background-color: #dc2626;
-@@ -86,105 +98,146 @@
-       cursor: pointer;
-     }
-     .steps {
-       margin: 20px 0;
-     }
-     .modal-content button {
-       background: #444;
-       color: #fff;
-       border: none;
-       padding: 8px 12px;
-       border-radius: 4px;
-       margin: 5px;
-       cursor: pointer;
-     }
-     .modal-content button:hover {
-       background: #666;
-     }
-     #summary p {
-       margin: 8px 0;
-     }
-   </style>
- </head>
- <body>
-   <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
-   <h1>Supplier Warranty Information</h1>
--  <table id="supplierTable">
-+  <div class="search-box">
-+    <input type="text" id="searchInput" placeholder="Search brands...">
-+  </div>
-+
-+  <h2>Local Suppliers</h2>
-+  <table id="localTable">
-+    <thead>
-+      <tr>
-+        <th>Brand</th>
-+        <th>Cordless Warranty</th>
-+        <th>Corded Warranty</th>
-+        <th>Battery Warranty</th>
-+        <th>Registration</th>
-+        <th>Import</th>
-+        <th>More Info</th>
-+      </tr>
-+    </thead>
-+    <tbody></tbody>
-+  </table>
-+
-+  <h2>Imported Suppliers</h2>
-+  <table id="importTable">
-     <thead>
-       <tr>
-         <th>Brand</th>
-         <th>Cordless Warranty</th>
-         <th>Corded Warranty</th>
-         <th>Battery Warranty</th>
-         <th>Registration</th>
-         <th>Import</th>
-         <th>More Info</th>
-       </tr>
-     </thead>
-     <tbody></tbody>
-   </table>
- 
-   <div id="modal" class="modal">
-     <div class="modal-content">
-       <button class="close-btn" onclick="closeModal()">X</button>
-       <h2 id="brandTitle"></h2>
-       <div id="summary"></div>
-       <div class="steps">
-         <div id="stepContent"></div>
-       </div>
-       <button onclick="prevStep()">Previous</button>
-       <button id="nextBtn" onclick="nextStep()">Next</button>
-       <button id="exitBtn" onclick="closeModal()" style="display:none;">Exit</button>
-     </div>
-   </div>
- 
-   <script>
-     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7prLZ444tgiw57Te-_Vdz1z87euBUwxRC6w5YJdEqJ_PVfeFQtjnFhvJhWEJK3Q8tG8JtAIYaxEaJ/pub?output=csv';
- 
-     let currentSteps = [];
-     let currentStepIndex = 0;
- 
-+    let allData = [];
-+
-     Papa.parse(csvUrl, {
-       download: true,
-       header: true,
-       complete: function(results) {
--        const tbody = document.querySelector('#supplierTable tbody');
-+        allData = results.data;
-+        renderTables();
-+      }
-+    });
- 
--        results.data.forEach(item => {
-+    function renderTables(filter = '') {
-+      const importBody = document.querySelector('#importTable tbody');
-+      const localBody = document.querySelector('#localTable tbody');
-+      importBody.innerHTML = '';
-+      localBody.innerHTML = '';
-+
-+      allData
-+        .filter(item => item.Brands && item.Brands.toLowerCase().includes(filter.toLowerCase()))
-+        .forEach(item => {
-           const tr = document.createElement('tr');
-           tr.innerHTML = `
-             <td>${item.Brands || 'N/A'}</td>
-             <td>${item['Cordless Warranty'] || 'N/A'}</td>
-             <td>${item['Corded warranty'] || 'N/A'}</td>
-             <td>${item['Battery Warranty'] || 'N/A'}</td>
-             <td>${item['Registration'] === 'TRUE' ? '✔️' : '❌'}</td>
-             <td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>
-           `;
--          tbody.appendChild(tr);
-+          if (item['Import'] === 'TRUE') {
-+            importBody.appendChild(tr);
-+          } else {
-+            localBody.appendChild(tr);
-+          }
-         });
--      }
-+    }
-+
-+    document.getElementById('searchInput').addEventListener('input', function(e) {
-+      renderTables(e.target.value);
-     });
- 
-     function openModal(item) {
-       document.getElementById('brandTitle').textContent = item.Brands || 'N/A';
-       document.getElementById('summary').innerHTML = `
-         <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty'] || 'N/A'}</p>
-         <p><strong>Corded Warranty:</strong> ${item['Corded warranty'] || 'N/A'}</p>
-         <p><strong>Battery Warranty:</strong> ${item['Battery Warranty'] || 'N/A'}</p>
-         <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
-       `;
- 
-       currentSteps = [item['Step 1'], item['Step 2'], item['Step 3'], item['Step 4'], item['Step 5']];
-       currentStepIndex = 0;
-       showStep();
- 
-       document.getElementById('modal').style.display = 'flex';
-     }
- 
-     function showStep() {
-       document.getElementById('stepContent').textContent = currentSteps[currentStepIndex] || 'No Information';
- 
-       const nextBtn = document.getElementById('nextBtn');
-       const exitBtn = document.getElementById('exitBtn');
- 
- 
-EOF
-)
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supplier Warranty Info</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 40px;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
+      text-align: center;
+    }
+    h1, h2 {
+      margin-bottom: 20px;
+    }
+    .search-box input {
+      width: 300px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+    }
+    table {
+      width: 90%;
+      margin: 20px auto;
+      border-collapse: collapse;
+      background-color: #1f1f1f;
+    }
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+    }
+    th {
+      background-color: #dc2626;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #222;
+      padding: 20px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 600px;
+    }
+    button {
+      padding: 8px 12px;
+      margin: 5px;
+      background: #444;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Supplier Warranty Information</h1>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search suppliers...">
+  </div>
+
+  <h2>Local Suppliers</h2>
+  <table id="localTable"><thead><tr><th>Supplier</th><th>More Info</th></tr></thead><tbody></tbody></table>
+
+  <h2>Imported Suppliers</h2>
+  <table id="importTable"><thead><tr><th>Supplier</th><th>More Info</th></tr></thead><tbody></tbody></table>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2 id="brandTitle"></h2>
+      <div id="summary"></div>
+      <div id="stepContent"></div>
+      <button onclick="prevStep()">Previous</button>
+      <button id="nextBtn" onclick="nextStep()">Next</button>
+      <button onclick="closeModal()">Exit</button>
+    </div>
+  </div>
+
+  <script>
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7prLZ444tgiw57Te-_Vdz1z87euBUwxRC6w5YJdEqJ_PVfeFQtjnFhvJhWEJK3Q8tG8JtAIYaxEaJ/pub?output=csv';
+    let allData = [], currentSteps = [], currentStepIndex = 0;
+
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data;
+        renderTables();
+      }
+    });
+
+    function renderTables(filter = '') {
+      const localBody = document.querySelector('#localTable tbody');
+      const importBody = document.querySelector('#importTable tbody');
+      localBody.innerHTML = '';
+      importBody.innerHTML = '';
+
+      allData.filter(item => item.Supplier?.toLowerCase().includes(filter.toLowerCase())).forEach(item => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.Supplier}</td><td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>`;
+        (item.Import === 'TRUE' ? importBody : localBody).appendChild(tr);
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => renderTables(e.target.value));
+
+    function openModal(item) {
+      document.getElementById('brandTitle').textContent = item.Supplier;
+      document.getElementById('summary').innerHTML = `<p>${item['Warranty Details']}</p>`;
+      currentSteps = [];
+
+      for (let i = 1; i <= 6; i++) {
+        if (item[`First Up Failure Step ${i}`]) currentSteps.push(`First Up Failure: ${item[`First Up Failure Step ${i}`]}`);
+      }
+      for (let i = 1; i <= 6; i++) {
+        if (item[`Warranty Process Step ${i}`]) currentSteps.push(`Warranty Process: ${item[`Warranty Process Step ${i}`]}`);
+      }
+
+      currentStepIndex = 0;
+      showStep();
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function showStep() {
+      document.getElementById('stepContent').textContent = currentSteps[currentStepIndex] || 'No further steps';
+      document.getElementById('nextBtn').style.display = currentStepIndex < currentSteps.length - 1 ? 'inline-block' : 'none';
+    }
+
+    function nextStep() {
+      if (currentStepIndex < currentSteps.length - 1) {
+        currentStepIndex++;
+        showStep();
+      }
+    }
+
+    function prevStep() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        showStep();
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>
