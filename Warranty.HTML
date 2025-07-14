@@ -112,9 +112,9 @@
       importBody.innerHTML = '';
 
       allData.forEach(item => {
-        if (!item.Supplier) return;
+        if (!item.Brands) return;
 
-        const supplierName = item.Supplier.trim();
+        const supplierName = item.Brands.trim();
         if (filter && !supplierName.toLowerCase().includes(filter.toLowerCase())) return;
 
         const tr = document.createElement('tr');
@@ -128,7 +128,7 @@
     document.getElementById('searchInput').addEventListener('input', e => renderTables(e.target.value));
 
     function openModal(item) {
-      document.getElementById('brandTitle').textContent = item.Supplier;
+      document.getElementById('brandTitle').textContent = item.Brands;
       document.getElementById('summary').innerHTML = `<p>${item['Warranty Details']}</p>`;
       currentSteps = [];
 
