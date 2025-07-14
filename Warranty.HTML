@@ -111,10 +111,17 @@
       localBody.innerHTML = '';
       importBody.innerHTML = '';
 
-      allData.filter(item => item.Supplier?.toLowerCase().includes(filter.toLowerCase())).forEach(item => {
+      allData.forEach(item => {
+        if (!item.Supplier) return;
+
+        const supplierName = item.Supplier.trim();
+        if (filter && !supplierName.toLowerCase().includes(filter.toLowerCase())) return;
+
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${item.Supplier}</td><td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>`;
-        (item.Import === 'TRUE' ? importBody : localBody).appendChild(tr);
+        tr.innerHTML = `<td>${supplierName}</td><td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>`;
+
+        const importFlag = item.Import?.trim().toUpperCase() === 'TRUE';
+        (importFlag ? importBody : localBody).appendChild(tr);
       });
     }
 
