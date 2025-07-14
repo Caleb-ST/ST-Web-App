@@ -156,7 +156,7 @@ Papa.parse(csvUrl, {
         <td>${item.Brands}</td>
         <td>${item['Cordless Warranty']}</td>
         <td>${item['Corded warranty']}</td>
-        <td>${item['Battery Warra']}</td>
+        <td>${item['Battery Warranty']}</td>
         <td>${item['Registration'] === 'TRUE' ? '✔️' : '❌'}</td>
         <td>${item['Import'] === 'TRUE' ? '✔️' : '❌'}</td>
         <td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>
@@ -172,12 +172,12 @@ function openModal(item) {
   document.getElementById('summary').innerHTML = `
     <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty']}</p>
     <p><strong>Corded Warranty:</strong> ${item['Corded warranty']}</p>
-    <p><strong>Battery Warranty:</strong> ${item['Battery Warra']}</p>
+    <p><strong>Battery Warranty:</strong> ${item['Battery Warranty']}</p>
     <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
     <p><strong>Import:</strong> ${item['Import'] === 'TRUE' ? 'Yes' : 'No'}</p>
   `;
 
-  currentSteps = [item['Step 1'], item['Step 2'], item['Step 3'], item['Step 4']];
+  currentSteps = [item['Step 1'], item['Step 2'], item['Step 3'], item['Step 4'], item['Step 5']];
   currentStepIndex = 0;
   showStep();
 
