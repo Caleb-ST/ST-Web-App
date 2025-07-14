@@ -94,7 +94,13 @@
       download: true,
       header: true,
       complete: function(results) {
-        allData = results.data;
+        allData = results.data.map(row => {
+          const cleanedRow = {};
+          for (const key in row) {
+            cleanedRow[key.trim()] = row[key]?.trim();
+          }
+          return cleanedRow;
+        });
         renderTables();
       }
     });
