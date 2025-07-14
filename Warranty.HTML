@@ -132,7 +132,8 @@
         <div id="stepContent"></div>
       </div>
       <button onclick="prevStep()">Previous</button>
-      <button onclick="nextStep()">Next</button>
+      <button id="nextBtn" onclick="nextStep()">Next</button>
+      <button id="exitBtn" onclick="closeModal()" style="display:none;">Exit</button>
     </div>
   </div>
 
@@ -151,10 +152,10 @@
         results.data.forEach(item => {
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td>${item.Brands}</td>
-            <td>${item['Cordless Warranty']}</td>
-            <td>${item['Corded warranty']}</td>
-            <td>${item['Battery Warranty']}</td>
+            <td>${item.Brands || 'N/A'}</td>
+            <td>${item['Cordless Warranty'] || 'N/A'}</td>
+            <td>${item['Corded warranty'] || 'N/A'}</td>
+            <td>${item['Battery Warranty'] || 'N/A'}</td>
             <td>${item['Registration'] === 'TRUE' ? '✔️' : '❌'}</td>
             <td>${item['Import'] === 'TRUE' ? '✔️' : '❌'}</td>
             <td><button onclick='openModal(${JSON.stringify(item)})'>More Info</button></td>
@@ -165,11 +166,11 @@
     });
 
     function openModal(item) {
-      document.getElementById('brandTitle').textContent = item.Brands;
+      document.getElementById('brandTitle').textContent = item.Brands || 'N/A';
       document.getElementById('summary').innerHTML = `
-        <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty']}</p>
-        <p><strong>Corded Warranty:</strong> ${item['Corded warranty']}</p>
-        <p><strong>Battery Warranty:</strong> ${item['Battery Warranty']}</p>
+        <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty'] || 'N/A'}</p>
+        <p><strong>Corded Warranty:</strong> ${item['Corded warranty'] || 'N/A'}</p>
+        <p><strong>Battery Warranty:</strong> ${item['Battery Warranty'] || 'N/A'}</p>
         <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
         <p><strong>Import:</strong> ${item['Import'] === 'TRUE' ? 'Yes' : 'No'}</p>
       `;
@@ -183,6 +184,17 @@
 
     function showStep() {
       document.getElementById('stepContent').textContent = currentSteps[currentStepIndex] || 'No Information';
+
+      const nextBtn = document.getElementById('nextBtn');
+      const exitBtn = document.getElementById('exitBtn');
+
+      if (!currentSteps[currentStepIndex + 1]) {
+        nextBtn.style.display = 'none';
+        exitBtn.style.display = 'inline-block';
+      } else {
+        nextBtn.style.display = 'inline-block';
+        exitBtn.style.display = 'none';
+      }
     }
 
     function nextStep() {
