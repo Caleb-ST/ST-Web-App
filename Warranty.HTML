@@ -57,6 +57,7 @@
       border-radius: 8px;
       width: 80%;
       max-width: 600px;
+      text-align: left;
     }
     button {
       padding: 8px 12px;
@@ -66,6 +67,9 @@
       color: white;
       border-radius: 5px;
       cursor: pointer;
+    }
+    .modal-content p {
+      margin: 10px 0;
     }
   </style>
 </head>
@@ -92,15 +96,13 @@
       <h2 id="brandTitle"></h2>
       <div id="summary"></div>
       <div id="stepContent"></div>
-      <button onclick="prevStep()">Previous</button>
-      <button id="nextBtn" onclick="nextStep()">Next</button>
       <button onclick="closeModal()">Exit</button>
     </div>
   </div>
 
   <script>
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ7prLZ444tgiw57Te-_Vdz1z87euBUwxRC6w5YJdEqJ_PVfeFQtjnFhvJhWEJK3Q8tG8JtAIYaxEaJ/pub?output=csv';
-    let allData = [], currentSteps = [], currentStepIndex = 0;
+    let allData = [];
 
     Papa.parse(csvUrl, {
       download: true,
@@ -130,7 +132,7 @@
         if (filter && !supplierName.toLowerCase().includes(filter.toLowerCase())) return;
 
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${supplierName}</td><td><button onclick='openModal(${JSON.stringify(item).replace(/'/g, "\'").replace(/"/g, '&quot;')})'>More Info</button></td>`;
+        tr.innerHTML = `<td>${supplierName}</td><td><button onclick='openModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')})'>More Info</button></td>`;
 
         const importFlag = item.Import?.trim().toUpperCase() === 'TRUE';
         (importFlag ? importBody : localBody).appendChild(tr);
@@ -148,33 +150,18 @@
         <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
       `;
 
-      currentSteps = [];
+      const stepContent = document.getElementById('stepContent');
+      stepContent.innerHTML = '';
       for (let i = 1; i <= 6; i++) {
-        if (item[`Step ${i}`]) currentSteps.push(item[`Step ${i}`]);
+        const stepText = item[`Step ${i}`];
+        if (stepText) {
+          const step = document.createElement('p');
+          step.innerHTML = `<strong>Step ${i}:</strong> ${stepText}`;
+          stepContent.appendChild(step);
+        }
       }
 
-      currentStepIndex = 0;
-      showStep();
       document.getElementById('modal').style.display = 'flex';
-    }
-
-    function showStep() {
-      document.getElementById('stepContent').textContent = currentSteps[currentStepIndex] || 'No further steps';
-      document.getElementById('nextBtn').style.display = currentStepIndex < currentSteps.length - 1 ? 'inline-block' : 'none';
-    }
-
-    function nextStep() {
-      if (currentStepIndex < currentSteps.length - 1) {
-        currentStepIndex++;
-        showStep();
-      }
-    }
-
-    function prevStep() {
-      if (currentStepIndex > 0) {
-        currentStepIndex--;
-        showStep();
-      }
     }
 
     function closeModal() {
