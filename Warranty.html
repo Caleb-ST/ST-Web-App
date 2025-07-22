@@ -1,153 +1,177 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Warranty</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supplier Warranty Info</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
-      background-color: #000;
-      color: white;
-      font-family: Arial, sans-serif;
+      margin: 0;
       padding: 40px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
       text-align: center;
     }
-
-    .search-box {
+    h1, h2 {
       margin-bottom: 20px;
-      width: 100%;
-      max-width: 500px;
     }
-
     .search-box input {
-      width: 100%;
-      padding: 12px 16px;
+      width: 300px;
+      padding: 10px;
       border-radius: 8px;
       border: none;
-      font-size: 1rem;
+      margin-bottom: 20px;
     }
-
-    .brand-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      max-width: 500px;
+    .tables-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    table {
       width: 100%;
-      background-color: #333; /* Added background to see the list */
+      max-width: 600px;
+      border-collapse: collapse;
+      background-color: #1f1f1f;
     }
-
-    .brand-list li {
+    th, td {
+      border: 1px solid #333;
+      padding: 10px;
+    }
+    th {
       background-color: #dc2626;
-      padding: 15px 20px;
-      margin-bottom: 10px;
+    }
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85);
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-content {
+      background: #222;
+      padding: 20px;
       border-radius: 8px;
-      transition: background-color 0.3s;
-      cursor: pointer;
+      width: 80%;
+      max-width: 600px;
       text-align: center;
     }
-
-    .brand-list li:hover {
-      background-color: #b91c1c;
+    .modal-content p {
+      margin: 10px 0;
+      line-height: 1.5;
     }
-
-    .back-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      text-decoration: none;
-      background-color: #dc2626;
-      padding: 15px 30px;
-      border-radius: 10px;
+    button {
+      padding: 8px 12px;
+      margin: 5px;
+      background: #444;
+      border: none;
       color: white;
-      font-size: 1rem;
-      transition: background-color 0.3s;
-    }
-
-    .back-button:hover {
-      background-color: #b91c1c;
+      border-radius: 5px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Brand Warranties</h1>
-
+  <h1>Supplier Warranty Information</h1>
   <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search brands...">
+    <input type="text" id="searchInput" placeholder="Search suppliers...">
   </div>
 
-  <ul class="brand-list" id="brandList"></ul>
+  <div class="tables-container">
+    <div>
+      <h2>Suppliers</h2>
+      <table id="supplierTable"><thead><tr><th>Supplier</th><th>Options</th></tr></thead><tbody></tbody></table>
+    </div>
+  </div>
 
-  <a href="index.html" class="back-button">← Back to Home</a>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <h2 id="brandTitle"></h2>
+      <div id="modalContent"></div>
+      <button onclick="closeModal()">Exit</button>
+    </div>
+  </div>
 
   <script>
-    // List of brands
-    const brandsRaw = [
-      "3M", "888 Tools", "Abbott & Ashby", "Accud", "AGP", "Air Boy", "Airtec", "Ajax", "Alco", "Amkus",
-      "Ampfibian", "Ankame", "Apach", "Apex", "Arbortech", "Asada", "Austsaw", "Badger", "Bailey", "Ballistol",
-      "Bar", "Barfell", "Baron", "Beaver", "Beehhive Vinyl", "Bernzomatic", "Bessey", "Bianco Pumpz", "Bluetongue",
-      "BlueTTI", "Bordo", "Borum", "Bossweld", "Bostik", "Bostitch", "Boxo", "Bramley", "Bremen", "Bromic", "Buckaroo",
-      "Busy Bob", "Cabac", "Capral", "Cardi", "Cel-Fi", "ChemTig", "Chemtools", "Chicago Pneumatic", "Cladmate",
-      "ClayTech", "CleanLink", "Coast", "Columbia", "Companion", "CRC", "Crescent", "Crosbe", "Curv-o-mark",
-      "Cyclone", "Davey", "Dawn", "Diamond Back", "Drager", "DTA", "Durashield", "Dust Light", "EcoFlow", "EDCO",
-      "EFO", "EHI", "Eibenstock", "Elsea", "Enecharger", "Epoca", "eSafety Supplies", "Eslon", "Esselte", "Estwing",
-      "EverSoak", "Eyres", "Fanmaster", "Fasty", "Festool", "Felo", "Fendi", "Ferret", "Flextool", "Flir", "Fluke",
-      "flex", "Garrick", "Gearwrench", "GME", "Gorilla", "Grabo", "Hikoki", "Husqvarna", "Industek", "Imports", "ITM",
-      "Jamec PEM", "Karcher", "Kelso", "Kemppi", "Klein", "Knipex", "Kyoristu", "Leica", "Lincoln Electric",
-      "Little Giant", "Lufkin", "Macnaught", "Makita", "Makinex", "Matson", "Metabo", "Milano", "Milwaukee",
-      "Paslode", "Plumb Boss", "Radio Detection", "Ramset", "Ridgid", "Rupes", "Simpson", "Smith Reels", "SP Tools",
-      "Stabila", "Stanley", "Star", "T & E", "Toledo", "TopCon", "TradeFlame", "TradeQuip", "Uniden", "Unimig",
-      "Warren & Brown", "Weka", "Weller", "West Air", "West Mix", "Wiha", "Wiss", "Yamaha", "3-in-One", "Advanced",
-      "Aeris Guard", "Air BPD", "Alemlube", "Armor Shield", "Artline", "Atlas Copco", "Aussie Gardener", "Autoglym"
-    ];
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxNzEUTF6dmSVAZ1ArcAZGPYCXbSLugNiWLsUnFr8QQFiT68U8gsLySpzIx0iQufO48z2I1HoJ4jGo/pub?output=csv';
+    let allData = [];
 
-    // Normalize brand names
-    const normalize = str => str.trim().toLowerCase().replace(/\s+/g, '');
-
-    // Convert to Title Case
-    const toTitleCase = str => str
-      .toLowerCase()
-      .split(' ')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-
-    // Remove duplicates and sort the list of brands
-    const brands = Array.from(
-      new Map(
-        brandsRaw.map(b => [normalize(b), toTitleCase(b.trim())])
-      ).values()
-    ).sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
-
-    const listContainer = document.getElementById("brandList");
-    const searchInput = document.getElementById("searchInput");
-
-    function renderList(filter = "") {
-      console.log("Rendering list..."); // Debugging line
-      listContainer.innerHTML = ""; // Clear current list
-      brands
-        .filter(brand => brand.toLowerCase().includes(filter.toLowerCase())) // Filter brands based on search input
-        .forEach(brand => {
-          const li = document.createElement("li");
-          li.textContent = brand;
-          li.onclick = () => location.href = "Coming Soon.html";
-          listContainer.appendChild(li);
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        allData = results.data.map(row => {
+          const cleaned = {};
+          for (const key in row) {
+            cleaned[key.trim()] = row[key]?.trim();
+          }
+          return cleaned;
+        }).filter(item => {
+          // Only show suppliers with at least one step populated
+          return Object.keys(item).some(key =>
+            /^Step \d$/.test(key) && item[key] ||
+            /^FUF Step \d$/.test(key) && item[key] ||
+            /^Warranty Process Step \d$/.test(key) && item[key]
+          );
         });
-    }
 
-    // Event listener for search input
-    searchInput.addEventListener("input", (e) => {
-      renderList(e.target.value);
+        renderTable();
+      }
     });
 
-    // Initial render
-    renderList();
+    function renderTable(filter = '') {
+      const body = document.querySelector('#supplierTable tbody');
+      body.innerHTML = '';
+
+      allData.forEach(item => {
+        const supplier = item['Brands']?.trim();
+        if (!supplier || (filter && !supplier.toLowerCase().includes(filter.toLowerCase()))) return;
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${supplier}</td>
+          <td>
+            <button onclick='showInfo(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')}, "warranty")'>Warranty Info</button>
+            <button onclick='showInfo(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')}, "process")'>Warranty Process</button>
+            <button onclick='showInfo(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')}, "fuf")'>FUF Process</button>
+          </td>
+        `;
+        body.appendChild(row);
+      });
+    }
+
+    document.getElementById('searchInput').addEventListener('input', e => renderTable(e.target.value));
+
+    function showInfo(item, type) {
+      document.getElementById('brandTitle').textContent = item.Brands;
+      const modalContent = document.getElementById('modalContent');
+      modalContent.innerHTML = '';
+
+      if (type === 'warranty') {
+        modalContent.innerHTML = `
+          <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty'] || 'N/A'}</p>
+          <p><strong>Corded Warranty:</strong> ${item['Corded warranty'] || 'N/A'}</p>
+          <p><strong>Battery Warranty:</strong> ${item['Battery Warranty'] || 'N/A'}</p>
+          <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
+        `;
+      } else {
+        const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Process Step ';
+        for (let i = 1; i <= 6; i++) {
+          if (item[`${prefix}${i}`]) {
+            modalContent.innerHTML += `<p><strong>Step ${i}:</strong> ${item[`${prefix}${i}`]}</p>`;
+          }
+        }
+      }
+
+      document.getElementById('modal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
   </script>
 </body>
 </html>
