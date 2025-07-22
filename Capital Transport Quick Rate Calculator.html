@@ -17,13 +17,11 @@
       flex-direction: column;
       align-items: center;
     }
-
     h1 {
       font-size: 2.5rem;
       margin-bottom: 10px;
       color: #fff;
     }
-
     .description {
       font-size: 1rem;
       max-width: 600px;
@@ -31,7 +29,6 @@
       margin-bottom: 20px;
       color: #ccc;
     }
-
     .description .surcharge {
       color: #ff5252;
       font-size: 1.3rem;
@@ -45,13 +42,11 @@
       margin-top: 10px;
       animation: pulse 2s infinite;
     }
-
     @keyframes pulse {
       0% { transform: scale(1); }
       50% { transform: scale(1.05); }
       100% { transform: scale(1); }
     }
-
     .form {
       background-color: #1a1a1a;
       padding: 30px;
@@ -59,13 +54,11 @@
       width: 100%;
       max-width: 500px;
     }
-
     label {
       display: block;
       margin-top: 15px;
       font-weight: bold;
     }
-
     input, select {
       width: 100%;
       padding: 10px;
@@ -74,7 +67,6 @@
       border: none;
       font-size: 1rem;
     }
-
     button, .back-button {
       width: 100%;
       padding: 15px;
@@ -86,21 +78,17 @@
       font-size: 1.2rem;
       cursor: pointer;
       text-decoration: none;
-      display: inline-block;
       text-align: center;
     }
-
     button:hover, .back-button:hover {
       background-color: #9b1c1c;
     }
-
     #result {
       margin-top: 20px;
       background: #222;
       padding: 15px;
       border-radius: 8px;
     }
-
     #suggestions {
       position: relative;
       background: #222;
@@ -110,16 +98,13 @@
       border-radius: 4px;
       margin-top: 5px;
     }
-
     .suggestion {
       padding: 8px;
       cursor: pointer;
     }
-
     .suggestion:hover {
       background-color: #333;
     }
-
     .button-container {
       width: 100%;
       max-width: 500px;
@@ -133,7 +118,7 @@
     Use this tool to estimate delivery costs <br>
     Dangerous goods include Explosives, Radioactive Material, <br>
     Flammable Liquids or Solids, Corrosives or Toxic Substances <br>
-    <span class="surcharge">Add a 10% surcharge to freight</span>
+    <span class="surcharge">THIS IS A QUOTE ONLY NOT FINAL COST.</span>
   </div>
 
   <div class="form">
@@ -183,11 +168,15 @@
       download: true,
       header: true,
       complete: function(results) {
-        const data = results.data;
-        window.deliveryData = data;
-        allSuburbs = Array.from(new Set(data.map(row => row.Suburb?.toUpperCase().trim())));
+        window.deliveryData = results.data;
+        allSuburbs = Array.from(new Set(results.data.map(row => row.Suburb?.toUpperCase().trim())));
       }
     });
+
+    function addTwentyPercent(val) {
+      const num = parseFloat(val);
+      return isNaN(num) ? 'N/A' : (num * 1.2).toFixed(2);
+    }
 
     function showSuggestions() {
       const input = document.getElementById("suburb").value.toUpperCase();
@@ -221,40 +210,10 @@
         return;
       }
 
-      const volume = (length * width * height) / 1000000;
-
       if (isDangerous) {
-        document.getElementById("result").innerHTML = `
-          <strong>This item contains Dangerous Goods.</strong><br>
-          Please book delivery directly through <a href="https://www.capitaltransport.com.au" target="_blank" style="color:#4fc3f7;">Capital Transport</a>.
-        `;
+        document.getElementById("result").innerHTML = `Dangerous goods require direct booking with <a href='https://www.capitaltransport.com.au' target='_blank'>Capital Transport</a>.`;
         return;
       }
-
-      const vehicleOptions = [
-        { label: "Courier", maxWeight: 25, maxLength: 50, maxWidth: 50, maxHeight: 50, maxVolume: 5.1 },
-        { label: "Station Wagon", maxWeight: 125, maxLength: 50, maxWidth: 50, maxHeight: 50, maxVolume: 5.3 },
-        { label: "Half Tonne", maxWeight: 500, maxLength: 120, maxWidth: 150, maxHeight: 150, maxVolume: 5.6 },
-        { label: "1 Tonne", maxWeight: 1000, maxLength: 240, maxWidth: 150, maxHeight: 200, maxVolume: 10.0 },
-        { label: "Roof Racks", maxWeight: 1000, maxLength: 650, maxWidth: 50, maxHeight: 50, maxVolume: 10.0 }
-      ];
-
-      const selectedVehicle = vehicleOptions.find(v =>
-        weight <= v.maxWeight &&
-        length <= v.maxLength &&
-        width <= v.maxWidth &&
-        height <= v.maxHeight &&
-        volume <= v.maxVolume
-      );
-
-     if (!selectedVehicle) {
-      document.getElementById("result").innerHTML = `
-      <strong>No suitable transport method found for the given dimensions and weight.</strong><br>
-      Please book delivery directly through <a href="https://www.capitaltransport.com.au" target="_blank" style="color:#4fc3f7;">Capital Transport</a>.
-      `;
-     return;
-      }
-
 
       const data = window.deliveryData || [];
       const filtered = data.filter(row => row.Store?.trim().toUpperCase() === store.toUpperCase());
@@ -265,9 +224,29 @@
         return;
       }
 
-      const std = match[selectedVehicle.label + "_STD"] || "N/A";
-      const exp = match[selectedVehicle.label + "_EXP"] || "N/A";
-      const vip = match[selectedVehicle.label + "_VIP"] || "N/A";
+      const vehicleOptions = [
+        { label: "Courier", maxWeight: 25, maxLength: 50, maxWidth: 50, maxHeight: 50 },
+        { label: "Station Wagon", maxWeight: 125, maxLength: 50, maxWidth: 50, maxHeight: 50 },
+        { label: "Half Tonne", maxWeight: 500, maxLength: 120, maxWidth: 150, maxHeight: 150 },
+        { label: "1 Tonne", maxWeight: 1000, maxLength: 240, maxWidth: 150, maxHeight: 200 },
+        { label: "Roof Racks", maxWeight: 1000, maxLength: 650, maxWidth: 50, maxHeight: 50 }
+      ];
+
+      const selectedVehicle = vehicleOptions.find(v =>
+        weight <= v.maxWeight &&
+        length <= v.maxLength &&
+        width <= v.maxWidth &&
+        height <= v.maxHeight
+      );
+
+      if (!selectedVehicle) {
+        document.getElementById("result").innerText = "No suitable vehicle found.";
+        return;
+      }
+
+      const std = addTwentyPercent(match[selectedVehicle.label + '_STD']);
+      const exp = addTwentyPercent(match[selectedVehicle.label + '_EXP']);
+      const vip = addTwentyPercent(match[selectedVehicle.label + '_VIP']);
 
       document.getElementById("result").innerHTML = `
         <strong>Best Vehicle:</strong> ${selectedVehicle.label}<br>
