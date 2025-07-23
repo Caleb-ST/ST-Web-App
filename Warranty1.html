@@ -161,9 +161,11 @@
       modalBody.innerHTML = '';
 
       if (type === 'info') {
+        const warrantyInfo = (item['Warranty Information'] || 'N/A').replace(/\n/g, '<br>');
         modalBody.innerHTML = `
-          <p><strong>Warranty:</strong> ${item['Warranty Information'] || 'N/A'}</p>
-        `;
+        <p><strong>Warranty:</strong><br>${warrantyInfo}</p>
+      `;
+
       } else {
         const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Step ';
         for (let i = 1; i <= 6; i++) {
