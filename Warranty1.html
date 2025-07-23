@@ -13,10 +13,15 @@
       padding: 40px;
       text-align: center;
     }
+    .tables-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+    }
     table {
       width: 100%;
-      max-width: 800px;
-      margin: auto;
+      max-width: 500px;
       border-collapse: collapse;
       background: #1f1f1f;
     }
@@ -68,12 +73,24 @@
 
   <h1>Supplier Warranty Information</h1>
   <input type="text" id="searchInput" placeholder="Search suppliers...">
-  <table>
-    <thead>
-      <tr><th>Supplier</th><th>Options</th></tr>
-    </thead>
-    <tbody id="supplierTable"></tbody>
-  </table>
+
+  <div class="tables-container">
+    <div>
+      <h2>Local Suppliers</h2>
+      <table>
+        <thead><tr><th>Supplier</th><th>Options</th></tr></thead>
+        <tbody id="localTable"></tbody>
+      </table>
+    </div>
+
+    <div>
+      <h2>Imported Suppliers</h2>
+      <table>
+        <thead><tr><th>Supplier</th><th>Options</th></tr></thead>
+        <tbody id="importTable"></tbody>
+      </table>
+    </div>
+  </div>
 
   <div id="modal" class="modal">
     <div class="modal-content">
@@ -100,23 +117,27 @@
           return clean;
         });
 
-        suppliers = rows.filter(item => {
-          return Object.keys(item).some(k =>
+        suppliers = rows.filter(item =>
+          Object.keys(item).some(k =>
             (/^Warranty Step \d$/i.test(k) && item[k]) ||
             (/^FUF Step \d$/i.test(k) && item[k])
-          );
-        });
+          )
+        );
 
-        renderTable();
+        renderTables();
       }
     });
 
-    function renderTable(filter = '') {
-      const tbody = document.getElementById('supplierTable');
-      tbody.innerHTML = '';
+    function renderTables(filter = '') {
+      const local = document.getElementById('localTable');
+      const imported = document.getElementById('importTable');
+      local.innerHTML = '';
+      imported.innerHTML = '';
 
       suppliers.forEach(item => {
         const brand = item['Brands'];
+        const isImported = item['Import']?.toLowerCase() === 'true';
+
         if (!brand || (filter && !brand.toLowerCase().includes(filter.toLowerCase()))) return;
 
         const row = document.createElement('tr');
@@ -126,12 +147,13 @@
             <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "info")'>Warranty Info</button>
             <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "process")'>Warranty Process</button>
             <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "fuf")'>FUF Process</button>
-          </td>`;
-        tbody.appendChild(row);
+          </td>
+        `;
+        (isImported ? imported : local).appendChild(row);
       });
     }
 
-    document.getElementById('searchInput').addEventListener('input', e => renderTable(e.target.value));
+    document.getElementById('searchInput').addEventListener('input', e => renderTables(e.target.value));
 
     function showModal(item, type) {
       document.getElementById('modalTitle').textContent = item['Brands'];
