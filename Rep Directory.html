@@ -2,97 +2,57 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Supplier Warranty Info</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rep Directory</title>
   <style>
     body {
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
+      margin: 0;
       padding: 40px;
-      text-align: center;
-    }
-
-    .tables-container {
+      height: 100vh;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+      color: white;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
+      flex-direction: column;
+      align-items: center;
     }
-
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin-bottom: 20px;
+      width: 300px;
+    }
     table {
       width: 100%;
-      max-width: 500px;
+      max-width: 1000px;
       border-collapse: collapse;
-      background: #1f1f1f;
+      background-color: #1f1f1f;
+      border-radius: 8px;
+      overflow: hidden;
     }
-
     th, td {
       padding: 12px;
-      border: 1px solid #333;
-      vertical-align: middle;
+      text-align: left;
+      border-bottom: 1px solid #333;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-
     th {
       background-color: #dc2626;
     }
-
-    input[type="text"] {
-      padding: 10px;
-      width: 300px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      border: none;
+    tr:hover {
+      background-color: #333;
     }
-
-    button {
-      padding: 6px 10px;
-      margin: 0 2px;
-      background: #444;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      white-space: nowrap;
+    tr.duplicate {
+      background-color: #b45309 !important;
     }
-
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      flex-wrap: nowrap;
-    }
-
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: #222;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 600px;
-      text-align: center;
-    }
-
-    .modal-content p {
-      margin: 10px 0;
-    }
-
-    .modal-content a {
-      color: #3b82f6;
-      text-decoration: underline;
-      word-break: break-word;
-    }
-
     .back-button {
       padding: 10px 20px;
       background-color: #dc2626;
@@ -103,142 +63,111 @@
       cursor: pointer;
       margin-bottom: 20px;
     }
-
     .back-button:hover {
       background-color: #9b1c1c;
     }
   </style>
 </head>
 <body>
-
-  <h1>Supplier Warranty Information</h1>
-
-  <a href="index.html">
-    <button class="back-button">← Back to Home</button>
-  </a>
-
-  <input type="text" id="searchInput" placeholder="Search suppliers...">
-
-  <div class="tables-container">
-    <div>
-      <h2>Local Suppliers</h2>
-      <table>
-        <thead><tr><th>Supplier</th><th>Options</th></tr></thead>
-        <tbody id="localTable"></tbody>
-      </table>
-    </div>
-
-    <div>
-      <h2>Imported Suppliers</h2>
-      <table>
-        <thead><tr><th>Supplier</th><th>Options</th></tr></thead>
-        <tbody id="importTable"></tbody>
-      </table>
-    </div>
-  </div>
-
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <h2 id="modalTitle"></h2>
-      <div id="modalBody"></div>
-      <button onclick="closeModal()">Exit</button>
-    </div>
-  </div>
+  <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
+  <h1>Rep Directory</h1>
+  <input type="text" id="searchInput" placeholder="Search by name, company, or role..." />
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Role</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody id="repTableBody"></tbody>
+  </table>
 
   <script>
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxNzEUTF6dmSVAZ1ArcAZGPYCXbSLugNiWLsUnFr8QQFiT68U8gsLySpzIx0iQufO48z2I1HoJ4jGo/pub?output=csv";
-    let suppliers = [];
+    const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
 
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const rows = results.data.map(row => {
-          const clean = {};
-          for (const key in row) {
-            const normKey = key?.trim().replace(/\s+/g, ' ');
-            clean[normKey] = row[key]?.trim();
-          }
-          return clean;
-        });
+    let repsData = [];
 
-        suppliers = rows.filter(item =>
-          Object.keys(item).some(k =>
-            (/^Warranty Step \d$/i.test(k) && item[k]) ||
-            (/^FUF Step \d$/i.test(k) && item[k])
-          ) || item['Warranty Information']
-        );
-
-        renderTables();
-      }
-    });
-
-    function renderTables(filter = '') {
-      const local = document.getElementById('localTable');
-      const imported = document.getElementById('importTable');
-      local.innerHTML = '';
-      imported.innerHTML = '';
-
-      suppliers.forEach(item => {
-        const brand = item['Brands'];
-        const isImported = item['Import']?.toLowerCase() === 'true';
-
-        if (!brand || (filter && !brand.toLowerCase().includes(filter.toLowerCase()))) return;
-
-        const hasWarrantySteps = [...Array(6)].some((_, i) => item[`Warranty Step ${i + 1}`]);
-        const hasFufSteps = [...Array(6)].some((_, i) => item[`FUF Step ${i + 1}`]);
-
-        const row = document.createElement('tr');
-        const safeItem = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;");
-
-        row.innerHTML = `
-          <td>${brand}</td>
-          <td>
-            <div class="button-group">
-              <button onclick='showModal(${safeItem}, "info")'>Warranty Info</button>
-              ${hasWarrantySteps ? `<button onclick='showModal(${safeItem}, "process")'>Warranty Process</button>` : ''}
-              ${hasFufSteps ? `<button onclick='showModal(${safeItem}, "fuf")'>FUF Process</button>` : ''}
-            </div>
-          </td>
-        `;
-        (isImported ? imported : local).appendChild(row);
+    function removeDuplicates(reps) {
+      const seen = new Set();
+      return reps.filter(rep => {
+        const name = rep.name.trim().toLowerCase();
+        if (seen.has(name)) return false;
+        seen.add(name);
+        return true;
       });
     }
 
-    document.getElementById('searchInput').addEventListener('input', e => renderTables(e.target.value));
-
-    function showModal(item, type) {
-      document.getElementById('modalTitle').textContent = item['Brands'];
-      const modalBody = document.getElementById('modalBody');
-      modalBody.innerHTML = '';
-
-      const linkify = (text) => {
-        const urlRegex = /((https?:\/\/)[^\s<]+)/g;
-        return text.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
-      };
-
-      if (type === 'info') {
-        const warrantyInfo = (item['Warranty Information'] || 'N/A')
-          .split('\n')
-          .map(line => `<p>${linkify(line)}</p>`)
-          .join('');
-        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
-      } else {
-        const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Step ';
-        for (let i = 1; i <= 6; i++) {
-          const key = prefix + i;
-          if (item[key]) {
-            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
-          }
-        }
-      }
-
-      document.getElementById('modal').style.display = 'flex';
+    function highlightDuplicates(reps) {
+      const nameCount = reps.reduce((acc, rep) => {
+        const name = rep.name.trim().toLowerCase();
+        acc[name] = (acc[name] || 0) + 1;
+        return acc;
+      }, {});
+      return reps.map(rep => ({
+        ...rep,
+        isDuplicate: nameCount[rep.name.trim().toLowerCase()] > 1
+      }));
     }
 
-    function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+    function renderTable(reps) {
+      const tableBody = document.getElementById("repTableBody");
+      tableBody.innerHTML = "";
+      reps.forEach(rep => {
+        const row = document.createElement("tr");
+        if (rep.isDuplicate) row.classList.add("duplicate");
+        row.innerHTML = `
+          <td>${rep.company}</td>
+          <td>${rep.role}</td>
+          <td>${rep.name}</td>
+          <td>${rep.phone}</td>
+          <td>${rep.email}</td>
+        `;
+        tableBody.appendChild(row);
+      });
     }
+
+    function searchTable() {
+      const searchValue = document.getElementById("searchInput").value.toLowerCase();
+      const filteredReps = repsData.filter(rep => {
+        return (
+          rep.name.toLowerCase().includes(searchValue) ||
+          rep.company.toLowerCase().includes(searchValue) ||
+          rep.role.toLowerCase().includes(searchValue)
+        );
+      });
+      renderTable(filteredReps);
+    }
+
+    function parseCSV(csv) {
+      const lines = csv.trim().split("\n");
+      const headers = lines[0].split(",").map(h => h.trim());
+      return lines.slice(1).map(line => {
+        const values = line.split(",").map(v => v.trim());
+        return {
+          company: values[0] || "",
+          role: values[1] || "",
+          name: values[2] || "",
+          phone: values[3] || "",
+          email: values[4] || ""
+        };
+      });
+    }
+
+    fetch(SHEET_URL)
+      .then(response => response.text())
+      .then(data => {
+        const parsedData = parseCSV(data);
+        const uniqueReps = removeDuplicates(parsedData);
+        repsData = highlightDuplicates(uniqueReps);
+        renderTable(repsData);
+        document.getElementById("searchInput").addEventListener("input", searchTable);
+      })
+      .catch(error => {
+        console.error("Error loading data:", error);
+      });
   </script>
 </body>
 </html>
