@@ -13,25 +13,32 @@
       padding: 40px;
       text-align: center;
     }
+
     .tables-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 20px;
     }
+
     table {
       width: 100%;
       max-width: 500px;
       border-collapse: collapse;
       background: #1f1f1f;
     }
+
     th, td {
       padding: 12px;
       border: 1px solid #333;
+      vertical-align: middle;
+      white-space: nowrap;
     }
+
     th {
       background-color: #dc2626;
     }
+
     input[type="text"] {
       padding: 10px;
       width: 300px;
@@ -39,15 +46,25 @@
       border-radius: 8px;
       border: none;
     }
+
     button {
-      padding: 8px 12px;
-      margin: 3px;
+      padding: 6px 10px;
+      margin: 0 2px;
       background: #444;
       border: none;
       color: white;
       border-radius: 5px;
       cursor: pointer;
+      white-space: nowrap;
     }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+
     .modal {
       display: none;
       position: fixed;
@@ -56,6 +73,7 @@
       justify-content: center;
       align-items: center;
     }
+
     .modal-content {
       background: #222;
       padding: 20px;
@@ -64,6 +82,7 @@
       max-width: 600px;
       text-align: center;
     }
+
     .modal-content p {
       margin: 10px 0;
     }
@@ -144,9 +163,11 @@
         row.innerHTML = `
           <td>${brand}</td>
           <td>
-            <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "info")'>Warranty Info</button>
-            <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "process")'>Warranty Process</button>
-            <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "fuf")'>FUF Process</button>
+            <div class="button-group">
+              <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "info")'>Warranty Info</button>
+              <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "process")'>Warranty Process</button>
+              <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "fuf")'>FUF Process</button>
+            </div>
           </td>
         `;
         (isImported ? imported : local).appendChild(row);
@@ -163,9 +184,8 @@
       if (type === 'info') {
         const warrantyInfo = (item['Warranty Information'] || 'N/A').replace(/\n/g, '<br>');
         modalBody.innerHTML = `
-        <p><strong>Warranty:</strong><br>${warrantyInfo}</p>
-      `;
-
+          <p><strong>Warranty:</strong><br>${warrantyInfo}</p>
+        `;
       } else {
         const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Step ';
         for (let i = 1; i <= 6; i++) {
