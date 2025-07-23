@@ -163,7 +163,6 @@
       if (type === 'info') {
         modalBody.innerHTML = `
           <p><strong>Warranty:</strong> ${item['Warranty Information'] || 'N/A'}</p>
-          <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
         `;
       } else {
         const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Step ';
