@@ -1,47 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supplier Warranty Info</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
   <style>
     body {
-      margin: 0;
-      padding: 40px;
-      background-color: #000;
+      background: #000;
+      color: #fff;
       font-family: Arial, sans-serif;
-      color: white;
+      padding: 40px;
       text-align: center;
-    }
-    h1, h2 {
-      margin-bottom: 20px;
-    }
-    .search-box input {
-      width: 300px;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 20px;
-    }
-    .tables-container {
-      display: flex;
-      justify-content: center;
-      gap: 20px;
-      flex-wrap: wrap;
     }
     table {
       width: 100%;
-      max-width: 600px;
+      max-width: 800px;
+      margin: auto;
       border-collapse: collapse;
-      background-color: #1f1f1f;
+      background: #1f1f1f;
     }
     th, td {
+      padding: 12px;
       border: 1px solid #333;
-      padding: 10px;
     }
     th {
       background-color: #dc2626;
+    }
+    input[type="text"] {
+      padding: 10px;
+      width: 300px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      padding: 8px 12px;
+      margin: 3px;
+      background: #444;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
     }
     .modal {
       display: none;
@@ -55,66 +55,55 @@
       background: #222;
       padding: 20px;
       border-radius: 8px;
-      width: 80%;
+      width: 90%;
       max-width: 600px;
       text-align: center;
     }
     .modal-content p {
       margin: 10px 0;
-      line-height: 1.5;
-    }
-    button {
-      padding: 8px 12px;
-      margin: 5px;
-      background: #444;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Supplier Warranty Information</h1>
-  <div class="search-box">
-    <input type="text" id="searchInput" placeholder="Search suppliers...">
-  </div>
 
-  <div class="tables-container">
-    <div>
-      <h2>Suppliers</h2>
-      <table id="supplierTable"><thead><tr><th>Supplier</th><th>Options</th></tr></thead><tbody></tbody></table>
-    </div>
-  </div>
+  <h1>Supplier Warranty Information</h1>
+  <input type="text" id="searchInput" placeholder="Search suppliers...">
+  <table>
+    <thead>
+      <tr><th>Supplier</th><th>Options</th></tr>
+    </thead>
+    <tbody id="supplierTable"></tbody>
+  </table>
 
   <div id="modal" class="modal">
     <div class="modal-content">
-      <h2 id="brandTitle"></h2>
-      <div id="modalContent"></div>
+      <h2 id="modalTitle"></h2>
+      <div id="modalBody"></div>
       <button onclick="closeModal()">Exit</button>
     </div>
   </div>
 
   <script>
-    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRxNzEUTF6dmSVAZ1ArcAZGPYCXbSLugNiWLsUnFr8QQFiT68U8gsLySpzIx0iQufO48z2I1HoJ4jGo/pub?output=csv';
-    let allData = [];
+    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRxNzEUTF6dmSVAZ1ArcAZGPYCXbSLugNiWLsUnFr8QQFiT68U8gsLySpzIx0iQufO48z2I1HoJ4jGo/pub?output=csv";
+    let suppliers = [];
 
     Papa.parse(csvUrl, {
       download: true,
       header: true,
       complete: function(results) {
-        allData = results.data.map(row => {
-          const cleaned = {};
+        const rows = results.data.map(row => {
+          const clean = {};
           for (const key in row) {
-            cleaned[key.trim()] = row[key]?.trim();
+            const normKey = key?.trim().replace(/\s+/g, ' ');
+            clean[normKey] = row[key]?.trim();
           }
-          return cleaned;
-        }).filter(item => {
-          // Only show suppliers with at least one step populated
-          return Object.keys(item).some(key =>
-            /^Step \d$/.test(key) && item[key] ||
-            /^FUF Step \d$/.test(key) && item[key] ||
-            /^Warranty Process Step \d$/.test(key) && item[key]
+          return clean;
+        });
+
+        suppliers = rows.filter(item => {
+          return Object.keys(item).some(k =>
+            (/^Warranty Step \d$/i.test(k) && item[k]) ||
+            (/^FUF Step \d$/i.test(k) && item[k])
           );
         });
 
@@ -123,45 +112,43 @@
     });
 
     function renderTable(filter = '') {
-      const body = document.querySelector('#supplierTable tbody');
-      body.innerHTML = '';
+      const tbody = document.getElementById('supplierTable');
+      tbody.innerHTML = '';
 
-      allData.forEach(item => {
-        const supplier = item['Brands']?.trim();
-        if (!supplier || (filter && !supplier.toLowerCase().includes(filter.toLowerCase()))) return;
+      suppliers.forEach(item => {
+        const brand = item['Brands'];
+        if (!brand || (filter && !brand.toLowerCase().includes(filter.toLowerCase()))) return;
 
         const row = document.createElement('tr');
         row.innerHTML = `
-          <td>${supplier}</td>
+          <td>${brand}</td>
           <td>
-            <button onclick='showInfo(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')}, "warranty")'>Warranty Info</button>
-            <button onclick='showInfo(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')}, "process")'>Warranty Process</button>
-            <button onclick='showInfo(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, '&quot;')}, "fuf")'>FUF Process</button>
-          </td>
-        `;
-        body.appendChild(row);
+            <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "info")'>Warranty Info</button>
+            <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "process")'>Warranty Process</button>
+            <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "fuf")'>FUF Process</button>
+          </td>`;
+        tbody.appendChild(row);
       });
     }
 
     document.getElementById('searchInput').addEventListener('input', e => renderTable(e.target.value));
 
-    function showInfo(item, type) {
-      document.getElementById('brandTitle').textContent = item.Brands;
-      const modalContent = document.getElementById('modalContent');
-      modalContent.innerHTML = '';
+    function showModal(item, type) {
+      document.getElementById('modalTitle').textContent = item['Brands'];
+      const modalBody = document.getElementById('modalBody');
+      modalBody.innerHTML = '';
 
-      if (type === 'warranty') {
-        modalContent.innerHTML = `
-          <p><strong>Cordless Warranty:</strong> ${item['Cordless Warranty'] || 'N/A'}</p>
-          <p><strong>Corded Warranty:</strong> ${item['Corded warranty'] || 'N/A'}</p>
-          <p><strong>Battery Warranty:</strong> ${item['Battery Warranty'] || 'N/A'}</p>
+      if (type === 'info') {
+        modalBody.innerHTML = `
+          <p><strong>Warranty:</strong> ${item['Warranty Information'] || 'N/A'}</p>
           <p><strong>Registration Required:</strong> ${item['Registration'] === 'TRUE' ? 'Yes' : 'No'}</p>
         `;
       } else {
-        const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Process Step ';
+        const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Step ';
         for (let i = 1; i <= 6; i++) {
-          if (item[`${prefix}${i}`]) {
-            modalContent.innerHTML += `<p><strong>Step ${i}:</strong> ${item[`${prefix}${i}`]}</p>`;
+          const key = prefix + i;
+          if (item[key]) {
+            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${item[key]}</p>`;
           }
         }
       }
