@@ -146,7 +146,7 @@
           Object.keys(item).some(k =>
             (/^Warranty Step \d$/i.test(k) && item[k]) ||
             (/^FUF Step \d$/i.test(k) && item[k])
-          )
+          ) || item['Warranty Information']
         );
 
         renderTables();
@@ -165,14 +165,19 @@
 
         if (!brand || (filter && !brand.toLowerCase().includes(filter.toLowerCase()))) return;
 
+        const hasWarrantySteps = [...Array(6)].some((_, i) => item[`Warranty Step ${i + 1}`]);
+        const hasFufSteps = [...Array(6)].some((_, i) => item[`FUF Step ${i + 1}`]);
+
         const row = document.createElement('tr');
+        const safeItem = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+
         row.innerHTML = `
           <td>${brand}</td>
           <td>
             <div class="button-group">
-              <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "info")'>Warranty Info</button>
-              <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "process")'>Warranty Process</button>
-              <button onclick='showModal(${JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;")}, "fuf")'>FUF Process</button>
+              <button onclick='showModal(${safeItem}, "info")'>Warranty Info</button>
+              ${hasWarrantySteps ? `<button onclick='showModal(${safeItem}, "process")'>Warranty Process</button>` : ''}
+              ${hasFufSteps ? `<button onclick='showModal(${safeItem}, "fuf")'>FUF Process</button>` : ''}
             </div>
           </td>
         `;
