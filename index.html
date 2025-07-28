@@ -16,21 +16,31 @@
       font-family: Arial, sans-serif;
       color: white;
     }
+
     h1 {
       font-size: 4rem;
-      margin-bottom: 40px;
-      color: #ffffff;
+      margin-bottom: 20px;
     }
+
     h2 {
-      margin-top: -30px;
+      margin-top: 0;
       margin-bottom: 40px;
-      color: #ffffff;
     }
-    .button-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
       gap: 20px;
+      align-items: center;
     }
+
+    .button-row {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
     .nav-button {
       padding: 30px;
       font-size: 1.2rem;
@@ -48,6 +58,7 @@
       text-align: center;
       text-decoration: none;
     }
+
     .nav-button:hover {
       background-color: #b91c1c;
     }
@@ -65,11 +76,13 @@
       align-items: center;
       z-index: 9999;
     }
+
     #login-screen input {
       padding: 10px;
       margin: 10px;
       font-size: 1rem;
     }
+
     #login-screen button {
       padding: 10px 20px;
       font-size: 1rem;
@@ -89,12 +102,16 @@
   <!-- Main Content -->
   <h1>Sydney Tools</h1>
   <h2>South Australia</h2>
-  <div class="button-grid">
-    <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLScFvYtmZhZ342Gwjg6qDE84fenyFCNZ-NaiswSKObuSvOtkbQ/viewform?usp=preview" target="_blank" rel="noopener noreferrer">BDM Leads</a>
-    <a class="nav-button" href="BDM.html">BDM</a>
-    <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
-    <a class="nav-button" href="Warranty1.html">Warranties</a>
-    <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
+  <div class="button-container">
+    <div class="button-row">
+      <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLScFvYtmZhZ342Gwjg6qDE84fenyFCNZ-NaiswSKObuSvOtkbQ/viewform?usp=preview" target="_blank" rel="noopener noreferrer">BDM Leads</a>
+      <a class="nav-button" href="BDM.html">BDM</a>
+    </div>
+    <div class="button-row">
+      <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
+      <a class="nav-button" href="Warranty1.html">Warranties</a>
+      <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
+    </div>
   </div>
 
   <script>
