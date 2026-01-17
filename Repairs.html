@@ -10,7 +10,6 @@
       --bg0:#07070a;
       --bg1:#0b0b10;
       --card:#0f0f16;
-      --card2:#12121c;
       --text:#f2f2f5;
       --muted:#a4a4b3;
       --border:rgba(255,255,255,0.08);
@@ -42,16 +41,8 @@
       display:flex; align-items:flex-end; justify-content:space-between; gap:14px; flex-wrap:wrap;
       margin-bottom: 14px;
     }
-    h1{
-      margin: 0;
-      font-size: 28px;
-      letter-spacing: 0.3px;
-    }
-    .sub{
-      margin: 6px 0 0;
-      color: var(--muted);
-      font-size: 13px;
-    }
+    h1{ margin: 0; font-size: 28px; letter-spacing: 0.3px; }
+    .sub{ margin: 6px 0 0; color: var(--muted); font-size: 13px; }
 
     .panel{
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
@@ -80,21 +71,13 @@
     }
     input::placeholder, textarea::placeholder{ color: rgba(242,242,245,0.45); }
     input:focus, select:focus, textarea:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
-
-    select{
-      background: rgba(255,255,255,0.06);
-    }
-
     button{
       cursor:pointer;
       border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
       transition: transform .08s ease, background .15s ease, border-color .15s ease;
     }
-    button:hover{
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,255,255,0.20);
-    }
+    button:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
     button:active{ transform: translateY(1px); }
     button:disabled{ opacity:0.6; cursor:not-allowed; }
 
@@ -107,7 +90,6 @@
       background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
       border-color: rgba(255,43,61,0.75);
     }
-
     .btn-danger{
       background: linear-gradient(180deg, rgba(255,43,61,0.25), rgba(184,12,43,0.18));
       border-color: rgba(255,43,61,0.35);
@@ -127,7 +109,6 @@
     }
     .badge.red{ background: var(--pill2); border-color: rgba(255,43,61,0.35); }
     .badge.green{ background: rgba(43,255,154,0.12); border-color: rgba(43,255,154,0.25); }
-    .badge.warn{ background: rgba(255,204,102,0.12); border-color: rgba(255,204,102,0.25); }
 
     .tableWrap{ padding: 12px; }
     table{
@@ -154,16 +135,10 @@
       top: 0;
       z-index: 1;
     }
-    tr.jobRow{
-      transition: background .12s ease, transform .06s ease;
-      cursor: pointer;
-    }
-    tr.jobRow:hover{
-      background: rgba(255,255,255,0.04);
-    }
-    tr.jobRow:active{
-      transform: translateY(1px);
-    }
+    tr.jobRow{ transition: background .12s ease, transform .06s ease; cursor: pointer; }
+    tr.jobRow:hover{ background: rgba(255,255,255,0.04); }
+    tr.jobRow:active{ transform: translateY(1px); }
+
     .mono{
       font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       font-size: 12px;
@@ -181,9 +156,11 @@
       background: rgba(0,0,0,0.65);
       padding: 20px;
       z-index: 9999;
+      overflow:auto;
     }
+    #modalBackdrop.open{ display:block; }
     #jobModal{
-      max-width: 780px;
+      max-width: 980px;
       margin: 50px auto;
       background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
       border: 1px solid rgba(255,255,255,0.10);
@@ -192,7 +169,7 @@
       padding: 16px;
     }
     .modalHead{
-      display:flex; justify-content:space-between; align-items:center; gap:12px;
+      display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
@@ -210,6 +187,54 @@
 
     textarea{ width:100%; resize: vertical; line-height: 1.35; min-height: 100px; }
 
+    .split{
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .card{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .card h3{
+      margin: 0 0 8px;
+      font-size: 13px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.8);
+    }
+    .updates{
+      display:flex;
+      flex-direction:column;
+      gap: 10px;
+      max-height: 420px;
+      overflow:auto;
+      padding-right: 6px;
+    }
+    .updateItem{
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.22);
+      border-radius: 14px;
+      padding: 10px;
+    }
+    .updateMeta{
+      display:flex;
+      justify-content:space-between;
+      gap: 10px;
+      color: rgba(242,242,245,0.72);
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .updateBody{
+      white-space: pre-wrap;
+      color: rgba(242,242,245,0.92);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
     .toast{
       position: fixed;
       right: 18px;
@@ -221,17 +246,20 @@
       box-shadow: 0 20px 50px rgba(0,0,0,0.55);
       color: var(--text);
       display:none;
-      max-width: 360px;
+      max-width: 420px;
+      z-index: 10000;
     }
     .toast .t{ font-weight: 700; margin-bottom: 3px; }
     .toast .m{ color: var(--muted); font-size: 13px; }
 
-    /* Mobile table friendliness */
+    @media (max-width: 980px){
+      .split{ grid-template-columns: 1fr; }
+    }
     @media (max-width: 900px){
-      th:nth-child(4), td:nth-child(4){ display:none; } /* hide fault column on small screens */
+      th:nth-child(4), td:nth-child(4){ display:none; }
     }
     @media (max-width: 680px){
-      th:nth-child(5), td:nth-child(5){ display:none; } /* hide last updated on very small screens */
+      th:nth-child(5), td:nth-child(5){ display:none; }
       .grid{ grid-template-columns: 1fr; }
     }
   </style>
@@ -242,13 +270,12 @@
     <div class="topbar">
       <div>
         <h1>Repairs Tracker</h1>
-        <p class="sub">Black & red, because subtlety is dead. Click a job to edit it.</p>
+        <p class="sub">Click a job to edit. Add updates in the right-hand panel. Pretend this is orderly.</p>
       </div>
       <div class="badge red">● Live updates enabled</div>
     </div>
 
     <div class="panel">
-      <!-- AUTH ROW -->
       <div class="row">
         <input id="email" placeholder="email" autocomplete="username" />
         <input id="password" type="password" placeholder="password" autocomplete="current-password" />
@@ -258,10 +285,8 @@
         <span id="authStatus" class="muted"></span>
       </div>
 
-      <!-- CONTROLS -->
       <div class="row" id="controls" style="display:none;">
         <input id="search" placeholder="Search customer / brand / model / serial / fault..." style="flex:1; min-width: 260px;" />
-
         <select id="statusFilter">
           <option value="">All statuses</option>
           <option>Received</option>
@@ -275,106 +300,128 @@
           <option>Sent to Supplier</option>
           <option>Cancelled</option>
         </select>
-
         <button id="refreshBtn">Refresh</button>
-
         <span class="right muted" id="countText"></span>
       </div>
 
-      <!-- ACTIONS -->
       <div class="row" id="actions" style="display:none;">
         <button id="addJobOpenBtn" class="btn-primary">+ Add Job</button>
         <span class="muted">Stagnant = no updates in 7 days.</span>
       </div>
 
-      <!-- TABLE -->
       <div class="tableWrap" id="tableWrap"></div>
     </div>
   </div>
 
-  <!-- MODAL -->
-  <div id="modalBackdrop">
-    <div id="jobModal">
+  <div id="modalBackdrop" aria-hidden="true">
+    <div id="jobModal" role="dialog" aria-modal="true">
       <div class="modalHead">
         <div>
           <h2 id="modalTitle">Create Repair Job</h2>
-          <div class="muted" id="modalSub">Fill the basics now. Fix the mess later.</div>
+          <div class="muted" id="modalSub">Add details and updates as you go.</div>
+          <div class="muted mono" id="modalJobId" style="margin-top:6px;"></div>
         </div>
         <button id="modalCloseBtn" title="Close">✕</button>
       </div>
 
-      <form id="jobForm">
-        <input type="hidden" id="job_id" />
-        <div class="grid">
-          <div>
-            <label>Customer Name *</label><br />
-            <input id="f_customer" required style="width:100%;" />
-          </div>
-          <div>
-            <label>Contact</label><br />
-            <input id="f_contact" placeholder="Phone or email" style="width:100%;" />
-          </div>
+      <div class="split">
+        <!-- LEFT: job fields -->
+        <div class="card">
+          <h3>Job Details</h3>
 
-          <div>
-            <label>Store</label><br />
-            <input id="f_store" placeholder="e.g. Windsor Gardens" style="width:100%;" />
-          </div>
-          <div>
-            <label>Priority</label><br />
-            <select id="f_priority" style="width:100%;">
-              <option>Normal</option>
-              <option>High</option>
-              <option>Low</option>
-            </select>
-          </div>
+          <form id="jobForm">
+            <input type="hidden" id="job_id" />
 
-          <div>
-            <label>Brand</label><br />
-            <input id="f_brand" style="width:100%;" />
-          </div>
-          <div>
-            <label>Model</label><br />
-            <input id="f_model" style="width:100%;" />
-          </div>
+            <div class="grid">
+              <div>
+                <label>Customer Name *</label><br />
+                <input id="f_customer" required style="width:100%;" />
+              </div>
+              <div>
+                <label>Contact</label><br />
+                <input id="f_contact" placeholder="Phone or email" style="width:100%;" />
+              </div>
 
-          <div>
-            <label>Serial</label><br />
-            <input id="f_serial" style="width:100%;" />
-          </div>
-          <div>
-            <label>Status</label><br />
-            <select id="f_status" style="width:100%;">
-              <option>Received</option>
-              <option>Diagnosing</option>
-              <option>Awaiting Approval</option>
-              <option>Awaiting Parts</option>
-              <option>In Repair</option>
-              <option>Testing / QA</option>
-              <option>Ready for Pickup</option>
-              <option>Completed</option>
-              <option>Sent to Supplier</option>
-              <option>Cancelled</option>
-            </select>
-          </div>
+              <div>
+                <label>Store</label><br />
+                <input id="f_store" placeholder="e.g. Windsor Gardens" style="width:100%;" />
+              </div>
+              <div>
+                <label>Priority</label><br />
+                <select id="f_priority" style="width:100%;">
+                  <option>Normal</option>
+                  <option>High</option>
+                  <option>Low</option>
+                </select>
+              </div>
 
-          <div class="full">
-            <label>Fault / Notes</label><br />
-            <textarea id="f_fault" placeholder="What’s broken? What’s been done? Who’s responsible?"></textarea>
-          </div>
+              <div>
+                <label>Brand</label><br />
+                <input id="f_brand" style="width:100%;" />
+              </div>
+              <div>
+                <label>Model</label><br />
+                <input id="f_model" style="width:100%;" />
+              </div>
+
+              <div>
+                <label>Serial</label><br />
+                <input id="f_serial" style="width:100%;" />
+              </div>
+              <div>
+                <label>Status</label><br />
+                <select id="f_status" style="width:100%;">
+                  <option>Received</option>
+                  <option>Diagnosing</option>
+                  <option>Awaiting Approval</option>
+                  <option>Awaiting Parts</option>
+                  <option>In Repair</option>
+                  <option>Testing / QA</option>
+                  <option>Ready for Pickup</option>
+                  <option>Completed</option>
+                  <option>Sent to Supplier</option>
+                  <option>Cancelled</option>
+                </select>
+              </div>
+
+              <div class="full">
+                <label>Fault / Notes</label><br />
+                <textarea id="f_fault" placeholder="What’s broken? What’s been done?"></textarea>
+              </div>
+            </div>
+
+            <div class="row" style="border-bottom:none; padding: 12px 0 0;">
+              <span class="muted" id="formMsg"></span>
+              <span class="right"></span>
+              <button type="button" id="deleteBtn" class="btn-danger" style="display:none;">Delete</button>
+              <button type="button" id="cancelBtn">Cancel</button>
+              <button type="submit" id="saveBtn" class="btn-primary">Save</button>
+            </div>
+          </form>
         </div>
 
-        <div class="row" style="border-bottom:none; padding: 12px 0 0;">
-          <span class="muted" id="formMsg"></span>
-          <span class="right"></span>
-          <button type="button" id="deleteBtn" class="btn-danger" style="display:none;">Delete</button>
-          <button type="button" id="cancelBtn">Cancel</button>
-          <button type="submit" id="saveBtn" class="btn-primary">Save</button>
+        <!-- RIGHT: updates -->
+        <div class="card">
+          <h3>Updates</h3>
+
+          <div class="muted" id="updatesHint" style="margin-bottom:10px;">
+            Create the job first, then add updates here.
+          </div>
+
+          <div class="row" style="padding:0; border-bottom:none; margin:0 0 10px;">
+            <textarea id="u_message" placeholder="Add an update note... (e.g. called customer, ordered part, tested OK)"></textarea>
+          </div>
+
+          <div class="row" style="padding:0; border-bottom:none; margin:0 0 12px;">
+            <button id="u_addBtn" class="btn-primary" style="flex:1;">Add Update</button>
+          </div>
+
+          <div class="updates" id="updatesList"></div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 
-  <!-- TOAST -->
   <div class="toast" id="toast">
     <div class="t" id="toastTitle">Done</div>
     <div class="m" id="toastMsg">…</div>
@@ -401,8 +448,15 @@
     const backdrop = el("modalBackdrop");
     const modalTitle = el("modalTitle");
     const modalSub = el("modalSub");
+    const modalJobId = el("modalJobId");
+
     const formMsg = el("formMsg");
     const deleteBtn = el("deleteBtn");
+
+    const updatesHint = el("updatesHint");
+    const updatesList = el("updatesList");
+    const uMessage = el("u_message");
+    const uAddBtn = el("u_addBtn");
 
     const toast = el("toast");
     const toastTitle = el("toastTitle");
@@ -410,8 +464,14 @@
 
     let allJobs = [];
     let modalMode = "add"; // "add" | "edit"
+    let prevStatus = null;
 
-    // ---- Helpers ----
+    // Global error catcher so your modal doesn’t “mysteriously” stop working.
+    window.addEventListener("error", (e) => {
+      showToast("Script error", e?.message || "Something crashed.");
+      console.error(e);
+    });
+
     function escapeHtml(str) {
       return String(str ?? "")
         .replaceAll("&", "&amp;")
@@ -436,10 +496,9 @@
       toastMsg.textContent = message;
       toast.style.display = "block";
       clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => toast.style.display = "none", 2600);
+      showToast._t = setTimeout(() => toast.style.display = "none", 2800);
     }
 
-    // ---- Auth UI ----
     async function setUIForAuth() {
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -466,13 +525,13 @@
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) return alert(error.message);
 
-      showToast("Logged in", "Welcome back. Try not to break anything.");
+      showToast("Logged in", "Welcome back.");
       await setUIForAuth();
     });
 
     logoutBtn.addEventListener("click", async () => {
       await supabase.auth.signOut();
-      showToast("Logged out", "Back to the void.");
+      showToast("Logged out", "Gone again. Classic.");
       await setUIForAuth();
     });
 
@@ -480,7 +539,6 @@
     el("search").addEventListener("input", () => loadJobs(true));
     el("statusFilter").addEventListener("change", () => loadJobs(true));
 
-    // ---- Jobs list ----
     async function loadJobs(fromCacheFilter = false) {
       if (!fromCacheFilter) {
         const { data, error } = await supabase
@@ -522,11 +580,10 @@
 
       const rows = jobs.map(j => {
         const stagnant = isStagnant(j.last_updated_at, 7);
-
-        const badges = [
-          stagnant ? `<span class="badge red">⚠ Stagnant</span>` : `<span class="badge green">● Active</span>`,
-          j.priority ? `<span class="badge">${escapeHtml(j.priority)}</span>` : ""
-        ].join("");
+        const badges = `
+          ${stagnant ? `<span class="badge red">⚠ Stagnant</span>` : `<span class="badge green">● Active</span>`}
+          ${j.priority ? `<span class="badge">${escapeHtml(j.priority)}</span>` : ``}
+        `;
 
         const item = [j.brand, j.model].filter(Boolean).join(" ");
         const serial = j.serial ? `<div class="mono">${escapeHtml(j.serial)}</div>` : "";
@@ -549,15 +606,8 @@
               <div class="cellTitle">${escapeHtml(j.status)}</div>
               <div class="cellBadges">${badges}</div>
             </td>
-            <td>
-              <div class="cellSub" style="white-space:pre-wrap;">${escapeHtml(j.fault ?? "")}</div>
-            </td>
-            <td>
-              <div class="cellSub">${escapeHtml(fmtDate(j.last_updated_at))}</div>
-              <div style="margin-top:10px; display:flex; gap:8px; flex-wrap:wrap;">
-                <button class="editBtn" data-id="${escapeHtml(j.id)}">Edit</button>
-              </div>
-            </td>
+            <td><div class="cellSub" style="white-space:pre-wrap;">${escapeHtml(j.fault ?? "")}</div></td>
+            <td><div class="cellSub">${escapeHtml(fmtDate(j.last_updated_at))}</div></td>
           </tr>
         `;
       }).join("");
@@ -577,66 +627,46 @@
         </table>
       `;
 
-      // Row click to edit (but ignore clicks on buttons)
       tableWrap.querySelectorAll("tr.jobRow").forEach(tr => {
-        tr.addEventListener("click", (e) => {
-          if (e.target && (e.target.tagName === "BUTTON")) return;
-          openEditModal(tr.dataset.id);
-        });
-      });
-
-      // Edit button
-      tableWrap.querySelectorAll("button.editBtn").forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          openEditModal(btn.dataset.id);
-        });
+        tr.addEventListener("click", () => openEditModal(tr.dataset.id));
       });
     }
 
-    // ---- Realtime refresh ----
+    // Realtime refresh
     supabase.channel("jobs-realtime")
       .on("postgres_changes", { event: "*", schema: "public", table: "jobs" }, () => loadJobs(false))
       .subscribe();
 
-    // ---- Modal open/close ----
-    function openModal(mode) {
-      modalMode = mode;
-      formMsg.textContent = "";
-      backdrop.style.display = "";
+    function openBackdrop(){
+      backdrop.classList.add("open");
+      backdrop.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
-
-      deleteBtn.style.display = (mode === "edit") ? "" : "none";
-      modalTitle.textContent = (mode === "edit") ? "Edit Repair Job" : "Create Repair Job";
-      modalSub.textContent = (mode === "edit") ? "Update the job card. Last updated will bump automatically." : "Fill the basics now. Fix the mess later.";
-
-      el("f_customer").focus();
     }
-
-    function closeModal() {
-      backdrop.style.display = "none";
+    function closeBackdrop(){
+      backdrop.classList.remove("open");
+      backdrop.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
       el("jobForm").reset();
       el("job_id").value = "";
-      el("f_priority").value = "Normal";
-      el("f_status").value = "Received";
+      modalJobId.textContent = "";
       formMsg.textContent = "";
+      deleteBtn.style.display = "none";
+      updatesList.innerHTML = "";
+      updatesHint.textContent = "Create the job first, then add updates here.";
+      uMessage.value = "";
+      uMessage.disabled = true;
+      uAddBtn.disabled = true;
+      prevStatus = null;
     }
 
-    el("addJobOpenBtn").addEventListener("click", () => {
-      closeModal(); // ensure clean
-      openModal("add");
-    });
-
-    el("modalCloseBtn").addEventListener("click", closeModal);
-    el("cancelBtn").addEventListener("click", closeModal);
+    el("modalCloseBtn").addEventListener("click", closeBackdrop);
+    el("cancelBtn").addEventListener("click", closeBackdrop);
 
     backdrop.addEventListener("click", (e) => {
-      if (e.target === backdrop) closeModal();
+      if (e.target === backdrop) closeBackdrop();
     });
-
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && backdrop.style.display !== "none") closeModal();
+      if (e.key === "Escape" && backdrop.classList.contains("open")) closeBackdrop();
     });
 
     function fillFormFromJob(job){
@@ -650,16 +680,100 @@
       el("f_fault").value = job.fault ?? "";
       el("f_priority").value = job.priority ?? "Normal";
       el("f_status").value = job.status ?? "Received";
+      prevStatus = job.status ?? "Received";
     }
 
-    function openEditModal(jobId){
+    async function loadUpdates(jobId){
+      updatesList.innerHTML = `<div class="muted">Loading updates…</div>`;
+
+      const { data, error } = await supabase
+        .from("job_updates")
+        .select("*")
+        .eq("job_id", jobId)
+        .order("created_at", { ascending: false });
+
+      if (error){
+        updatesList.innerHTML = `<div class="muted">Error loading updates: ${escapeHtml(error.message)}</div>`;
+        return;
+      }
+
+      const updates = data ?? [];
+      if (!updates.length){
+        updatesList.innerHTML = `<div class="muted">No updates yet. Add one on the right.</div>`;
+        return;
+      }
+
+      updatesList.innerHTML = updates.map(u => {
+        const when = fmtDate(u.created_at);
+        const status = u.new_status ? `<span class="badge">${escapeHtml(u.new_status)}</span>` : "";
+        const msg = u.message ? escapeHtml(u.message) : "(no message)";
+        return `
+          <div class="updateItem">
+            <div class="updateMeta">
+              <div>${escapeHtml(when)}</div>
+              <div>${status}</div>
+            </div>
+            <div class="updateBody">${msg}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    async function addUpdate(jobId, newStatus, message){
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const payload = {
+        job_id: jobId,
+        user_id: session?.user?.id ?? null,
+        new_status: newStatus ?? null,
+        message: message ?? null
+      };
+
+      const { error } = await supabase.from("job_updates").insert([payload]);
+      if (error) throw error;
+    }
+
+    // Open Add Job
+    el("addJobOpenBtn").addEventListener("click", () => {
+      modalMode = "add";
+      modalTitle.textContent = "Create Repair Job";
+      modalSub.textContent = "Create it first, then add updates.";
+      deleteBtn.style.display = "none";
+      modalJobId.textContent = "";
+      updatesList.innerHTML = "";
+      updatesHint.textContent = "Create the job first, then add updates here.";
+      uMessage.value = "";
+      uMessage.disabled = true;
+      uAddBtn.disabled = true;
+      formMsg.textContent = "";
+      openBackdrop();
+      el("f_priority").value = "Normal";
+      el("f_status").value = "Received";
+      el("f_customer").focus();
+    });
+
+    // Open Edit Job
+    async function openEditModal(jobId){
       const job = allJobs.find(j => j.id === jobId);
       if (!job) return showToast("Not found", "That job isn’t in the current list.");
+
+      modalMode = "edit";
+      modalTitle.textContent = "Edit Repair Job";
+      modalSub.textContent = "Save changes, then add updates as needed.";
+      deleteBtn.style.display = "";
+      modalJobId.textContent = job.id;
+
       fillFormFromJob(job);
-      openModal("edit");
+
+      updatesHint.textContent = "Add notes here for a full history trail.";
+      uMessage.disabled = false;
+      uAddBtn.disabled = false;
+
+      openBackdrop();
+      await loadUpdates(jobId);
     }
 
-    // ---- Save (insert/update) ----
+    // Save job (insert/update) + auto-log status change
     el("jobForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
@@ -685,13 +799,32 @@
         };
 
         if (modalMode === "add") {
-          const { error } = await supabase.from("jobs").insert([payload]);
+          const { data, error } = await supabase.from("jobs").insert([payload]).select();
           if (error) throw error;
 
+          const newJob = data?.[0];
           showToast("Saved", "New job created.");
+
+          await loadJobs(false);
+
+          // Now allow updates on newly created job
+          if (newJob?.id){
+            modalMode = "edit";
+            el("job_id").value = newJob.id;
+            modalJobId.textContent = newJob.id;
+            deleteBtn.style.display = "";
+            prevStatus = newJob.status ?? payload.status;
+
+            uMessage.disabled = false;
+            uAddBtn.disabled = false;
+            updatesHint.textContent = "Add notes here for a full history trail.";
+            await loadUpdates(newJob.id);
+          }
         } else {
           const jobId = el("job_id").value;
           if (!jobId) throw new Error("Missing job_id for edit.");
+
+          const newStatus = payload.status;
 
           const { error } = await supabase
             .from("jobs")
@@ -700,11 +833,18 @@
 
           if (error) throw error;
 
+          // Auto-log status changes
+          if (prevStatus && newStatus && newStatus !== prevStatus){
+            await addUpdate(jobId, newStatus, `Status changed: ${prevStatus} → ${newStatus}`);
+            prevStatus = newStatus;
+          }
+
           showToast("Updated", "Job changes saved.");
+          await loadJobs(false);
+          await loadUpdates(jobId);
         }
 
-        await loadJobs(false);
-        closeModal();
+        formMsg.textContent = "";
       } catch (err) {
         formMsg.textContent = err?.message ?? String(err);
       } finally {
@@ -712,7 +852,39 @@
       }
     });
 
-    // ---- Delete ----
+    // Add update button
+    uAddBtn.addEventListener("click", async () => {
+      const jobId = el("job_id").value;
+      if (!jobId){
+        showToast("No job yet", "Save the job first, then add updates.");
+        return;
+      }
+
+      const message = uMessage.value.trim();
+      if (!message){
+        showToast("Empty update", "Type something first. Even a sad little note.");
+        return;
+      }
+
+      uAddBtn.disabled = true;
+      try{
+        const statusNow = el("f_status").value;
+        await addUpdate(jobId, statusNow, message);
+        uMessage.value = "";
+        showToast("Update added", "Timeline updated.");
+        await loadUpdates(jobId);
+
+        // bump job last_updated_at so stagnant tracking stays accurate
+        await supabase.from("jobs").update({ last_updated_at: new Date().toISOString() }).eq("id", jobId);
+        await loadJobs(false);
+      } catch(err){
+        showToast("Update failed", err?.message ?? String(err));
+      } finally{
+        uAddBtn.disabled = false;
+      }
+    });
+
+    // Delete job
     deleteBtn.addEventListener("click", async () => {
       const jobId = el("job_id").value;
       if (!jobId) return;
@@ -732,7 +904,7 @@
 
         showToast("Deleted", "Job removed.");
         await loadJobs(false);
-        closeModal();
+        closeBackdrop();
       } catch (err) {
         formMsg.textContent = err?.message ?? String(err);
       } finally {
@@ -740,7 +912,16 @@
       }
     });
 
-    // ---- Init ----
+    // Realtime updates for job_updates while modal is open (nice touch)
+    supabase.channel("updates-realtime")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "job_updates" }, (payload) => {
+        const currentId = el("job_id").value;
+        if (backdrop.classList.contains("open") && currentId && payload?.new?.job_id === currentId){
+          loadUpdates(currentId);
+        }
+      })
+      .subscribe();
+
     setUIForAuth();
   </script>
 </body>
