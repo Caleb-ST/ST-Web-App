@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Repairs Tracker</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 1100px; margin: 20px auto; padding: 0 12px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border-bottom: 1px solid #ddd; padding: 10px; text-align: left; }
+    input, select, button { padding: 8px; }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin: 10px 0; }
+    .muted { color:#666; font-size: 0.9em; }
+  </style>
+</head>
+<body>
+  <h1>Repairs Tracker</h1>
+
+  <div class="row">
+    <input id="email" placeholder="email" />
+    <input id="password" type="password" placeholder="password" />
+    <button id="loginBtn">Login</button>
+    <button id="logoutBtn" style="display:none;">Logout</button>
+    <span id="authStatus" class="muted"></span>
+  </div>
+
+  <div class="row" id="controls" style="display:none;">
+    <input id="search" placeholder="Search customer / brand / model / serial / fault..." style="flex:1; min-width: 260px;" />
+    <select id="statusFilter">
+      <option value="">All statuses</option>
+      <option>Received</option>
+      <option>Diagnosing</option>
+      <option>Awaiting Approval</option>
+      <option>Awaiting Parts</option>
+      <option>In Repair</option>
+      <option>Testing / QA</option>
+      <option>Ready for Pickup</option>
+      <option>Completed</option>
+      <option>Sent to Supplier</option>
+      <option>Cancelled</option>
+    </select>
+    <button id="refreshBtn">Refresh</button>
+  </div>
+
+  <div id="tableWrap"></div>
+
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    // TODO: paste your values here
+    const SUPABASE_URL = "PASTE_YOUR_PROJECT_URL";
+    const SUPABASE_ANON = "PASTE_YOUR_ANON_KEY";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON);
+
+    const el = (id) => document.getElementById(id);
+    const authStatus = el("authStatus");
+    const controls = el("controls");
+    const logoutBtn = el("logoutBtn");
+
+    async function setUIForAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        authStatus.textContent = `Logged in as ${session.user.email}`;
+        controls.style.display = "";
+        logoutBtn.style.display = "";
+        await loadJobs();
+      } else {
+        authStatus.textContent = "Not logged in";
+        controls.style.display = "none";
+        logoutBtn.style.display = "none";
+        el("tableWrap").innerHTML = "";
+      }
+    }
+
+    el("loginBtn").addEventListener("click", async () => {
+      const email = el("email").value.trim();
+      const password = el("password").value;
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        alert(error.message);
+        return;
+      }
+      await setUIForAuth();
+    });
+
+    logoutBtn.addEventListener("click", async () => {
+      await supabase.auth.signOut();
+      await setUIForAuth();
+    });
+
+    el("refreshBtn").addEventListener("click", loadJobs);
+    el("search").addEventListener("input", () => loadJobs(true));
+    el("statusFilter").addEventListener("change", () => loadJobs(true));
+
+    function isStagnant(lastUpdatedISO, days=7) {
+      const ms = Date.now() - new Date(lastUpdatedISO).getTime();
+      return ms > days * 24 * 60 * 60 * 1000;
+    }
+
+    let allJobs = [];
+
+    async function loadJobs(fromCacheFilter=false) {
+      if (!fromCacheFilter) {
+        const { data, error } = await supabase
+          .from("jobs")
+          .select("*")
+          .order("last_updated_at", { ascending: false });
+
+        if (error) {
+          el("tableWrap").innerHTML = `<p class="muted">Error: ${error.message}</p>`;
+          return;
+        }
+        allJobs = data ?? [];
+      }
+
+      const q = el("search").value.trim().toLowerCase();
+      const status = el("statusFilter").value;
+
+      const filtered = allJobs.filter(j => {
+        const hay = [
+          j.customer_name, j.brand, j.model, j.serial, j.fault, j.store, j.status
+        ].join(" ").toLowerCase();
+
+        const qOk = !q || hay.includes(q);
+        const sOk = !status || j.status === status;
+        return qOk && sOk;
+      });
+
+      renderJobs(filtered);
+    }
+
+    function renderJobs(jobs) {
+      if (!jobs.length) {
+        el("tableWrap").innerHTML = `<p class="muted">No jobs found.</p>`;
+        return;
+      }
+
+      const rows = jobs.map(j => {
+        const stagnant = isStagnant(j.last_updated_at, 7);
+        const badge = stagnant ? " ⚠ stagnant" : "";
+        return `
+          <tr>
+            <td>${j.customer_name}</td>
+            <td>${j.brand ?? ""} ${j.model ?? ""}</td>
+            <td>${j.serial ?? ""}</td>
+            <td>${j.status}${badge}</td>
+            <td>${new Date(j.last_updated_at).toLocaleString()}</td>
+          </tr>
+        `;
+      }).join("");
+
+      el("tableWrap").innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Item</th>
+              <th>Serial</th>
+              <th>Status</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+        <p class="muted">Stagnant = no updates in 7 days.</p>
+      `;
+    }
+
+    // Realtime refresh (optional but nice)
+    supabase.channel("jobs-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "jobs" }, () => loadJobs())
+      .subscribe();
+
+    setUIForAuth();
+  </script>
+</body>
+</html>
