@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sydney Tools South Australia</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supplier Warranty Info</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <style>
     :root{
@@ -15,6 +16,8 @@
       --shadow: 0 20px 60px rgba(0,0,0,0.55);
       --red:#ff2b3d;
       --red2:#b80c2b;
+      --pill:rgba(255,255,255,0.08);
+      --pill2:rgba(255,43,61,0.18);
       --focus: 0 0 0 3px rgba(255,43,61,0.25);
     }
 
@@ -30,15 +33,12 @@
         radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
         radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      display:flex;
-      align-items:center;
-      justify-content:center;
       padding: 26px 14px 50px;
     }
 
     .wrap{
-      width: 100%;
-      max-width: 1050px;
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
     .topbar{
@@ -46,35 +46,32 @@
       flex-direction:column;
       align-items:center;
       justify-content:center;
-      gap: 10px;
+      gap: 8px;
       margin-bottom: 14px;
       text-align:center;
     }
 
     h1{
       margin:0;
-      font-size: 32px;
-      letter-spacing: 0.4px;
-      line-height: 1.05;
+      font-size: 30px;
+      letter-spacing: .35px;
+      line-height: 1.1;
     }
 
-    h2{
+    .sub{
       margin: 0;
-      font-size: 14px;
-      font-weight: 500;
+      font-size: 13px;
       color: var(--muted);
-      letter-spacing: 0.3px;
     }
 
     .badge{
       display:inline-flex;
       align-items:center;
-      justify-content:center;
       gap:8px;
       padding: 6px 12px;
       border-radius: 999px;
       font-size: 12px;
-      background: rgba(255,43,61,0.18);
+      background: var(--pill2);
       border: 1px solid rgba(255,43,61,0.35);
       box-shadow: 0 10px 30px rgba(255,43,61,0.12);
       white-space: nowrap;
@@ -85,245 +82,416 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
-      overflow:hidden;
+      overflow: hidden;
       backdrop-filter: blur(10px);
     }
 
-    .panelHead{
-      padding: 14px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      text-align:center;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .grid{
-      padding: 16px;
-      display:grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    @media (max-width: 950px){
-      .grid{ grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 600px){
-      .grid{ grid-template-columns: 1fr; }
-      h1{ font-size: 28px; }
-    }
-
-    /* Unified “Repairs-style” button */
-    a.nav-button{
-      position: relative;
+    .row{
       display:flex;
+      gap:10px;
+      flex-wrap:wrap;
       align-items:center;
       justify-content:center;
-      text-align:center;
-      text-decoration:none;
-
-      min-height: 92px;
-      padding: 18px 16px;
-      border-radius: 16px;
-
-      color: var(--text);
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-
-      font-weight: 700;
-      letter-spacing: 0.2px;
-      transition: transform .08s ease, box-shadow .18s ease, filter .18s ease;
-      overflow:hidden;
-    }
-
-    a.nav-button::before{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background:
-        radial-gradient(700px 250px at 15% 0%, rgba(255,255,255,0.14), transparent 55%),
-        radial-gradient(600px 250px at 85% 100%, rgba(0,0,0,0.25), transparent 55%);
-      opacity: 0.9;
-      pointer-events:none;
-    }
-
-    a.nav-button:hover{
-      box-shadow: 0 18px 44px rgba(255,43,61,0.35);
-      transform: translateY(-1px);
-      filter: saturate(1.05);
-    }
-
-    a.nav-button:active{
-      transform: translateY(1px);
-    }
-
-    /* Login overlay matches Repairs modal vibe */
-    #login-screen{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index: 9999;
-      padding: 22px 14px;
-    }
-
-    .loginModal{
-      width: 100%;
-      max-width: 560px;
-      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 16px;
-      text-align: center;
-    }
-
-    .loginHead{
-      padding-bottom: 10px;
+      padding: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 12px;
+      text-align:center;
     }
+    .row:last-child{ border-bottom:none; }
 
-    .loginHead h3{
-      margin:0;
-      font-size: 18px;
-      letter-spacing: 0.3px;
-    }
-
-    .loginHead .muted{
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .formRow{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 12px;
-      justify-content: center;
-    }
-
-    input{
-      flex: 1;
-      min-width: 230px;
+    input, button, select, textarea{
       padding: 10px 10px;
       font: inherit;
       color: var(--text);
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
-      outline:none;
+      outline: none;
     }
     input::placeholder{ color: rgba(242,242,245,0.45); }
     input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
 
     .btn{
-      width: 100%;
-      max-width: 220px;
-      padding: 10px 16px;
-      border-radius: 12px;
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
+    }
+    .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn-primary{
       background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
+      border-color: rgba(255,43,61,0.55);
       box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      color: var(--text);
-      cursor: pointer;
       font-weight: 700;
-      letter-spacing: 0.2px;
-      transition: transform .08s ease, box-shadow .18s ease;
+      letter-spacing: .2px;
+    }
+    .btn-primary:hover{
+      background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
+      border-color: rgba(255,43,61,0.75);
     }
 
-    .btn:hover{
-      box-shadow: 0 18px 44px rgba(255,43,61,0.35);
-      transform: translateY(-1px);
+    .tableWrap{
+      padding: 12px;
     }
 
-    .btn:active{
-      transform: translateY(1px);
+    .tables-container{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
     }
 
-    .loginFoot{
-      margin-top: 12px;
+    @media (max-width: 980px){
+      .tables-container{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.85);
+    }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: middle;
+    }
+
+    th{
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.75);
+      background: rgba(255,255,255,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      text-align:left;
+    }
+
+    tr:hover td{
+      background: rgba(255,255,255,0.03);
+    }
+
+    .supplier{
+      font-weight: 700;
+    }
+
+    .button-group{
+      display:flex;
+      justify-content:flex-end;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Modal */
+    #modal{
+      display:none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 9999;
+      padding: 20px;
+      overflow:auto;
+      align-items:center;
+      justify-content:center;
+    }
+    #modal.open{ display:flex; }
+
+    .modal-content{
+      width: 100%;
+      max-width: 760px;
+      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .modalHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+
+    .modalHead h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .modalBody p{
+      margin: 10px 0;
+      color: rgba(242,242,245,0.92);
+      line-height: 1.4;
+    }
+
+    .modalBody a{
+      color: #60a5fa;
+      text-decoration: underline;
+      word-break: break-word;
+    }
+
+    .mutedSmall{
       color: var(--muted);
       font-size: 12px;
-      line-height: 1.35;
+      margin-top: 4px;
     }
   </style>
 </head>
 
 <body>
-  <!-- Login -->
-  <div id="login-screen">
-    <div class="loginModal">
-      <div class="loginHead">
-        <h3>Please Log In</h3>
-        <div class="muted">Internal tools portal</div>
-      </div>
-
-      <div class="formRow">
-        <input id="username" type="text" placeholder="Username" autocomplete="username" />
-        <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
-      </div>
-
-      <div class="formRow" style="margin-top:14px;">
-        <button class="btn" onclick="login()">Login</button>
-      </div>
-
-      <div class="loginFoot">
-        This is a speed bump, not a vault. Don’t put secrets here.
-      </div>
-    </div>
-  </div>
-
-  <!-- Main -->
   <div class="wrap">
     <div class="topbar">
-      <div>
-        <h1>Sydney Tools</h1>
-        <h2>South Australia</h2>
-      </div>
-      <div class="badge">● Internal Navigation</div>
+      <h1>Supplier Warranty Information</h1>
+      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
+      <div class="badge">● Live from Google Sheet</div>
     </div>
 
     <div class="panel">
-      <div class="panelHead">Select a tool to continue</div>
+      <div class="row">
+        <a class="btn btn-primary" href="index.html">← Back to Home</a>
+        <input type="text" id="searchInput" placeholder="Search suppliers..." style="min-width:260px; width: 360px; max-width: 90%;" />
+      </div>
 
-      <div class="grid">
-        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLScFvYtmZhZ342Gwjg6qDE84fenyFCNZ-NaiswSKObuSvOtkbQ/viewform?usp=preview" target="_blank" rel="noopener noreferrer">BDM Leads</a>
-        <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
-        <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank" rel="noopener noreferrer">RST Approval Request</a>
-        <a class="nav-button" href="Warranty1.html">Warranties</a>
-        <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
-        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank" rel="noopener noreferrer">GP Check Fix</a>
+      <div class="tableWrap">
+        <div class="tables-container">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Local Suppliers</h2>
+              <span class="mutedSmall" id="localCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="localTable"></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <h2>Imported Suppliers</h2>
+              <span class="mutedSmall" id="importCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="importTable"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <!-- Modal -->
+  <div id="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <div class="modalHead">
+        <div>
+          <h3 id="modalTitle"></h3>
+          <div class="mutedSmall" id="modalSub"></div>
+        </div>
+        <button class="btn" onclick="closeModal()" title="Close">✕</button>
+      </div>
+
+      <div class="modalBody" id="modalBody"></div>
+
+      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
   <script>
-    const validUsername = "Sydney Tools";
-    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
+    let suppliers = [];
 
-    function md5(str){ return CryptoJS.MD5(str).toString(); }
+    // Load CSV
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const rows = (results.data || []).map(row => {
+          const clean = {};
+          for (const key in row) {
+            const normKey = key?.trim().replace(/\s+/g, " ");
+            clean[normKey] = (row[key] ?? "").trim();
+          }
+          return clean;
+        });
 
-    if (localStorage.getItem("loggedIn") === "true") {
-      document.getElementById("login-screen").style.display = "none";
-    }
+        suppliers = rows.filter(item =>
+          Object.keys(item).some(k =>
+            (/^Warranty Step \d$/i.test(k) && item[k]) ||
+            (/^FUF Step \d$/i.test(k) && item[k])
+          ) || item["Warranty Information"]
+        );
 
-    function login(){
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value;
-
-      if (u === validUsername && md5(p) === validPasswordHash){
-        localStorage.setItem("loggedIn","true");
-        document.getElementById("login-screen").style.display = "none";
-      } else {
-        alert("Access denied.");
-        window.location.href = "https://www.google.com";
+        renderTables();
       }
+    });
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
+
+    function renderTables(filter = "") {
+      const local = document.getElementById("localTable");
+      const imported = document.getElementById("importTable");
+      const localCount = document.getElementById("localCount");
+      const importCount = document.getElementById("importCount");
+
+      local.innerHTML = "";
+      imported.innerHTML = "";
+
+      let lCount = 0, iCount = 0;
+
+      suppliers.forEach((item, idx) => {
+        const brand = item["Brands"];
+        const isImported = (item["Import"] || "").toLowerCase() === "true";
+
+        if (!brand) return;
+        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
+
+        const hasWarrantySteps = [...Array(6)].some((_, i) => item[`Warranty Step ${i + 1}`]);
+        const hasFufSteps = [...Array(6)].some((_, i) => item[`FUF Step ${i + 1}`]);
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="supplier">${escapeHtml(brand)}</td>
+          <td>
+            <div class="button-group">
+              <button class="btn btn-primary" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>
+              ${hasWarrantySteps ? `<button class="btn" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
+            </div>
+          </td>
+        `;
+
+        if (isImported) {
+          imported.appendChild(row);
+          iCount++;
+        } else {
+          local.appendChild(row);
+          lCount++;
+        }
+      });
+
+      localCount.textContent = `${lCount} suppliers`;
+      importCount.textContent = `${iCount} suppliers`;
+
+      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+    }
+
+    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
+
+    function linkify(text) {
+      const urlRegex = /((https?:\/\/)[^\s<]+)/g;
+      return escapeHtml(text).replace(urlRegex, url => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`);
+    }
+
+    function showModalByIndex(index, type) {
+      const item = suppliers[index];
+      if (!item) return;
+
+      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
+      const modalSub = document.getElementById("modalSub");
+      const modalBody = document.getElementById("modalBody");
+      modalBody.innerHTML = "";
+
+      if (type === "info") {
+        modalSub.textContent = "Warranty Information";
+        const warrantyInfo = (item["Warranty Information"] || "N/A")
+          .split("\n")
+          .map(line => `<p>${linkify(line)}</p>`)
+          .join("");
+        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
+      } else {
+        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
+        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
+
+        let any = false;
+        for (let i = 1; i <= 6; i++) {
+          const key = prefix + i;
+          if (item[key]) {
+            any = true;
+            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
+          }
+        }
+        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
+      }
+
+      openModal();
+    }
+
+    function openModal() {
+      const m = document.getElementById("modal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      const m = document.getElementById("modal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    // Close modal on backdrop click + ESC
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+    });
   </script>
 </body>
 </html>
