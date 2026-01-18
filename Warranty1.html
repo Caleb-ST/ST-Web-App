@@ -5,143 +5,364 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Supplier Warranty Info</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+
   <style>
-    body {
-      background: #000;
-      color: #fff;
-      font-family: Arial, sans-serif;
-      padding: 40px;
-      text-align: center;
+    :root{
+      --bg0:#07070a;
+      --bg1:#0b0b10;
+      --text:#f2f2f5;
+      --muted:#a4a4b3;
+      --border:rgba(255,255,255,0.08);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --red:#ff2b3d;
+      --red2:#b80c2b;
+      --pill2:rgba(255,43,61,0.18);
+      --focus: 0 0 0 3px rgba(255,43,61,0.25);
     }
 
-    .tables-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
+        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      padding: 26px 14px 50px;
     }
 
-    table {
-      width: 100%;
-      max-width: 500px;
-      border-collapse: collapse;
-      background: #1f1f1f;
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
     }
 
-    th, td {
+    .topbar{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 8px;
+      margin-bottom: 14px;
+      text-align:center;
+    }
+
+    h1{
+      margin:0;
+      font-size: 30px;
+      letter-spacing: .35px;
+      line-height: 1.1;
+    }
+
+    .sub{
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--pill2);
+      border: 1px solid rgba(255,43,61,0.35);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
+      white-space: nowrap;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
       padding: 12px;
-      border: 1px solid #333;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align:center;
+    }
+    .row:last-child{ border-bottom:none; }
+
+    input, button, a.btn{
+      padding: 10px 10px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    input{
+      min-width:260px;
+      width: 420px;
+      max-width: 92%;
+    }
+
+    input::placeholder{ color: rgba(242,242,245,0.45); }
+    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
+      user-select:none;
+    }
+    .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border-color: rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .btn-primary:hover{
+      background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
+      border-color: rgba(255,43,61,0.75);
+      box-shadow: 0 16px 40px rgba(255,43,61,0.28);
+      transform: translateY(-1px);
+    }
+
+    .btn-sm{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .tableWrap{
+      padding: 12px;
+    }
+
+    .tables-container{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 980px){
+      .tables-container{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.85);
+    }
+
+    .mutedSmall{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       vertical-align: middle;
-      white-space: nowrap;
     }
 
-    th {
-      background-color: #dc2626;
+    th{
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.75);
+      background: rgba(255,255,255,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      text-align:left;
     }
 
-    input[type="text"] {
-      padding: 10px;
-      width: 300px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      border: none;
+    tr:hover td{
+      background: rgba(255,255,255,0.03);
     }
 
-    button {
-      padding: 6px 10px;
-      margin: 0 2px;
-      background: #444;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      cursor: pointer;
-      white-space: nowrap;
+    .supplier{
+      font-weight: 700;
     }
 
-    .button-group {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
+    /* tidy options buttons */
+    .button-group{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap: 8px;
       flex-wrap: nowrap;
     }
+    @media (max-width: 520px){
+      .button-group{
+        flex-wrap: wrap;
+        justify-content:flex-start;
+      }
+    }
 
-    .modal {
-      display: none;
+    /* Modal */
+    #modal{
+      display:none;
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.85);
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background: #222;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 9999;
       padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 600px;
-      text-align: left;
+      overflow:auto;
+      align-items:center;
+      justify-content:center;
+    }
+    #modal.open{ display:flex; }
+
+    .modal-content{
+      width: 100%;
+      max-width: 760px;
+      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
     }
 
-    .modal-content p {
+    .modalHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+
+    .modalHead h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .modalBody p{
       margin: 10px 0;
+      color: rgba(242,242,245,0.92);
+      line-height: 1.4;
     }
 
-    .modal-content a {
-      color: #3b82f6;
+    .modalBody a{
+      color: #60a5fa;
       text-decoration: underline;
       word-break: break-word;
     }
-
-    .back-button {
-      padding: 10px 20px;
-      background-color: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 20px;
-    }
-
-    .back-button:hover {
-      background-color: #9b1c1c;
-    }
   </style>
 </head>
+
 <body>
-
-  <h1>Supplier Warranty Information</h1>
-
-  <a href="index.html">
-    <button class="back-button">← Back to Home</button>
-  </a>
-
-  <input type="text" id="searchInput" placeholder="Search suppliers...">
-
-  <div class="tables-container">
-    <div>
-      <h2>Local Suppliers</h2>
-      <table>
-        <thead><tr><th>Supplier</th><th>Options</th></tr></thead>
-        <tbody id="localTable"></tbody>
-      </table>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Supplier Warranty Information</h1>
+      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
+      <div class="badge">● Live from Google Sheet</div>
     </div>
 
-    <div>
-      <h2>Imported Suppliers</h2>
-      <table>
-        <thead><tr><th>Supplier</th><th>Options</th></tr></thead>
-        <tbody id="importTable"></tbody>
-      </table>
+    <div class="panel">
+      <div class="row">
+        <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
+        <input type="text" id="searchInput" placeholder="Search suppliers..." />
+      </div>
+
+      <div class="tableWrap">
+        <div class="tables-container">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Local Suppliers</h2>
+              <span class="mutedSmall" id="localCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="localTable"></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <h2>Imported Suppliers</h2>
+              <span class="mutedSmall" id="importCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="importTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div id="modal" class="modal">
-    <div class="modal-content">
-      <h2 id="modalTitle"></h2>
-      <div id="modalBody"></div>
-      <button onclick="closeModal()">Exit</button>
+  <!-- Modal -->
+  <div id="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <div class="modalHead">
+        <div>
+          <h3 id="modalTitle"></h3>
+          <div class="mutedSmall" id="modalSub"></div>
+        </div>
+        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
+      </div>
+
+      <div class="modalBody" id="modalBody"></div>
+
+      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -153,94 +374,150 @@
       download: true,
       header: true,
       complete: function(results) {
-        const rows = results.data.map(row => {
+        const rows = (results.data || []).map(row => {
           const clean = {};
           for (const key in row) {
-            const normKey = key?.trim().replace(/\s+/g, ' ');
-            clean[normKey] = row[key]?.trim();
+            const normKey = (key || "").trim().replace(/\s+/g, " ");
+            clean[normKey] = (row[key] ?? "").trim();
           }
           return clean;
         });
 
-        suppliers = rows.filter(item =>
-          Object.keys(item).some(k =>
-            (/^Warranty Step \d$/i.test(k) && item[k]) ||
-            (/^FUF Step \d$/i.test(k) && item[k])
-          ) || item['Warranty Information']
-        );
+        // Only keep entries with actual usable content
+        suppliers = rows.filter(item => {
+          const hasBrand = !!item["Brands"];
+          const hasWarrantyInfo = !!item["Warranty Information"];
+          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+          return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
+        });
 
         renderTables();
       }
     });
 
-    function renderTables(filter = '') {
-      const local = document.getElementById('localTable');
-      const imported = document.getElementById('importTable');
-      local.innerHTML = '';
-      imported.innerHTML = '';
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
 
-      suppliers.forEach(item => {
-        const brand = item['Brands'];
-        const isImported = item['Import']?.toLowerCase() === 'true';
+    function renderTables(filter = "") {
+      const local = document.getElementById("localTable");
+      const imported = document.getElementById("importTable");
+      const localCount = document.getElementById("localCount");
+      const importCount = document.getElementById("importCount");
 
-        if (!brand || (filter && !brand.toLowerCase().includes(filter.toLowerCase()))) return;
+      local.innerHTML = "";
+      imported.innerHTML = "";
 
-        const hasWarrantySteps = [...Array(6)].some((_, i) => item[`Warranty Step ${i + 1}`]);
-        const hasFufSteps = [...Array(6)].some((_, i) => item[`FUF Step ${i + 1}`]);
+      let lCount = 0, iCount = 0;
 
-        const row = document.createElement('tr');
-        const safeItem = JSON.stringify(item).replace(/'/g, "\\'").replace(/"/g, "&quot;");
+      suppliers.forEach((item, idx) => {
+        const brand = item["Brands"];
+        const isImported = (item["Import"] || "").toLowerCase() === "true";
 
+        if (!brand) return;
+        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
+
+        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+        const hasWarrantyInfo = !!item["Warranty Information"];
+
+        const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${brand}</td>
+          <td class="supplier">${escapeHtml(brand)}</td>
           <td>
             <div class="button-group">
-              <button onclick='showModal(${safeItem}, "info")'>Warranty Info</button>
-              ${hasWarrantySteps ? `<button onclick='showModal(${safeItem}, "process")'>Warranty Process</button>` : ''}
-              ${hasFufSteps ? `<button onclick='showModal(${safeItem}, "fuf")'>FUF Process</button>` : ''}
+              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
+              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
             </div>
           </td>
         `;
-        (isImported ? imported : local).appendChild(row);
+
+        if (isImported) {
+          imported.appendChild(row);
+          iCount++;
+        } else {
+          local.appendChild(row);
+          lCount++;
+        }
       });
+
+      localCount.textContent = `${lCount} suppliers`;
+      importCount.textContent = `${iCount} suppliers`;
+
+      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
     }
 
-    document.getElementById('searchInput').addEventListener('input', e => renderTables(e.target.value));
+    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
-    function showModal(item, type) {
-      document.getElementById('modalTitle').textContent = item['Brands'];
-      const modalBody = document.getElementById('modalBody');
-      modalBody.innerHTML = '';
+    function linkify(text) {
+      const urlRegex = /((https?:\/\/)[^\\s<]+)/g;
+      return escapeHtml(text).replace(urlRegex, url =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+      );
+    }
 
-      const linkify = (text) => {
-        const urlRegex = /((https?:\/\/)[^\s<]+)/g;
-        return text.replace(urlRegex, url => `<a href="${url}" target="_blank">${url}</a>`);
-      };
+    function showModalByIndex(index, type) {
+      const item = suppliers[index];
+      if (!item) return;
 
-      if (type === 'info') {
-        const warrantyInfo = (item['Warranty Information'] || 'N/A')
-          .split('\n')
+      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
+      const modalSub = document.getElementById("modalSub");
+      const modalBody = document.getElementById("modalBody");
+      modalBody.innerHTML = "";
+
+      if (type === "info") {
+        modalSub.textContent = "Warranty Information";
+        const warrantyInfo = (item["Warranty Information"] || "N/A")
+          .split("\n")
           .map(line => `<p>${linkify(line)}</p>`)
-          .join('');
+          .join("");
         modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
       } else {
-        const prefix = type === 'fuf' ? 'FUF Step ' : 'Warranty Step ';
+        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
+        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
+
+        let any = false;
         for (let i = 1; i <= 6; i++) {
           const key = prefix + i;
           if (item[key]) {
+            any = true;
             modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
           }
         }
+        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
       }
 
-      document.getElementById('modal').style.display = 'flex';
+      openModal();
+    }
+
+    function openModal() {
+      const m = document.getElementById("modal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
     }
 
     function closeModal() {
-      document.getElementById('modal').style.display = 'none';
+      const m = document.getElementById("modal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
     }
+
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+    });
   </script>
 </body>
 </html>
-
-
