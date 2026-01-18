@@ -338,9 +338,18 @@
                 <label>Contact</label><br />
                 <input id="f_contact" placeholder="Phone" style="width:100%;" />
               </div>
+
               <div>
                 <label>Store</label><br />
-                <input id="f_store" placeholder="e.g. Windsor Gardens" style="width:100%;" />
+                <select id="f_store" style="width:100%;">
+                  <option value="">Select store…</option>
+                  <option>Seaford</option>
+                  <option>Lonsdale</option>
+                  <option>Windsor Gardens</option>
+                  <option>Regency Park</option>
+                  <option>Parafield</option>
+                  <option>Munno Parra</option>
+                </select>
               </div>
 
               <div>
@@ -787,7 +796,7 @@
           ref_no: el("f_refno").value.trim() || null,
           customer_name,
           contact: el("f_contact").value.trim() || null,
-          store: el("f_store").value.trim() || null,
+          store: el("f_store").value || null,
           brand: el("f_brand").value.trim() || null,
           model: el("f_model").value.trim() || null,
           serial: el("f_serial").value.trim() || null,
