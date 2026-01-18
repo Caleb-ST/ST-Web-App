@@ -219,10 +219,10 @@
     .right{ margin-left:auto; }
 
     @media (max-width: 820px){
-      th:nth-child(4), td:nth-child(4){ display:none; } /* hide phone */
+      th:nth-child(4), td:nth-child(4){ display:none; } /* phone */
     }
     @media (max-width: 620px){
-      th:nth-child(5), td:nth-child(5){ display:none; } /* hide email */
+      th:nth-child(5), td:nth-child(5){ display:none; } /* email */
       input{ width: 100%; }
     }
   </style>
@@ -232,7 +232,7 @@
   <div class="wrap">
     <div class="topbar">
       <h1>Rep Directory</h1>
-      <p class="sub">Search reps fast. Highlight duplicates so you can fix the sheet later.</p>
+      <p class="sub">Search reps fast. Duplicates highlighted so you can fix the sheet later.</p>
       <div class="badge">● Live from Google Sheet</div>
     </div>
 
@@ -271,7 +271,7 @@
         .replaceAll("'", "&#039;");
     }
 
-    // Basic CSV parser that handles quoted commas properly (enough for Google CSV exports)
+    // CSV parser that handles quoted commas
     function parseCSV(csv) {
       const rows = [];
       let row = [];
@@ -329,17 +329,21 @@
       }));
     }
 
+    function pick(row, keys) {
+      for (const k of keys) {
+        const v = row[k];
+        if (typeof v === "string" && v.trim() !== "") return v.trim();
+      }
+      return "";
+    }
+
     function buildRepObjects(parsed){
-      // This assumes sheet columns order or headers match:
-      // Company, Role, Name, Phone, Email (either headers or positions)
-      // We'll support both:
       return parsed.map(row => {
-        // try header names first, fallback to positional
-        const company = row.Company ?? row.company ?? row[0] ?? "";
-        const role    = row.Role    ?? row.role    ?? row[1] ?? "";
-        const name    = row.Name    ?? row.name    ?? row[2] ?? "";
-        const phone   = row.Phone   ?? row.phone   ?? row[3] ?? "";
-        const email   = row.Email   ?? row.email   ?? row[4] ?? "";
+        const company = pick(row, ["Company","company","COMPANY"]);
+        const role    = pick(row, ["Role","role","ROLE"]);
+        const name    = pick(row, ["Name","name","NAME"]);
+        const phone   = pick(row, ["Phone","phone","PHONE","Mobile","mobile","MOBILE"]);
+        const email   = pick(row, ["Email","email","EMAIL","E-mail","E-mail Address","Email Address","email address"]);
 
         return { company, role, name, phone, email };
       }).filter(r => r.name || r.company || r.role || r.phone || r.email);
@@ -416,10 +420,6 @@
       .then(res => res.text())
       .then(csv => {
         const parsedRows = parseCSV(csv);
-
-        // If parseCSV returned objects keyed by header names:
-        // it will already be in {Header: value} shape.
-        // If it returned positional, it will still work via buildRepObjects fallback.
         const reps = buildRepObjects(parsedRows);
 
         allReps = withDuplicateFlags(reps);
