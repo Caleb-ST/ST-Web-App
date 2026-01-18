@@ -33,23 +33,33 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 26px 14px;
+      padding: 26px 14px 50px;
     }
 
     .wrap{
       width: 100%;
-      max-width: 980px;
-      text-align: center;
+      max-width: 1050px;
+    }
+
+    .topbar{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap: 10px;
+      margin-bottom: 14px;
+      text-align:center;
     }
 
     h1{
       margin:0;
-      font-size: 34px;
+      font-size: 32px;
       letter-spacing: 0.4px;
+      line-height: 1.05;
     }
 
     h2{
-      margin: 6px 0 0;
+      margin: 0;
       font-size: 14px;
       font-weight: 500;
       color: var(--muted);
@@ -59,6 +69,7 @@
     .badge{
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:8px;
       padding: 6px 12px;
       border-radius: 999px;
@@ -66,23 +77,22 @@
       background: rgba(255,43,61,0.18);
       border: 1px solid rgba(255,43,61,0.35);
       box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      margin: 10px auto 0;
+      white-space: nowrap;
     }
 
     .panel{
-      margin-top: 18px;
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
+      overflow:hidden;
       backdrop-filter: blur(10px);
-      overflow: hidden;
     }
 
     .panelHead{
-      padding: 16px;
+      padding: 14px 16px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      text-align: center;
+      text-align:center;
       color: var(--muted);
       font-size: 13px;
     }
@@ -94,15 +104,17 @@
       gap: 14px;
     }
 
-    @media (max-width: 900px){
+    @media (max-width: 950px){
       .grid{ grid-template-columns: repeat(2, 1fr); }
     }
-    @media (max-width: 580px){
+    @media (max-width: 600px){
       .grid{ grid-template-columns: 1fr; }
       h1{ font-size: 28px; }
     }
 
+    /* Unified “Repairs-style” button */
     a.nav-button{
+      position: relative;
       display:flex;
       align-items:center;
       justify-content:center;
@@ -117,21 +129,35 @@
       background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
       border: 1px solid rgba(255,43,61,0.55);
       box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 650;
+
+      font-weight: 700;
       letter-spacing: 0.2px;
-      transition: transform .08s ease, box-shadow .15s ease;
+      transition: transform .08s ease, box-shadow .18s ease, filter .18s ease;
+      overflow:hidden;
+    }
+
+    a.nav-button::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(700px 250px at 15% 0%, rgba(255,255,255,0.14), transparent 55%),
+        radial-gradient(600px 250px at 85% 100%, rgba(0,0,0,0.25), transparent 55%);
+      opacity: 0.9;
+      pointer-events:none;
     }
 
     a.nav-button:hover{
-      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
+      box-shadow: 0 18px 44px rgba(255,43,61,0.35);
       transform: translateY(-1px);
+      filter: saturate(1.05);
     }
 
     a.nav-button:active{
       transform: translateY(1px);
     }
 
-    /* Login overlay */
+    /* Login overlay matches Repairs modal vibe */
     #login-screen{
       position: fixed;
       inset: 0;
@@ -145,7 +171,7 @@
 
     .loginModal{
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 18px;
@@ -154,12 +180,19 @@
       text-align: center;
     }
 
-    .loginModal h3{
-      margin:0;
-      font-size: 18px;
+    .loginHead{
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
     }
 
-    .loginModal .muted{
+    .loginHead h3{
+      margin:0;
+      font-size: 18px;
+      letter-spacing: 0.3px;
+    }
+
+    .loginHead .muted{
       margin-top: 6px;
       color: var(--muted);
       font-size: 13px;
@@ -169,14 +202,14 @@
       display:flex;
       gap: 10px;
       flex-wrap: wrap;
-      margin-top: 14px;
+      margin-top: 12px;
       justify-content: center;
     }
 
     input{
       flex: 1;
-      min-width: 220px;
-      padding: 10px;
+      min-width: 230px;
+      padding: 10px 10px;
       font: inherit;
       color: var(--text);
       background: rgba(255,255,255,0.06);
@@ -184,11 +217,12 @@
       border-radius: 12px;
       outline:none;
     }
-
     input::placeholder{ color: rgba(242,242,245,0.45); }
     input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
 
     .btn{
+      width: 100%;
+      max-width: 220px;
       padding: 10px 16px;
       border-radius: 12px;
       background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
@@ -196,52 +230,73 @@
       box-shadow: 0 10px 30px rgba(255,43,61,0.22);
       color: var(--text);
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+      transition: transform .08s ease, box-shadow .18s ease;
     }
 
     .btn:hover{
-      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
+      box-shadow: 0 18px 44px rgba(255,43,61,0.35);
+      transform: translateY(-1px);
+    }
+
+    .btn:active{
+      transform: translateY(1px);
+    }
+
+    .loginFoot{
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
     }
   </style>
 </head>
 
 <body>
-
   <!-- Login -->
   <div id="login-screen">
     <div class="loginModal">
-      <h3>Please Log In</h3>
-      <div class="muted">Internal tools portal</div>
-
-      <div class="formRow">
-        <input id="username" type="text" placeholder="Username" />
-        <input id="password" type="password" placeholder="Password" />
+      <div class="loginHead">
+        <h3>Please Log In</h3>
+        <div class="muted">Internal tools portal</div>
       </div>
 
       <div class="formRow">
+        <input id="username" type="text" placeholder="Username" autocomplete="username" />
+        <input id="password" type="password" placeholder="Password" autocomplete="current-password" />
+      </div>
+
+      <div class="formRow" style="margin-top:14px;">
         <button class="btn" onclick="login()">Login</button>
+      </div>
+
+      <div class="loginFoot">
+        This is a speed bump, not a vault. Don’t put secrets here.
       </div>
     </div>
   </div>
 
   <!-- Main -->
   <div class="wrap">
-    <h1>Sydney Tools</h1>
-    <h2>South Australia</h2>
-    <div class="badge">● Internal Navigation</div>
+    <div class="topbar">
+      <div>
+        <h1>Sydney Tools</h1>
+        <h2>South Australia</h2>
+      </div>
+      <div class="badge">● Internal Navigation</div>
+    </div>
 
     <div class="panel">
-      <div class="panelHead">
-        Select a tool to continue
-      </div>
+      <div class="panelHead">Select a tool to continue</div>
 
       <div class="grid">
-        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLScFvYtmZhZ342Gwjg6qDE84fenyFCNZ-NaiswSKObuSvOtkbQ/viewform?usp=preview" target="_blank">BDM Leads</a>
+        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLScFvYtmZhZ342Gwjg6qDE84fenyFCNZ-NaiswSKObuSvOtkbQ/viewform?usp=preview" target="_blank" rel="noopener noreferrer">BDM Leads</a>
         <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
-        <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank">RST Approval Request</a>
+        <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank" rel="noopener noreferrer">RST Approval Request</a>
         <a class="nav-button" href="Warranty1.html">Warranties</a>
         <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
-        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">GP Check Fix</a>
+        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank" rel="noopener noreferrer">GP Check Fix</a>
       </div>
     </div>
   </div>
