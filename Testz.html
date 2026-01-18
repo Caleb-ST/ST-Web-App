@@ -53,12 +53,13 @@
       margin:0;
       font-size: 30px;
       letter-spacing: .35px;
+      line-height: 1.1;
     }
 
     .sub{
+      margin: 0;
       font-size: 13px;
       color: var(--muted);
-      margin: 0;
     }
 
     .badge{
@@ -71,6 +72,7 @@
       background: var(--pill2);
       border: 1px solid rgba(255,43,61,0.35);
       box-shadow: 0 10px 30px rgba(255,43,61,0.12);
+      white-space: nowrap;
     }
 
     .panel{
@@ -78,7 +80,7 @@
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
-      overflow:hidden;
+      overflow: hidden;
       backdrop-filter: blur(10px);
     }
 
@@ -90,62 +92,77 @@
       justify-content:center;
       padding: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align:center;
     }
+    .row:last-child{ border-bottom:none; }
 
-    input{
-      padding: 10px;
+    input, button, a.btn{
+      padding: 10px 10px;
       font: inherit;
       color: var(--text);
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
       outline: none;
-      min-width:260px;
     }
+
+    input{
+      min-width:260px;
+      width: 420px;
+      max-width: 92%;
+    }
+
     input::placeholder{ color: rgba(242,242,245,0.45); }
     input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
 
     .btn{
       cursor:pointer;
-      border-radius: 12px;
-      padding: 10px 14px;
       border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
-      color: var(--text);
+      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      text-decoration:none;
       display:inline-flex;
       align-items:center;
+      justify-content:center;
       gap:8px;
       white-space:nowrap;
-      text-decoration:none;
-      transition: transform .08s ease, box-shadow .15s ease;
+      user-select:none;
     }
+    .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
+    .btn:active{ transform: translateY(1px); }
 
     .btn-primary{
       background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
       border-color: rgba(255,43,61,0.55);
       box-shadow: 0 10px 30px rgba(255,43,61,0.22);
       font-weight: 700;
+      letter-spacing: .2px;
     }
-
     .btn-primary:hover{
-      box-shadow: 0 16px 40px rgba(255,43,61,0.35);
+      background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
+      border-color: rgba(255,43,61,0.75);
+      box-shadow: 0 16px 40px rgba(255,43,61,0.28);
       transform: translateY(-1px);
     }
 
     .btn-sm{
       padding: 8px 10px;
+      border-radius: 12px;
       font-size: 13px;
     }
 
-    .tables{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .tableWrap{
       padding: 12px;
     }
 
+    .tables-container{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
     @media (max-width: 980px){
-      .tables{ grid-template-columns: 1fr; }
+      .tables-container{ grid-template-columns: 1fr; }
     }
 
     .card{
@@ -157,17 +174,30 @@
 
     .cardHead{
       padding: 12px;
-      display:flex;
-      justify-content:space-between;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      font-size: 12px;
-      color: rgba(242,242,245,0.75);
-      text-transform: uppercase;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size: 13px;
       letter-spacing: .6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.85);
+    }
+
+    .mutedSmall{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      white-space: nowrap;
     }
 
     table{
-      width:100%;
+      width: 100%;
       border-collapse: collapse;
     }
 
@@ -179,8 +209,14 @@
 
     th{
       font-size: 12px;
-      color: rgba(242,242,245,0.75);
+      letter-spacing: 0.6px;
       text-transform: uppercase;
+      color: rgba(242,242,245,0.75);
+      background: rgba(255,255,255,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      text-align:left;
     }
 
     tr:hover td{
@@ -188,174 +224,300 @@
     }
 
     .supplier{
-      font-weight:700;
+      font-weight: 700;
     }
 
+    /* tidy options buttons */
     .button-group{
       display:flex;
-      gap:8px;
       justify-content:flex-end;
-      flex-wrap:wrap;
+      align-items:center;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    @media (max-width: 520px){
+      .button-group{
+        flex-wrap: wrap;
+        justify-content:flex-start;
+      }
     }
 
     /* Modal */
     #modal{
       display:none;
-      position:fixed;
-      inset:0;
+      position: fixed;
+      inset: 0;
       background: rgba(0,0,0,0.65);
+      z-index: 9999;
+      padding: 20px;
+      overflow:auto;
       align-items:center;
       justify-content:center;
-      padding:20px;
-      z-index:9999;
     }
     #modal.open{ display:flex; }
 
     .modal-content{
+      width: 100%;
+      max-width: 760px;
       background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
-      border:1px solid rgba(255,255,255,0.10);
-      border-radius:18px;
-      padding:16px;
-      max-width:760px;
-      width:100%;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
       box-shadow: var(--shadow);
+      padding: 16px;
     }
 
     .modalHead{
       display:flex;
       justify-content:space-between;
-      border-bottom:1px solid rgba(255,255,255,0.08);
-      padding-bottom:10px;
-      margin-bottom:12px;
+      align-items:flex-start;
+      gap:12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+
+    .modalHead h3{
+      margin:0;
+      font-size: 18px;
     }
 
     .modalBody p{
-      line-height:1.4;
+      margin: 10px 0;
+      color: rgba(242,242,245,0.92);
+      line-height: 1.4;
     }
 
     .modalBody a{
-      color:#60a5fa;
+      color: #60a5fa;
+      text-decoration: underline;
+      word-break: break-word;
     }
   </style>
 </head>
 
 <body>
-<div class="wrap">
-  <div class="topbar">
-    <h1>Supplier Warranty Information</h1>
-    <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
-    <div class="badge">● Live from Google Sheet</div>
-  </div>
-
-  <div class="panel">
-    <div class="row">
-      <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
-      <input id="searchInput" placeholder="Search suppliers…" />
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Supplier Warranty Information</h1>
+      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
+      <div class="badge">● Live from Google Sheet</div>
     </div>
 
-    <div class="tables">
-      <div class="card">
-        <div class="cardHead">
-          <span>Local Suppliers</span>
-          <span id="localCount"></span>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Supplier</th><th>Options</th></tr>
-          </thead>
-          <tbody id="localTable"></tbody>
-        </table>
+    <div class="panel">
+      <div class="row">
+        <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
+        <input type="text" id="searchInput" placeholder="Search suppliers..." />
       </div>
 
-      <div class="card">
-        <div class="cardHead">
-          <span>Imported Suppliers</span>
-          <span id="importCount"></span>
-        </div>
-        <table>
-          <thead>
-            <tr><th>Supplier</th><th>Options</th></tr>
-          </thead>
-          <tbody id="importTable"></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Modal -->
-<div id="modal">
-  <div class="modal-content">
-    <div class="modalHead">
-      <h3 id="modalTitle"></h3>
-      <button class="btn btn-sm" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modalBody" id="modalBody"></div>
-    <div class="row" style="border-bottom:none; justify-content:flex-end;">
-      <button class="btn btn-primary" onclick="closeModal()">Close</button>
-    </div>
-  </div>
-</div>
-
-<script>
-  const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
-  let suppliers = [];
-
-  Papa.parse(csvUrl, {
-    download:true,
-    header:true,
-    complete: r => {
-      suppliers = r.data.filter(x => x.Brands);
-      render();
-    }
-  });
-
-  function render(filter=""){
-    const l = document.getElementById("localTable");
-    const i = document.getElementById("importTable");
-    l.innerHTML = i.innerHTML = "";
-    let lc=0, ic=0;
-
-    suppliers.forEach((s,idx)=>{
-      if(filter && !s.Brands.toLowerCase().includes(filter.toLowerCase())) return;
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td class="supplier">${s.Brands}</td>
-        <td>
-          <div class="button-group">
-            <button class="btn btn-primary btn-sm" onclick="show(${idx},'info')">Warranty Info</button>
-            ${s["Warranty Step 1"] ? `<button class="btn btn-sm" onclick="show(${idx},'process')">Warranty Process</button>` : ""}
+      <div class="tableWrap">
+        <div class="tables-container">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Local Suppliers</h2>
+              <span class="mutedSmall" id="localCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="localTable"></tbody>
+            </table>
           </div>
-        </td>`;
-      (s.Import?.toLowerCase()==="true"?i:l).appendChild(tr);
-      s.Import?.toLowerCase()==="true"?ic++:lc++;
+
+          <div class="card">
+            <div class="cardHead">
+              <h2>Imported Suppliers</h2>
+              <span class="mutedSmall" id="importCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="importTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <div class="modalHead">
+        <div>
+          <h3 id="modalTitle"></h3>
+          <div class="mutedSmall" id="modalSub"></div>
+        </div>
+        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
+      </div>
+
+      <div class="modalBody" id="modalBody"></div>
+
+      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
+    let suppliers = [];
+
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const rows = (results.data || []).map(row => {
+          const clean = {};
+          for (const key in row) {
+            const normKey = (key || "").trim().replace(/\s+/g, " ");
+            clean[normKey] = (row[key] ?? "").trim();
+          }
+          return clean;
+        });
+
+        // Only keep entries with actual usable content
+        suppliers = rows.filter(item => {
+          const hasBrand = !!item["Brands"];
+          const hasWarrantyInfo = !!item["Warranty Information"];
+          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+          return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
+        });
+
+        renderTables();
+      }
     });
 
-    localCount.textContent = lc+" suppliers";
-    importCount.textContent = ic+" suppliers";
-  }
-
-  searchInput.oninput = e => render(e.target.value);
-
-  function show(idx,type){
-    const s = suppliers[idx];
-    modalTitle.textContent = s.Brands;
-    modalBody.innerHTML = "";
-
-    if(type==="info"){
-      modalBody.innerHTML = (s["Warranty Information"]||"").split("\n").map(l=>`<p>${l}</p>`).join("");
-    } else {
-      for(let n=1;n<=6;n++){
-        const k = `Warranty Step ${n}`;
-        if(s[k]) modalBody.innerHTML += `<p><b>Step ${n}:</b> ${s[k]}</p>`;
-      }
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
-    modal.classList.add("open");
-  }
 
-  function closeModal(){
-    modal.classList.remove("open");
-  }
-</script>
+    function renderTables(filter = "") {
+      const local = document.getElementById("localTable");
+      const imported = document.getElementById("importTable");
+      const localCount = document.getElementById("localCount");
+      const importCount = document.getElementById("importCount");
+
+      local.innerHTML = "";
+      imported.innerHTML = "";
+
+      let lCount = 0, iCount = 0;
+
+      suppliers.forEach((item, idx) => {
+        const brand = item["Brands"];
+        const isImported = (item["Import"] || "").toLowerCase() === "true";
+
+        if (!brand) return;
+        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
+
+        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+        const hasWarrantyInfo = !!item["Warranty Information"];
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="supplier">${escapeHtml(brand)}</td>
+          <td>
+            <div class="button-group">
+              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
+              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
+            </div>
+          </td>
+        `;
+
+        if (isImported) {
+          imported.appendChild(row);
+          iCount++;
+        } else {
+          local.appendChild(row);
+          lCount++;
+        }
+      });
+
+      localCount.textContent = `${lCount} suppliers`;
+      importCount.textContent = `${iCount} suppliers`;
+
+      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+    }
+
+    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
+
+    function linkify(text) {
+      const urlRegex = /((https?:\/\/)[^\\s<]+)/g;
+      return escapeHtml(text).replace(urlRegex, url =>
+        `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`
+      );
+    }
+
+    function showModalByIndex(index, type) {
+      const item = suppliers[index];
+      if (!item) return;
+
+      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
+      const modalSub = document.getElementById("modalSub");
+      const modalBody = document.getElementById("modalBody");
+      modalBody.innerHTML = "";
+
+      if (type === "info") {
+        modalSub.textContent = "Warranty Information";
+        const warrantyInfo = (item["Warranty Information"] || "N/A")
+          .split("\n")
+          .map(line => `<p>${linkify(line)}</p>`)
+          .join("");
+        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
+      } else {
+        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
+        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
+
+        let any = false;
+        for (let i = 1; i <= 6; i++) {
+          const key = prefix + i;
+          if (item[key]) {
+            any = true;
+            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
+          }
+        }
+        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
+      }
+
+      openModal();
+    }
+
+    function openModal() {
+      const m = document.getElementById("modal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      const m = document.getElementById("modal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+    });
+  </script>
 </body>
 </html>
