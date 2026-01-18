@@ -37,10 +37,7 @@
       padding: 26px 14px 50px;
     }
 
-    .wrap{
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+    .wrap{ max-width: 1200px; margin: 0 auto; }
 
     .topbar{
       display:flex;
@@ -170,9 +167,7 @@
       border-color: var(--warnBd);
     }
 
-    .tableWrap{
-      padding: 12px;
-    }
+    .tableWrap{ padding: 12px; }
 
     table{
       width: 100%;
@@ -207,24 +202,36 @@
 
     tr:hover td{ background: rgba(255,255,255,0.03); }
 
-    tr.duplicate td{
-      background: rgba(245, 158, 11, 0.14) !important;
-    }
+    tr.duplicate td{ background: rgba(245, 158, 11, 0.14) !important; }
 
-    .mutedSmall{
-      color: var(--muted);
-      font-size: 12px;
-    }
-
+    .mutedSmall{ color: var(--muted); font-size: 12px; }
     .right{ margin-left:auto; }
 
     @media (max-width: 820px){
-      th:nth-child(4), td:nth-child(4){ display:none; } /* phone */
+      th:nth-child(4), td:nth-child(4){ display:none; }
     }
     @media (max-width: 620px){
-      th:nth-child(5), td:nth-child(5){ display:none; } /* email */
+      th:nth-child(5), td:nth-child(5){ display:none; }
       input{ width: 100%; }
     }
+
+    /* tiny toast for mapping warnings */
+    .toast{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(15,15,22,0.92);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+      color: var(--text);
+      display:none;
+      max-width: 520px;
+      z-index: 10000;
+    }
+    .toast .t{ font-weight: 700; margin-bottom: 3px; }
+    .toast .m{ color: var(--muted); font-size: 13px; white-space: pre-wrap; }
   </style>
 </head>
 
@@ -257,10 +264,25 @@
     </div>
   </div>
 
+  <div class="toast" id="toast">
+    <div class="t" id="toastTitle">Notice</div>
+    <div class="m" id="toastMsg"></div>
+  </div>
+
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
 
     let allReps = [];
+
+    const el = (id) => document.getElementById(id);
+
+    function showToast(title, msg){
+      el("toastTitle").textContent = title;
+      el("toastMsg").textContent = msg;
+      el("toast").style.display = "block";
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => el("toast").style.display = "none", 5200);
+    }
 
     function escapeHtml(str) {
       return String(str ?? "")
@@ -302,14 +324,69 @@
       }
       if (cell.length || row.length) { row.push(cell); rows.push(row); }
 
-      const headers = (rows.shift() || []).map(h => h.trim());
-      return rows
+      const headers = (rows.shift() || []).map(h => (h ?? "").trim());
+      const data = rows
         .filter(r => r.some(v => (v ?? "").trim() !== ""))
         .map(r => {
           const obj = {};
           headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
           return obj;
         });
+
+      return { headers, data };
+    }
+
+    function normHeader(h){
+      return (h || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function findHeader(headers, tests){
+      // tests: array of functions(headerString)->bool, in priority order
+      for (const test of tests){
+        const found = headers.find(h => test(normHeader(h)));
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function detectMapping(headers){
+      const companyKey = findHeader(headers, [
+        h => h === "company",
+        h => h.includes("company"),
+        h => h.includes("supplier"),
+        h => h.includes("brand") && !h.includes("rep"),
+      ]);
+
+      const roleKey = findHeader(headers, [
+        h => h === "role",
+        h => h.includes("role"),
+        h => h.includes("position"),
+        h => h.includes("title"),
+      ]);
+
+      const nameKey = findHeader(headers, [
+        h => h === "name",
+        h => h.includes("rep name"),
+        h => h.includes("contact name"),
+        h => h.includes("name"),
+        h => h.includes("rep") && h.includes("contact"),
+      ]);
+
+      const phoneKey = findHeader(headers, [
+        h => h === "phone",
+        h => h.includes("phone"),
+        h => h.includes("mobile"),
+        h => h.includes("contact number"),
+        h => h.includes("tel"),
+      ]);
+
+      const emailKey = findHeader(headers, [
+        h => h === "email",
+        h => h.includes("email"),
+        h => h.includes("e-mail"),
+      ]);
+
+      return { companyKey, roleKey, nameKey, phoneKey, emailKey };
     }
 
     function normalizeName(name){
@@ -329,31 +406,33 @@
       }));
     }
 
-    function pick(row, keys) {
-      for (const k of keys) {
-        const v = row[k];
-        if (typeof v === "string" && v.trim() !== "") return v.trim();
-      }
-      return "";
-    }
+    function buildRepObjects(parsed, mapping){
+      const { companyKey, roleKey, nameKey, phoneKey, emailKey } = mapping;
 
-    function buildRepObjects(parsed){
+      if (!nameKey){
+        showToast(
+          "Column mapping issue",
+          "Could not find a Name column in the sheet.\n\n" +
+          "Fix: rename a column to 'Name' (or include 'name' in the header), or tell me what your headers are."
+        );
+      }
+
       return parsed.map(row => {
-        const company = pick(row, ["Company","company","COMPANY"]);
-        const role    = pick(row, ["Role","role","ROLE"]);
-        const name    = pick(row, ["Name","name","NAME"]);
-        const phone   = pick(row, ["Phone","phone","PHONE","Mobile","mobile","MOBILE"]);
-        const email   = pick(row, ["Email","email","EMAIL","E-mail","E-mail Address","Email Address","email address"]);
+        const company = companyKey ? (row[companyKey] || "").trim() : "";
+        const role    = roleKey    ? (row[roleKey]    || "").trim() : "";
+        const name    = nameKey    ? (row[nameKey]    || "").trim() : "";
+        const phone   = phoneKey   ? (row[phoneKey]   || "").trim() : "";
+        const email   = emailKey   ? (row[emailKey]   || "").trim() : "";
 
         return { company, role, name, phone, email };
       }).filter(r => r.name || r.company || r.role || r.phone || r.email);
     }
 
     function renderTable(reps){
-      const wrap = document.getElementById("tableWrap");
-      const countText = document.getElementById("countText");
-      const dupPill = document.getElementById("dupPill");
-      const dupCount = document.getElementById("dupCount");
+      const wrap = el("tableWrap");
+      const countText = el("countText");
+      const dupPill = el("dupPill");
+      const dupCount = el("dupCount");
 
       const dupTotal = reps.filter(r => r.isDuplicate).length;
       if (dupTotal > 0){
@@ -397,8 +476,8 @@
     }
 
     function applyFilters(){
-      const q = document.getElementById("searchInput").value.trim().toLowerCase();
-      const hideDupes = document.getElementById("hideDupes").checked;
+      const q = el("searchInput").value.trim().toLowerCase();
+      const hideDupes = el("hideDupes").checked;
 
       let reps = allReps;
 
@@ -419,19 +498,28 @@
     fetch(SHEET_URL)
       .then(res => res.text())
       .then(csv => {
-        const parsedRows = parseCSV(csv);
-        const reps = buildRepObjects(parsedRows);
+        const parsed = parseCSV(csv);
+        const mapping = detectMapping(parsed.headers);
 
+        // If name detection fails, show headers so you can fix it fast
+        if (!mapping.nameKey){
+          showToast(
+            "Headers found",
+            "Your sheet headers are:\n" + parsed.headers.join(", ")
+          );
+        }
+
+        const reps = buildRepObjects(parsed.data, mapping);
         allReps = withDuplicateFlags(reps);
 
         renderTable(allReps);
 
-        document.getElementById("searchInput").addEventListener("input", applyFilters);
-        document.getElementById("hideDupes").addEventListener("change", applyFilters);
+        el("searchInput").addEventListener("input", applyFilters);
+        el("hideDupes").addEventListener("change", applyFilters);
       })
       .catch(err => {
         console.error(err);
-        document.getElementById("tableWrap").innerHTML =
+        el("tableWrap").innerHTML =
           `<div class="mutedSmall" style="padding:12px;">Error loading reps: ${escapeHtml(err.message || err)}</div>`;
       });
   </script>
