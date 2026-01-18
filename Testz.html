@@ -88,7 +88,7 @@
 
     .row{
       display:flex;
-      gap:10px;
+      gap:12px;
       flex-wrap:wrap;
       align-items:center;
       justify-content:center;
@@ -114,13 +114,14 @@
       cursor:pointer;
       border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
-      transition: transform .08s ease, background .15s ease, border-color .15s ease;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
       text-decoration:none;
       display:inline-flex;
       align-items:center;
       justify-content:center;
       gap:8px;
       white-space:nowrap;
+      user-select:none;
     }
     .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
     .btn:active{ transform: translateY(1px); }
@@ -135,6 +136,23 @@
     .btn-primary:hover{
       background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
       border-color: rgba(255,43,61,0.75);
+      box-shadow: 0 16px 40px rgba(255,43,61,0.28);
+    }
+
+    /* Nicer back button (ghost style, consistent) */
+    .btn-back{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 10px 12px;
+    }
+    .btn-back:hover{
+      border-color: rgba(255,43,61,0.35);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.35);
+    }
+    .btn-back .arrow{
+      display:inline-block;
+      width: 10px;
+      transform: translateY(-0.5px);
     }
 
     .tableWrap{
@@ -206,11 +224,35 @@
       font-weight: 700;
     }
 
+    /* TIDIER OPTIONS BUTTONS */
     .button-group{
       display:flex;
       justify-content:flex-end;
+      align-items:center;
       gap: 8px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;         /* keep on one line when possible */
+    }
+
+    /* If it gets too tight, allow wrap (but still side-by-side) */
+    @media (max-width: 520px){
+      .button-group{
+        flex-wrap: wrap;         /* wrap to next line if needed */
+        justify-content:flex-start;
+      }
+    }
+
+    /* Slimmer buttons inside tables */
+    .btn-sm{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .mutedSmall{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      white-space: nowrap;
     }
 
     /* Modal */
@@ -263,12 +305,6 @@
       text-decoration: underline;
       word-break: break-word;
     }
-
-    .mutedSmall{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-    }
   </style>
 </head>
 
@@ -282,8 +318,14 @@
 
     <div class="panel">
       <div class="row">
-        <a class="btn btn-primary" href="index.html">← Back to Home</a>
-        <input type="text" id="searchInput" placeholder="Search suppliers..." style="min-width:260px; width: 360px; max-width: 90%;" />
+        <a class="btn btn-back" href="index.html"><span class="arrow">←</span> Back to Home</a>
+
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search suppliers..."
+          style="min-width:260px; width: 420px; max-width: 92%;"
+        />
       </div>
 
       <div class="tableWrap">
@@ -332,7 +374,7 @@
           <h3 id="modalTitle"></h3>
           <div class="mutedSmall" id="modalSub"></div>
         </div>
-        <button class="btn" onclick="closeModal()" title="Close">✕</button>
+        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
       </div>
 
       <div class="modalBody" id="modalBody"></div>
@@ -347,7 +389,6 @@
     const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
     let suppliers = [];
 
-    // Load CSV
     Papa.parse(csvUrl, {
       download: true,
       header: true,
@@ -407,9 +448,9 @@
           <td class="supplier">${escapeHtml(brand)}</td>
           <td>
             <div class="button-group">
-              <button class="btn btn-primary" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>
-              ${hasWarrantySteps ? `<button class="btn" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
-              ${hasFufSteps ? `<button class="btn" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
+              <button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>
+              ${hasWarrantySteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
             </div>
           </td>
         `;
@@ -485,7 +526,6 @@
       document.body.style.overflow = "";
     }
 
-    // Close modal on backdrop click + ESC
     document.getElementById("modal").addEventListener("click", (e) => {
       if (e.target.id === "modal") closeModal();
     });
