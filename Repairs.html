@@ -264,7 +264,6 @@
     <div class="topbar">
       <div>
         <h1>Repairs Tracker</h1>
-        <p class="sub">Ref No is now included. Click a job to edit. Updates are on the right.</p>
       </div>
       <div class="badge red">● Live updates enabled</div>
     </div>
@@ -323,12 +322,12 @@
           <h3>Job Details</h3>
 
           <form id="jobForm">
-            <input type="hidden" id="job_id" />
+            <input type="hidden" id="job_id" />45
 
             <div class="grid">
               <div>
                 <label>Ref No.</label><br />
-                <input id="f_refno" placeholder="e.g. ST-12345" style="width:100%;" />
+                <input id="f_refno" placeholder="From ADEN" style="width:100%;" />
               </div>
               <div>
                 <label>Customer Name *</label><br />
@@ -337,7 +336,7 @@
 
               <div>
                 <label>Contact</label><br />
-                <input id="f_contact" placeholder="Phone or email" style="width:100%;" />
+                <input id="f_contact" placeholder="Phone" style="width:100%;" />
               </div>
               <div>
                 <label>Store</label><br />
@@ -380,10 +379,6 @@
                   <option>Sent to Supplier</option>
                   <option>Cancelled</option>
                 </select>
-              </div>
-              <div>
-                <label>(Reserved) Assigned To</label><br />
-                <input disabled value="Coming soon" style="width:100%; opacity:.7;" />
               </div>
 
               <div class="full">
