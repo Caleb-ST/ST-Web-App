@@ -4,169 +4,523 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rep Directory</title>
+
   <style>
-    body {
-      margin: 0;
-      padding: 40px;
-      height: 100vh;
-      background-color: #000;
-      font-family: Arial, sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    :root{
+      --bg0:#07070a;
+      --bg1:#0b0b10;
+      --text:#f2f2f5;
+      --muted:#a4a4b3;
+      --border:rgba(255,255,255,0.08);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --red:#ff2b3d;
+      --red2:#b80c2b;
+      --pill:rgba(255,255,255,0.08);
+      --pill2:rgba(255,43,61,0.18);
+      --focus: 0 0 0 3px rgba(255,43,61,0.25);
+      --warnBg: rgba(245, 158, 11, 0.16);
+      --warnBd: rgba(245, 158, 11, 0.35);
     }
-    h1 {
-      font-size: 3rem;
-      margin-bottom: 20px;
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
+        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      padding: 26px 14px 50px;
     }
-    input[type="text"] {
-      padding: 10px;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: none;
-      margin-bottom: 20px;
-      width: 300px;
+
+    .wrap{ max-width: 1200px; margin: 0 auto; }
+
+    .topbar{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 8px;
+      margin-bottom: 14px;
+      text-align:center;
     }
-    table {
-      width: 100%;
-      max-width: 1000px;
-      border-collapse: collapse;
-      background-color: #1f1f1f;
-      border-radius: 8px;
+
+    h1{
+      margin:0;
+      font-size: 30px;
+      letter-spacing: .35px;
+      line-height: 1.1;
+    }
+
+    .sub{
+      margin:0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: var(--pill2);
+      border: 1px solid rgba(255,43,61,0.35);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
+      white-space: nowrap;
+    }
+
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
       overflow: hidden;
+      backdrop-filter: blur(10px);
     }
-    th, td {
+
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:center;
       padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #333;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align:center;
+    }
+
+    input, button, a.btn{
+      padding: 10px 10px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    input{
+      min-width: 260px;
+      width: 520px;
+      max-width: 92%;
+    }
+
+    input::placeholder{ color: rgba(242,242,245,0.45); }
+    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
+
+    .btn{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06);
+      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      white-space:nowrap;
+      user-select:none;
+    }
+    .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border-color: rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
+    .btn-primary:hover{
+      background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
+      border-color: rgba(255,43,61,0.75);
+      box-shadow: 0 16px 40px rgba(255,43,61,0.28);
+      transform: translateY(-1px);
+    }
+
+    .btn-sm{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: var(--pill);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(242,242,245,0.85);
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .pill.warn{
+      background: var(--warnBg);
+      border-color: var(--warnBd);
+    }
+
+    .tableWrap{ padding: 12px; }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      overflow: hidden;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.18);
+    }
+
+    th, td{
+      padding: 12px;
+      text-align:left;
+      vertical-align: middle;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      max-width: 1px;
     }
-    th {
-      background-color: #dc2626;
+
+    th{
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.75);
+      background: rgba(255,255,255,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
-    tr:hover {
-      background-color: #333;
+
+    tr:hover td{ background: rgba(255,255,255,0.03); }
+
+    tr.duplicate td{ background: rgba(245, 158, 11, 0.14) !important; }
+
+    .mutedSmall{ color: var(--muted); font-size: 12px; }
+    .right{ margin-left:auto; }
+
+    @media (max-width: 820px){
+      th:nth-child(4), td:nth-child(4){ display:none; }
     }
-    tr.duplicate {
-      background-color: #b45309 !important;
+    @media (max-width: 620px){
+      th:nth-child(5), td:nth-child(5){ display:none; }
+      input{ width: 100%; }
     }
-    .back-button {
-      padding: 10px 20px;
-      background-color: #dc2626;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 20px;
+
+    /* tiny toast for mapping warnings */
+    .toast{
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(15,15,22,0.92);
+      border: 1px solid rgba(255,255,255,0.10);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
+      color: var(--text);
+      display:none;
+      max-width: 520px;
+      z-index: 10000;
     }
-    .back-button:hover {
-      background-color: #9b1c1c;
-    }
+    .toast .t{ font-weight: 700; margin-bottom: 3px; }
+    .toast .m{ color: var(--muted); font-size: 13px; white-space: pre-wrap; }
   </style>
 </head>
+
 <body>
-  <button class="back-button" onclick="window.location.href='index.html'">Back to Home</button>
-  <h1>Rep Directory</h1>
-  <input type="text" id="searchInput" placeholder="Search by name, company, or role..." />
-  <table>
-    <thead>
-      <tr>
-        <th>Company</th>
-        <th>Role</th>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Email</th>
-      </tr>
-    </thead>
-    <tbody id="repTableBody"></tbody>
-  </table>
+  <div class="wrap">
+    <div class="topbar">
+      <h1>Rep Directory</h1>
+      <p class="sub">Search reps fast. Duplicates highlighted so you can fix the sheet later.</p>
+      <div class="badge">● Live from Google Sheet</div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
+
+        <input type="text" id="searchInput" placeholder="Search by name, company, role, phone, email..." />
+
+        <label class="pill" style="cursor:pointer;">
+          <input type="checkbox" id="hideDupes" style="accent-color: var(--red); width:auto; min-width:auto; margin:0;">
+          Hide duplicates
+        </label>
+
+        <span class="right mutedSmall" id="countText"></span>
+        <span class="pill warn" id="dupPill" style="display:none;">⚠ <span id="dupCount">0</span> duplicates</span>
+      </div>
+
+      <div class="tableWrap" id="tableWrap">
+        <div class="mutedSmall" style="padding:12px;">Loading…</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <div class="t" id="toastTitle">Notice</div>
+    <div class="m" id="toastMsg"></div>
+  </div>
 
   <script>
     const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
 
-    let repsData = [];
+    let allReps = [];
 
-    function removeDuplicates(reps) {
-      const seen = new Set();
-      return reps.filter(rep => {
-        const name = rep.name.trim().toLowerCase();
-        if (seen.has(name)) return false;
-        seen.add(name);
-        return true;
-      });
+    const el = (id) => document.getElementById(id);
+
+    function showToast(title, msg){
+      el("toastTitle").textContent = title;
+      el("toastMsg").textContent = msg;
+      el("toast").style.display = "block";
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => el("toast").style.display = "none", 5200);
     }
 
-    function highlightDuplicates(reps) {
-      const nameCount = reps.reduce((acc, rep) => {
-        const name = rep.name.trim().toLowerCase();
-        acc[name] = (acc[name] || 0) + 1;
-        return acc;
-      }, {});
-      return reps.map(rep => ({
-        ...rep,
-        isDuplicate: nameCount[rep.name.trim().toLowerCase()] > 1
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    // CSV parser that handles quoted commas
+    function parseCSV(csv) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let inQuotes = false;
+
+      for (let i = 0; i < csv.length; i++) {
+        const ch = csv[i];
+        const next = csv[i + 1];
+
+        if (ch === '"' && inQuotes && next === '"') {
+          cell += '"'; i++;
+        } else if (ch === '"') {
+          inQuotes = !inQuotes;
+        } else if (ch === "," && !inQuotes) {
+          row.push(cell); cell = "";
+        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+          if (cell.length || row.length) {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = "";
+          }
+          if (ch === "\r" && next === "\n") i++;
+        } else {
+          cell += ch;
+        }
+      }
+      if (cell.length || row.length) { row.push(cell); rows.push(row); }
+
+      const headers = (rows.shift() || []).map(h => (h ?? "").trim());
+      const data = rows
+        .filter(r => r.some(v => (v ?? "").trim() !== ""))
+        .map(r => {
+          const obj = {};
+          headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
+          return obj;
+        });
+
+      return { headers, data };
+    }
+
+    function normHeader(h){
+      return (h || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function findHeader(headers, tests){
+      // tests: array of functions(headerString)->bool, in priority order
+      for (const test of tests){
+        const found = headers.find(h => test(normHeader(h)));
+        if (found) return found;
+      }
+      return null;
+    }
+
+    function detectMapping(headers){
+      const companyKey = findHeader(headers, [
+        h => h === "company",
+        h => h.includes("company"),
+        h => h.includes("supplier"),
+        h => h.includes("brand") && !h.includes("rep"),
+      ]);
+
+      const roleKey = findHeader(headers, [
+        h => h === "role",
+        h => h.includes("role"),
+        h => h.includes("position"),
+        h => h.includes("title"),
+      ]);
+
+      const nameKey = findHeader(headers, [
+        h => h === "name",
+        h => h.includes("rep name"),
+        h => h.includes("contact name"),
+        h => h.includes("name"),
+        h => h.includes("rep") && h.includes("contact"),
+      ]);
+
+      const phoneKey = findHeader(headers, [
+        h => h === "phone",
+        h => h.includes("phone"),
+        h => h.includes("mobile"),
+        h => h.includes("contact number"),
+        h => h.includes("tel"),
+      ]);
+
+      const emailKey = findHeader(headers, [
+        h => h === "email",
+        h => h.includes("email"),
+        h => h.includes("e-mail"),
+      ]);
+
+      return { companyKey, roleKey, nameKey, phoneKey, emailKey };
+    }
+
+    function normalizeName(name){
+      return (name || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function withDuplicateFlags(reps){
+      const counts = {};
+      reps.forEach(r => {
+        const key = normalizeName(r.name);
+        if (!key) return;
+        counts[key] = (counts[key] || 0) + 1;
+      });
+      return reps.map(r => ({
+        ...r,
+        isDuplicate: counts[normalizeName(r.name)] > 1
       }));
     }
 
-    function renderTable(reps) {
-      const tableBody = document.getElementById("repTableBody");
-      tableBody.innerHTML = "";
-      reps.forEach(rep => {
-        const row = document.createElement("tr");
-        if (rep.isDuplicate) row.classList.add("duplicate");
-        row.innerHTML = `
-          <td>${rep.company}</td>
-          <td>${rep.role}</td>
-          <td>${rep.name}</td>
-          <td>${rep.phone}</td>
-          <td>${rep.email}</td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
+    function buildRepObjects(parsed, mapping){
+      const { companyKey, roleKey, nameKey, phoneKey, emailKey } = mapping;
 
-    function searchTable() {
-      const searchValue = document.getElementById("searchInput").value.toLowerCase();
-      const filteredReps = repsData.filter(rep => {
-        return (
-          rep.name.toLowerCase().includes(searchValue) ||
-          rep.company.toLowerCase().includes(searchValue) ||
-          rep.role.toLowerCase().includes(searchValue)
+      if (!nameKey){
+        showToast(
+          "Column mapping issue",
+          "Could not find a Name column in the sheet.\n\n" +
+          "Fix: rename a column to 'Name' (or include 'name' in the header), or tell me what your headers are."
         );
-      });
-      renderTable(filteredReps);
+      }
+
+      return parsed.map(row => {
+        const company = companyKey ? (row[companyKey] || "").trim() : "";
+        const role    = roleKey    ? (row[roleKey]    || "").trim() : "";
+        const name    = nameKey    ? (row[nameKey]    || "").trim() : "";
+        const phone   = phoneKey   ? (row[phoneKey]   || "").trim() : "";
+        const email   = emailKey   ? (row[emailKey]   || "").trim() : "";
+
+        return { company, role, name, phone, email };
+      }).filter(r => r.name || r.company || r.role || r.phone || r.email);
     }
 
-    function parseCSV(csv) {
-      const lines = csv.trim().split("\n");
-      const headers = lines[0].split(",").map(h => h.trim());
-      return lines.slice(1).map(line => {
-        const values = line.split(",").map(v => v.trim());
-        return {
-          company: values[0] || "",
-          role: values[1] || "",
-          name: values[2] || "",
-          phone: values[3] || "",
-          email: values[4] || ""
-        };
-      });
+    function renderTable(reps){
+      const wrap = el("tableWrap");
+      const countText = el("countText");
+      const dupPill = el("dupPill");
+      const dupCount = el("dupCount");
+
+      const dupTotal = reps.filter(r => r.isDuplicate).length;
+      if (dupTotal > 0){
+        dupPill.style.display = "inline-flex";
+        dupCount.textContent = dupTotal;
+      } else {
+        dupPill.style.display = "none";
+      }
+
+      countText.textContent = `${reps.length} shown`;
+
+      if (!reps.length){
+        wrap.innerHTML = `<div class="mutedSmall" style="padding:12px;">No reps found.</div>`;
+        return;
+      }
+
+      const rows = reps.map(r => `
+        <tr class="${r.isDuplicate ? "duplicate" : ""}">
+          <td title="${escapeHtml(r.company)}">${escapeHtml(r.company)}</td>
+          <td title="${escapeHtml(r.role)}">${escapeHtml(r.role)}</td>
+          <td title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</td>
+          <td title="${escapeHtml(r.phone)}">${escapeHtml(r.phone)}</td>
+          <td title="${escapeHtml(r.email)}">${escapeHtml(r.email)}</td>
+        </tr>
+      `).join("");
+
+      wrap.innerHTML = `
+        <table>
+          <thead>
+            <tr>
+              <th style="width:24%;">Company</th>
+              <th style="width:20%;">Role</th>
+              <th style="width:22%;">Name</th>
+              <th style="width:16%;">Phone</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>${rows}</tbody>
+        </table>
+      `;
+    }
+
+    function applyFilters(){
+      const q = el("searchInput").value.trim().toLowerCase();
+      const hideDupes = el("hideDupes").checked;
+
+      let reps = allReps;
+
+      if (q){
+        reps = reps.filter(r => {
+          const hay = [r.company, r.role, r.name, r.phone, r.email].join(" ").toLowerCase();
+          return hay.includes(q);
+        });
+      }
+
+      if (hideDupes){
+        reps = reps.filter(r => !r.isDuplicate);
+      }
+
+      renderTable(reps);
     }
 
     fetch(SHEET_URL)
-      .then(response => response.text())
-      .then(data => {
-        const parsedData = parseCSV(data);
-        const uniqueReps = removeDuplicates(parsedData);
-        repsData = highlightDuplicates(uniqueReps);
-        renderTable(repsData);
-        document.getElementById("searchInput").addEventListener("input", searchTable);
+      .then(res => res.text())
+      .then(csv => {
+        const parsed = parseCSV(csv);
+        const mapping = detectMapping(parsed.headers);
+
+        // If name detection fails, show headers so you can fix it fast
+        if (!mapping.nameKey){
+          showToast(
+            "Headers found",
+            "Your sheet headers are:\n" + parsed.headers.join(", ")
+          );
+        }
+
+        const reps = buildRepObjects(parsed.data, mapping);
+        allReps = withDuplicateFlags(reps);
+
+        renderTable(allReps);
+
+        el("searchInput").addEventListener("input", applyFilters);
+        el("hideDupes").addEventListener("change", applyFilters);
       })
-      .catch(error => {
-        console.error("Error loading data:", error);
+      .catch(err => {
+        console.error(err);
+        el("tableWrap").innerHTML =
+          `<div class="mutedSmall" style="padding:12px;">Error loading reps: ${escapeHtml(err.message || err)}</div>`;
       });
   </script>
 </body>
