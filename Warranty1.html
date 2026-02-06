@@ -227,7 +227,6 @@
       font-weight: 700;
     }
 
-    /* tidy options buttons */
     .button-group{
       display:flex;
       justify-content:flex-end;
@@ -242,7 +241,6 @@
       }
     }
 
-    /* Modal */
     #modal{
       display:none;
       position: fixed;
@@ -347,7 +345,6 @@
     </div>
   </div>
 
-  <!-- Modal -->
   <div id="modal" aria-hidden="true">
     <div class="modal-content" role="dialog" aria-modal="true">
       <div class="modalHead">
@@ -383,12 +380,11 @@
           return clean;
         });
 
-        // Only keep entries with actual usable content
         suppliers = rows.filter(item => {
           const hasBrand = !!item["Brands"];
           const hasWarrantyInfo = !!item["Warranty Information"];
-          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[Warranty Step ${i + 1}]).some(Boolean);
-          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[FUF Step ${i + 1}]).some(Boolean);
+          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
           return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
         });
 
@@ -423,21 +419,21 @@
         if (!brand) return;
         if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
 
-        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[Warranty Step ${i + 1}]).some(Boolean);
-        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[FUF Step ${i + 1}]).some(Boolean);
+        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
         const hasWarrantyInfo = !!item["Warranty Information"];
 
         const row = document.createElement("tr");
-        row.innerHTML = 
+        row.innerHTML = `
           <td class="supplier">${escapeHtml(brand)}</td>
           <td>
             <div class="button-group">
-              ${hasWarrantyInfo ? <button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button> : ""}
-              ${hasWarrantySteps ? <button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button> : ""}
-              ${hasFufSteps ? <button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button> : ""}
+              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
+              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
             </div>
           </td>
-        ;
+        `;
 
         if (isImported) {
           imported.appendChild(row);
@@ -448,20 +444,25 @@
         }
       });
 
-      localCount.textContent = ${lCount} suppliers;
-      importCount.textContent = ${iCount} suppliers;
+      localCount.textContent = `${lCount} suppliers`;
+      importCount.textContent = `${iCount} suppliers`;
 
-      if (!lCount) local.innerHTML = <tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>;
-      if (!iCount) imported.innerHTML = <tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>;
+      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
     }
 
     document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
+    // ✅ FIXED: the old regex had [^\\s<] which stops at the letter "s" in many URLs.
+    // This version matches full URLs and trims trailing punctuation like "." or ")"
     function linkify(text) {
-      const urlRegex = /((https?:\/\/)[^\\s<]+)/g;
-      return escapeHtml(text).replace(urlRegex, url =>
-        <a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>
-      );
+      const urlRegex = /(https?:\/\/[^\s<]+)/g;
+
+      return escapeHtml(text).replace(urlRegex, (match) => {
+        const clean = match.replace(/[),.]+$/g, "");
+        const tail = match.slice(clean.length);
+        return `<a href="${clean}" target="_blank" rel="noopener noreferrer">${clean}</a>${escapeHtml(tail)}`;
+      });
     }
 
     function showModalByIndex(index, type) {
@@ -477,9 +478,9 @@
         modalSub.textContent = "Warranty Information";
         const warrantyInfo = (item["Warranty Information"] || "N/A")
           .split("\n")
-          .map(line => <p>${linkify(line)}</p>)
+          .map(line => `<p>${linkify(line)}</p>`)
           .join("");
-        modalBody.innerHTML = <p><strong>Warranty:</strong></p>${warrantyInfo};
+        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
       } else {
         const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
         modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
@@ -489,10 +490,10 @@
           const key = prefix + i;
           if (item[key]) {
             any = true;
-            modalBody.innerHTML += <p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>;
+            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
           }
         }
-        if (!any) modalBody.innerHTML = <p>No steps found for this supplier.</p>;
+        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
       }
 
       openModal();
