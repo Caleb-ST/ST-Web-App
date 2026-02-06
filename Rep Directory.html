@@ -417,6 +417,48 @@
         .replaceAll("'", "&#039;");
     }
 
+    // ✅ COPY FIX: Clipboard API when allowed, fallback for file:// or insecure contexts
+    function copyText(text){
+      const t = String(text || "");
+      if (!t) return;
+
+      // Preferred: Clipboard API (HTTPS or localhost)
+      if (navigator.clipboard && window.isSecureContext){
+        navigator.clipboard.writeText(t).then(
+          () => showToast("Copied", t),
+          () => fallbackCopy(t)
+        );
+        return;
+      }
+
+      // Fallback for file:// or non-secure http
+      fallbackCopy(t);
+
+      function fallbackCopy(value){
+        try{
+          const ta = document.createElement("textarea");
+          ta.value = value;
+          ta.setAttribute("readonly", "");
+          ta.style.position = "fixed";
+          ta.style.top = "-1000px";
+          ta.style.left = "-1000px";
+          ta.style.opacity = "0";
+          document.body.appendChild(ta);
+
+          ta.select();
+          ta.setSelectionRange(0, ta.value.length);
+
+          const ok = document.execCommand("copy");
+          document.body.removeChild(ta);
+
+          if (ok) showToast("Copied", value);
+          else showToast("Copy blocked", "Browser blocked copy. Serve over HTTPS or use localhost.");
+        } catch (e){
+          showToast("Copy blocked", "Browser blocked copy. Serve over HTTPS or use localhost.");
+        }
+      }
+    }
+
     // CSV parser that handles quoted commas
     function parseCSV(csv) {
       const rows = [];
@@ -569,7 +611,6 @@
         dupCount: reps.filter(x => x.isDuplicate).length
       }));
 
-      // Sort companies A-Z
       arr.sort((a,b) => a.name.localeCompare(b.name));
       return arr;
     }
@@ -589,7 +630,7 @@
       const grid = document.createElement("div");
       grid.className = "companyGrid";
 
-      list.forEach((c, idx) => {
+      list.forEach((c) => {
         const btn = document.createElement("button");
         btn.className = "companyBtn";
         btn.type = "button";
@@ -606,15 +647,6 @@
 
       wrap.innerHTML = "";
       wrap.appendChild(grid);
-    }
-
-    function copyText(text){
-      const t = String(text || "");
-      if (!t) return;
-      navigator.clipboard.writeText(t).then(
-        () => showToast("Copied", t),
-        () => showToast("Copy failed", "Your browser refused. Naturally.")
-      );
     }
 
     function repRow(key, val, opts = {}){
@@ -635,14 +667,15 @@
         <div class="repRow">
           <div class="repKey">${escapeHtml(key)}</div>
           <div class="repVal" title="${safeVal}">${display || `<span class="mutedSmall">—</span>`}</div>
-          <button class="btn btn-sm iconBtn" onclick="copyText(${JSON.stringify(val || "")})" title="Copy">Copy</button>
+          <button class="btn btn-sm iconBtn" data-copy="${escapeHtml(val || "")}" title="Copy">Copy</button>
         </div>
       `;
     }
 
     function openCompanyModal(company){
       el("modalTitle").textContent = company.name;
-      el("modalSub").textContent = `${company.count} rep${company.count === 1 ? "" : "s"}${company.dupCount ? ` · ${company.dupCount} duplicate name${company.dupCount === 1 ? "" : "s"} detected` : ""}`;
+      el("modalSub").textContent =
+        `${company.count} rep${company.count === 1 ? "" : "s"}${company.dupCount ? ` · ${company.dupCount} duplicate name${company.dupCount === 1 ? "" : "s"} detected` : ""}`;
 
       const body = el("modalBody");
       body.innerHTML = "";
@@ -662,6 +695,11 @@
         body.appendChild(card);
       });
 
+      // Wire up copy buttons safely (no inline onclick needed)
+      body.querySelectorAll("[data-copy]").forEach(btn => {
+        btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")));
+      });
+
       openModal();
     }
 
@@ -679,8 +717,7 @@
       document.body.style.overflow = "";
     }
 
-    // Expose for inline onclick in repRow copy buttons
-    window.copyText = copyText;
+    // Make close available for the close buttons
     window.closeModal = closeModal;
 
     el("modal").addEventListener("click", (e) => {
@@ -703,7 +740,6 @@
         })).filter(c => c.reps.length);
       }
 
-      // Recompute counts after filtering
       filtered = filtered.map(c => ({
         ...c,
         count: c.reps.length,
@@ -712,13 +748,11 @@
 
       if (q){
         filtered = filtered.filter(c => {
-          // Match company name or any rep details
           if (c.name.toLowerCase().includes(q)) return true;
           return c.reps.some(r => [r.name, r.role, r.phone, r.email].join(" ").toLowerCase().includes(q));
         });
       }
 
-      // Global duplicate pill (based on full dataset, not filtered)
       const dupTotal = allReps.filter(r => r.isDuplicate).length;
       if (dupTotal > 0){
         el("dupPill").style.display = "inline-flex";
@@ -745,7 +779,6 @@
 
         companies = groupByCompany(allReps);
 
-        // initial
         applyFilters();
 
         el("searchInput").addEventListener("input", applyFilters);
