@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rep Directory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supplier Warranty Info</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <style>
     :root{
@@ -15,11 +16,8 @@
       --shadow: 0 20px 60px rgba(0,0,0,0.55);
       --red:#ff2b3d;
       --red2:#b80c2b;
-      --pill:rgba(255,255,255,0.08);
       --pill2:rgba(255,43,61,0.18);
       --focus: 0 0 0 3px rgba(255,43,61,0.25);
-      --warnBg: rgba(245, 158, 11, 0.16);
-      --warnBd: rgba(245, 158, 11, 0.35);
     }
 
     *{ box-sizing:border-box; }
@@ -37,7 +35,10 @@
       padding: 26px 14px 50px;
     }
 
-    .wrap{ max-width: 1200px; margin: 0 auto; }
+    .wrap{
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
     .topbar{
       display:flex;
@@ -56,7 +57,7 @@
     }
 
     .sub{
-      margin:0;
+      margin: 0;
       font-size: 13px;
       color: var(--muted);
     }
@@ -93,6 +94,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.08);
       text-align:center;
     }
+    .row:last-child{ border-bottom:none; }
 
     input, button, a.btn{
       padding: 10px 10px;
@@ -105,8 +107,8 @@
     }
 
     input{
-      min-width: 260px;
-      width: 520px;
+      min-width:260px;
+      width: 420px;
       max-width: 92%;
     }
 
@@ -149,44 +151,60 @@
       font-size: 13px;
     }
 
-    .pill{
-      display:inline-flex;
+    .tableWrap{
+      padding: 12px;
+    }
+
+    .tables-container{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    @media (max-width: 980px){
+      .tables-container{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display:flex;
       align-items:center;
-      gap:6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--pill);
-      border: 1px solid rgba(255,255,255,0.12);
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
       color: rgba(242,242,245,0.85);
+    }
+
+    .mutedSmall{
+      color: var(--muted);
       font-size: 12px;
+      margin-top: 4px;
       white-space: nowrap;
     }
-
-    .pill.warn{
-      background: var(--warnBg);
-      border-color: var(--warnBd);
-    }
-
-    .tableWrap{ padding: 12px; }
 
     table{
       width: 100%;
       border-collapse: collapse;
-      overflow: hidden;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(0,0,0,0.18);
     }
 
     th, td{
       padding: 12px;
-      text-align:left;
-      vertical-align: middle;
       border-bottom: 1px solid rgba(255,255,255,0.06);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 1px;
+      vertical-align: middle;
     }
 
     th{
@@ -198,91 +216,181 @@
       position: sticky;
       top: 0;
       z-index: 1;
+      text-align:left;
     }
 
-    tr:hover td{ background: rgba(255,255,255,0.03); }
-
-    tr.duplicate td{ background: rgba(245, 158, 11, 0.14) !important; }
-
-    .mutedSmall{ color: var(--muted); font-size: 12px; }
-    .right{ margin-left:auto; }
-
-    @media (max-width: 820px){
-      th:nth-child(4), td:nth-child(4){ display:none; }
-    }
-    @media (max-width: 620px){
-      th:nth-child(5), td:nth-child(5){ display:none; }
-      input{ width: 100%; }
+    tr:hover td{
+      background: rgba(255,255,255,0.03);
     }
 
-    /* tiny toast for mapping warnings */
-    .toast{
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(15,15,22,0.92);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
-      color: var(--text);
+    .supplier{
+      font-weight: 700;
+    }
+
+    .button-group{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+    @media (max-width: 520px){
+      .button-group{
+        flex-wrap: wrap;
+        justify-content:flex-start;
+      }
+    }
+
+    #modal{
       display:none;
-      max-width: 520px;
-      z-index: 10000;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 9999;
+      padding: 20px;
+      overflow:auto;
+      align-items:center;
+      justify-content:center;
     }
-    .toast .t{ font-weight: 700; margin-bottom: 3px; }
-    .toast .m{ color: var(--muted); font-size: 13px; white-space: pre-wrap; }
+    #modal.open{ display:flex; }
+
+    .modal-content{
+      width: 100%;
+      max-width: 760px;
+      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .modalHead{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 12px;
+    }
+
+    .modalHead h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .modalBody p{
+      margin: 10px 0;
+      color: rgba(242,242,245,0.92);
+      line-height: 1.4;
+    }
+
+    .modalBody a{
+      color: #60a5fa;
+      text-decoration: underline;
+      word-break: break-word;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
     <div class="topbar">
-      <h1>Rep Directory</h1>
-      <p class="sub">Search reps fast. Duplicates highlighted so you can fix the sheet later.</p>
+      <h1>Supplier Warranty Information</h1>
+      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
       <div class="badge">● Live from Google Sheet</div>
     </div>
 
     <div class="panel">
       <div class="row">
         <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
-
-        <input type="text" id="searchInput" placeholder="Search by name, company, role, phone, email..." />
-
-        <label class="pill" style="cursor:pointer;">
-          <input type="checkbox" id="hideDupes" style="accent-color: var(--red); width:auto; min-width:auto; margin:0;">
-          Hide duplicates
-        </label>
-
-        <span class="right mutedSmall" id="countText"></span>
-        <span class="pill warn" id="dupPill" style="display:none;">⚠ <span id="dupCount">0</span> duplicates</span>
+        <input type="text" id="searchInput" placeholder="Search suppliers..." />
       </div>
 
-      <div class="tableWrap" id="tableWrap">
-        <div class="mutedSmall" style="padding:12px;">Loading…</div>
+      <div class="tableWrap">
+        <div class="tables-container">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Local Suppliers</h2>
+              <span class="mutedSmall" id="localCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="localTable"></tbody>
+            </table>
+          </div>
+
+          <div class="card">
+            <div class="cardHead">
+              <h2>Imported Suppliers</h2>
+              <span class="mutedSmall" id="importCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="importTable"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast">
-    <div class="t" id="toastTitle">Notice</div>
-    <div class="m" id="toastMsg"></div>
+  <div id="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <div class="modalHead">
+        <div>
+          <h3 id="modalTitle"></h3>
+          <div class="mutedSmall" id="modalSub"></div>
+        </div>
+        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
+      </div>
+
+      <div class="modalBody" id="modalBody"></div>
+
+      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
   </div>
 
   <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
+    let suppliers = [];
 
-    let allReps = [];
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const rows = (results.data || []).map(row => {
+          const clean = {};
+          for (const key in row) {
+            const normKey = (key || "").trim().replace(/\s+/g, " ");
+            clean[normKey] = (row[key] ?? "").trim();
+          }
+          return clean;
+        });
 
-    const el = (id) => document.getElementById(id);
+        suppliers = rows.filter(item => {
+          const hasBrand = !!item["Brands"];
+          const hasWarrantyInfo = !!item["Warranty Information"];
+          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+          return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
+        });
 
-    function showToast(title, msg){
-      el("toastTitle").textContent = title;
-      el("toastMsg").textContent = msg;
-      el("toast").style.display = "block";
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => el("toast").style.display = "none", 5200);
-    }
+        renderTables();
+      }
+    });
 
     function escapeHtml(str) {
       return String(str ?? "")
@@ -293,235 +401,124 @@
         .replaceAll("'", "&#039;");
     }
 
-    // CSV parser that handles quoted commas
-    function parseCSV(csv) {
-      const rows = [];
-      let row = [];
-      let cell = "";
-      let inQuotes = false;
+    function renderTables(filter = "") {
+      const local = document.getElementById("localTable");
+      const imported = document.getElementById("importTable");
+      const localCount = document.getElementById("localCount");
+      const importCount = document.getElementById("importCount");
 
-      for (let i = 0; i < csv.length; i++) {
-        const ch = csv[i];
-        const next = csv[i + 1];
+      local.innerHTML = "";
+      imported.innerHTML = "";
 
-        if (ch === '"' && inQuotes && next === '"') {
-          cell += '"'; i++;
-        } else if (ch === '"') {
-          inQuotes = !inQuotes;
-        } else if (ch === "," && !inQuotes) {
-          row.push(cell); cell = "";
-        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
-          if (cell.length || row.length) {
-            row.push(cell);
-            rows.push(row);
-            row = [];
-            cell = "";
-          }
-          if (ch === "\r" && next === "\n") i++;
+      let lCount = 0, iCount = 0;
+
+      suppliers.forEach((item, idx) => {
+        const brand = item["Brands"];
+        const isImported = (item["Import"] || "").toLowerCase() === "true";
+
+        if (!brand) return;
+        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
+
+        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+        const hasWarrantyInfo = !!item["Warranty Information"];
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="supplier">${escapeHtml(brand)}</td>
+          <td>
+            <div class="button-group">
+              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
+              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
+            </div>
+          </td>
+        `;
+
+        if (isImported) {
+          imported.appendChild(row);
+          iCount++;
         } else {
-          cell += ch;
+          local.appendChild(row);
+          lCount++;
         }
-      }
-      if (cell.length || row.length) { row.push(cell); rows.push(row); }
-
-      const headers = (rows.shift() || []).map(h => (h ?? "").trim());
-      const data = rows
-        .filter(r => r.some(v => (v ?? "").trim() !== ""))
-        .map(r => {
-          const obj = {};
-          headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
-          return obj;
-        });
-
-      return { headers, data };
-    }
-
-    function normHeader(h){
-      return (h || "").trim().toLowerCase().replace(/\s+/g, " ");
-    }
-
-    function findHeader(headers, tests){
-      // tests: array of functions(headerString)->bool, in priority order
-      for (const test of tests){
-        const found = headers.find(h => test(normHeader(h)));
-        if (found) return found;
-      }
-      return null;
-    }
-
-    function detectMapping(headers){
-      const companyKey = findHeader(headers, [
-        h => h === "company",
-        h => h.includes("company"),
-        h => h.includes("supplier"),
-        h => h.includes("brand") && !h.includes("rep"),
-      ]);
-
-      const roleKey = findHeader(headers, [
-        h => h === "role",
-        h => h.includes("role"),
-        h => h.includes("position"),
-        h => h.includes("title"),
-      ]);
-
-      const nameKey = findHeader(headers, [
-        h => h === "name",
-        h => h.includes("rep name"),
-        h => h.includes("contact name"),
-        h => h.includes("name"),
-        h => h.includes("rep") && h.includes("contact"),
-      ]);
-
-      const phoneKey = findHeader(headers, [
-        h => h === "phone",
-        h => h.includes("phone"),
-        h => h.includes("mobile"),
-        h => h.includes("contact number"),
-        h => h.includes("tel"),
-      ]);
-
-      const emailKey = findHeader(headers, [
-        h => h === "email",
-        h => h.includes("email"),
-        h => h.includes("e-mail"),
-      ]);
-
-      return { companyKey, roleKey, nameKey, phoneKey, emailKey };
-    }
-
-    function normalizeName(name){
-      return (name || "").trim().toLowerCase().replace(/\s+/g, " ");
-    }
-
-    function withDuplicateFlags(reps){
-      const counts = {};
-      reps.forEach(r => {
-        const key = normalizeName(r.name);
-        if (!key) return;
-        counts[key] = (counts[key] || 0) + 1;
       });
-      return reps.map(r => ({
-        ...r,
-        isDuplicate: counts[normalizeName(r.name)] > 1
-      }));
+
+      localCount.textContent = `${lCount} suppliers`;
+      importCount.textContent = `${iCount} suppliers`;
+
+      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
     }
 
-    function buildRepObjects(parsed, mapping){
-      const { companyKey, roleKey, nameKey, phoneKey, emailKey } = mapping;
+    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
-      if (!nameKey){
-        showToast(
-          "Column mapping issue",
-          "Could not find a Name column in the sheet.\n\n" +
-          "Fix: rename a column to 'Name' (or include 'name' in the header), or tell me what your headers are."
-        );
-      }
+    // ✅ FIXED: the old regex had [^\\s<] which stops at the letter "s" in many URLs.
+    // This version matches full URLs and trims trailing punctuation like "." or ")"
+    function linkify(text) {
+      const urlRegex = /(https?:\/\/[^\s<]+)/g;
 
-      return parsed.map(row => {
-        const company = companyKey ? (row[companyKey] || "").trim() : "";
-        const role    = roleKey    ? (row[roleKey]    || "").trim() : "";
-        const name    = nameKey    ? (row[nameKey]    || "").trim() : "";
-        const phone   = phoneKey   ? (row[phoneKey]   || "").trim() : "";
-        const email   = emailKey   ? (row[emailKey]   || "").trim() : "";
-
-        return { company, role, name, phone, email };
-      }).filter(r => r.name || r.company || r.role || r.phone || r.email);
+      return escapeHtml(text).replace(urlRegex, (match) => {
+        const clean = match.replace(/[),.]+$/g, "");
+        const tail = match.slice(clean.length);
+        return `<a href="${clean}" target="_blank" rel="noopener noreferrer">${clean}</a>${escapeHtml(tail)}`;
+      });
     }
 
-    function renderTable(reps){
-      const wrap = el("tableWrap");
-      const countText = el("countText");
-      const dupPill = el("dupPill");
-      const dupCount = el("dupCount");
+    function showModalByIndex(index, type) {
+      const item = suppliers[index];
+      if (!item) return;
 
-      const dupTotal = reps.filter(r => r.isDuplicate).length;
-      if (dupTotal > 0){
-        dupPill.style.display = "inline-flex";
-        dupCount.textContent = dupTotal;
+      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
+      const modalSub = document.getElementById("modalSub");
+      const modalBody = document.getElementById("modalBody");
+      modalBody.innerHTML = "";
+
+      if (type === "info") {
+        modalSub.textContent = "Warranty Information";
+        const warrantyInfo = (item["Warranty Information"] || "N/A")
+          .split("\n")
+          .map(line => `<p>${linkify(line)}</p>`)
+          .join("");
+        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
       } else {
-        dupPill.style.display = "none";
-      }
+        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
+        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
 
-      countText.textContent = `${reps.length} shown`;
-
-      if (!reps.length){
-        wrap.innerHTML = `<div class="mutedSmall" style="padding:12px;">No reps found.</div>`;
-        return;
-      }
-
-      const rows = reps.map(r => `
-        <tr class="${r.isDuplicate ? "duplicate" : ""}">
-          <td title="${escapeHtml(r.company)}">${escapeHtml(r.company)}</td>
-          <td title="${escapeHtml(r.role)}">${escapeHtml(r.role)}</td>
-          <td title="${escapeHtml(r.name)}">${escapeHtml(r.name)}</td>
-          <td title="${escapeHtml(r.phone)}">${escapeHtml(r.phone)}</td>
-          <td title="${escapeHtml(r.email)}">${escapeHtml(r.email)}</td>
-        </tr>
-      `).join("");
-
-      wrap.innerHTML = `
-        <table>
-          <thead>
-            <tr>
-              <th style="width:24%;">Company</th>
-              <th style="width:20%;">Role</th>
-              <th style="width:22%;">Name</th>
-              <th style="width:16%;">Phone</th>
-              <th>Email</th>
-            </tr>
-          </thead>
-          <tbody>${rows}</tbody>
-        </table>
-      `;
-    }
-
-    function applyFilters(){
-      const q = el("searchInput").value.trim().toLowerCase();
-      const hideDupes = el("hideDupes").checked;
-
-      let reps = allReps;
-
-      if (q){
-        reps = reps.filter(r => {
-          const hay = [r.company, r.role, r.name, r.phone, r.email].join(" ").toLowerCase();
-          return hay.includes(q);
-        });
-      }
-
-      if (hideDupes){
-        reps = reps.filter(r => !r.isDuplicate);
-      }
-
-      renderTable(reps);
-    }
-
-    fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(csv => {
-        const parsed = parseCSV(csv);
-        const mapping = detectMapping(parsed.headers);
-
-        // If name detection fails, show headers so you can fix it fast
-        if (!mapping.nameKey){
-          showToast(
-            "Headers found",
-            "Your sheet headers are:\n" + parsed.headers.join(", ")
-          );
+        let any = false;
+        for (let i = 1; i <= 6; i++) {
+          const key = prefix + i;
+          if (item[key]) {
+            any = true;
+            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
+          }
         }
+        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
+      }
 
-        const reps = buildRepObjects(parsed.data, mapping);
-        allReps = withDuplicateFlags(reps);
+      openModal();
+    }
 
-        renderTable(allReps);
+    function openModal() {
+      const m = document.getElementById("modal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
 
-        el("searchInput").addEventListener("input", applyFilters);
-        el("hideDupes").addEventListener("change", applyFilters);
-      })
-      .catch(err => {
-        console.error(err);
-        el("tableWrap").innerHTML =
-          `<div class="mutedSmall" style="padding:12px;">Error loading reps: ${escapeHtml(err.message || err)}</div>`;
-      });
+    function closeModal() {
+      const m = document.getElementById("modal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+    });
   </script>
 </body>
 </html>
