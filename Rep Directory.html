@@ -216,19 +216,27 @@
       align-items:center;
     }
 
-    /* Modal */
+    /* Modal (FIXED) */
     #modal{
-      display:none;
+      display:none;                 /* ✅ hidden by default */
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.65);
       z-index: 9999;
       padding: 20px;
       overflow:auto;
-      align-items:center;
+
+      /* Flex layout only matters when open */
+      align-items:flex-start;
       justify-content:center;
     }
-    #modal.open{ display:flex; }
+    #modal.open{
+      display:flex;                 /* ✅ only visible when open */
+    }
+
+    @media (max-width: 520px){
+      #modal{ padding: 12px; }
+    }
 
     .modal-content{
       width: 100%;
@@ -238,6 +246,13 @@
       border-radius: 18px;
       box-shadow: var(--shadow);
       padding: 16px;
+
+      max-height: calc(100vh - 40px);
+      overflow: hidden;
+
+      display:flex;
+      flex-direction:column;
+      margin-top: 8px;
     }
 
     .modalHead{
@@ -248,6 +263,7 @@
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
       margin-bottom: 12px;
+      flex: 0 0 auto;
     }
 
     .modalHead h3{
@@ -267,7 +283,15 @@
       display:flex;
       flex-direction:column;
       gap:10px;
+
+      overflow:auto;
+      padding-right: 4px;
+      flex: 1 1 auto;
     }
+
+    .repList::-webkit-scrollbar{ width: 10px; }
+    .repList::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.14); border-radius: 999px; }
+    .repList::-webkit-scrollbar-track{ background: rgba(255,255,255,0.05); border-radius: 999px; }
 
     .repCard{
       background: rgba(0,0,0,0.18);
@@ -296,7 +320,6 @@
     .repRow:first-of-type{ border-top:none; }
     .repKey{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing:.6px; }
 
-    /* Single-line, no-wrap values (especially email) with horizontal scroll */
     .repVal{
       white-space: nowrap;
       overflow: auto;
@@ -381,7 +404,7 @@
 
       <div class="repList" id="modalBody"></div>
 
-      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+      <div class="row" style="border-bottom:none; justify-content:flex-end; flex:0 0 auto;">
         <button class="btn btn-primary" onclick="closeModal()">Close</button>
       </div>
     </div>
@@ -417,12 +440,11 @@
         .replaceAll("'", "&#039;");
     }
 
-    // ✅ COPY FIX: Clipboard API when allowed, fallback for file:// or insecure contexts
+    // Copy helper (Clipboard API + fallback)
     function copyText(text){
       const t = String(text || "");
       if (!t) return;
 
-      // Preferred: Clipboard API (HTTPS or localhost)
       if (navigator.clipboard && window.isSecureContext){
         navigator.clipboard.writeText(t).then(
           () => showToast("Copied", t),
@@ -431,7 +453,6 @@
         return;
       }
 
-      // Fallback for file:// or non-secure http
       fallbackCopy(t);
 
       function fallbackCopy(value){
@@ -695,7 +716,6 @@
         body.appendChild(card);
       });
 
-      // Wire up copy buttons safely (no inline onclick needed)
       body.querySelectorAll("[data-copy]").forEach(btn => {
         btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")));
       });
@@ -717,7 +737,6 @@
       document.body.style.overflow = "";
     }
 
-    // Make close available for the close buttons
     window.closeModal = closeModal;
 
     el("modal").addEventListener("click", (e) => {
