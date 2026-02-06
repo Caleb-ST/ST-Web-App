@@ -216,20 +216,23 @@
       align-items:center;
     }
 
-    /* Modal */
+    /* Modal (FIXED) */
     #modal{
-      display:none;
+      display:none;                 /* ✅ hidden by default */
       position: fixed;
       inset: 0;
       background: rgba(0,0,0,0.65);
       z-index: 9999;
       padding: 20px;
       overflow:auto;
-      display:flex;
-      align-items:flex-start; /* ✅ FIX: don't vertical-center tall modals */
+
+      /* Flex layout only matters when open */
+      align-items:flex-start;
       justify-content:center;
     }
-    #modal.open{ display:flex; }
+    #modal.open{
+      display:flex;                 /* ✅ only visible when open */
+    }
 
     @media (max-width: 520px){
       #modal{ padding: 12px; }
@@ -244,13 +247,12 @@
       box-shadow: var(--shadow);
       padding: 16px;
 
-      /* ✅ FIX: keep modal within viewport and scroll inside */
       max-height: calc(100vh - 40px);
       overflow: hidden;
 
       display:flex;
       flex-direction:column;
-      margin-top: 8px; /* gives breathing room at top */
+      margin-top: 8px;
     }
 
     .modalHead{
@@ -282,7 +284,6 @@
       flex-direction:column;
       gap:10px;
 
-      /* ✅ FIX: the list scrolls, not the whole modal */
       overflow:auto;
       padding-right: 4px;
       flex: 1 1 auto;
