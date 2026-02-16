@@ -69,8 +69,43 @@
       margin: 10px auto 0;
     }
 
-    .panel{
+    /* Back button row */
+    .backRow{
+      display:flex;
+      justify-content:flex-start;
       margin-top: 18px;
+      margin-bottom: 8px;
+    }
+
+    .backBtn{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 8px 14px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor:pointer;
+
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+
+      transition: transform .08s ease, box-shadow .15s ease;
+    }
+
+    .backBtn:hover{
+      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+      transform: translateY(-1px);
+    }
+
+    .backBtn:active{
+      transform: translateY(1px);
+    }
+
+    .panel{
+      margin-top: 6px;
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border: 1px solid var(--border);
       border-radius: 18px;
@@ -97,6 +132,7 @@
     @media (max-width: 900px){
       .grid{ grid-template-columns: repeat(2, 1fr); }
     }
+
     @media (max-width: 580px){
       .grid{ grid-template-columns: 1fr; }
       h1{ font-size: 28px; }
@@ -186,7 +222,11 @@
     }
 
     input::placeholder{ color: rgba(242,242,245,0.45); }
-    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
+
+    input:focus{
+      box-shadow: var(--focus);
+      border-color: rgba(255,43,61,0.45);
+    }
 
     .btn{
       padding: 10px 16px;
@@ -226,11 +266,18 @@
 
   <!-- Main -->
   <div class="wrap">
+
     <h1>Sydney Tools</h1>
     <h2>South Australia</h2>
     <div class="badge">● Internal Navigation</div>
 
+    <!-- Back button -->
+    <div class="backRow">
+      <button class="backBtn" onclick="goBack()">← Back</button>
+    </div>
+
     <div class="panel">
+
       <div class="panelHead">
         Select a tool to continue
       </div>
@@ -241,33 +288,60 @@
         <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
         <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">GP Check Fix</a>
       </div>
+
     </div>
+
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
   <script>
+
     const validUsername = "Sydney Tools";
     const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674";
 
-    function md5(str){ return CryptoJS.MD5(str).toString(); }
+    function md5(str){
+      return CryptoJS.MD5(str).toString();
+    }
 
-    if (localStorage.getItem("loggedIn") === "true") {
+    if (localStorage.getItem("loggedIn") === "true"){
       document.getElementById("login-screen").style.display = "none";
     }
 
     function login(){
+
       const u = document.getElementById("username").value.trim();
       const p = document.getElementById("password").value;
 
       if (u === validUsername && md5(p) === validPasswordHash){
+
         localStorage.setItem("loggedIn","true");
         document.getElementById("login-screen").style.display = "none";
+
       } else {
+
         alert("Access denied.");
         window.location.href = "https://www.google.com";
+
       }
+
     }
+
+    function goBack(){
+
+      if (window.history.length > 1){
+
+        window.history.back();
+
+      } else {
+
+        window.location.href = "index.html";
+
+      }
+
+    }
+
   </script>
+
 </body>
 </html>
-
