@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sydney Tools South Australia</title>
+
+  <style>
+    :root{
+      --bg0:#07070a;
+      --bg1:#0b0b10;
+      --text:#f2f2f5;
+      --muted:#a4a4b3;
+      --border:rgba(255,255,255,0.08);
+      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --red:#ff2b3d;
+      --red2:#b80c2b;
+      --focus: 0 0 0 3px rgba(255,43,61,0.25);
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
+        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 26px 14px;
+    }
+
+    .wrap{
+      width: 100%;
+      max-width: 980px;
+      text-align: center;
+    }
+
+    h1{
+      margin:0;
+      font-size: 34px;
+      letter-spacing: 0.4px;
+    }
+
+    h2{
+      margin: 6px 0 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      letter-spacing: 0.3px;
+    }
+
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(255,43,61,0.18);
+      border: 1px solid rgba(255,43,61,0.35);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
+      margin: 10px auto 0;
+    }
+
+    .panel{
+      margin-top: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .panelHead{
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .grid{
+      padding: 16px;
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px){
+      .grid{ grid-template-columns: 1fr; }
+      h1{ font-size: 28px; }
+    }
+
+    a.nav-button{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      text-decoration:none;
+
+      min-height: 92px;
+      padding: 18px 16px;
+      border-radius: 16px;
+
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border: 1px solid rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      transition: transform .08s ease, box-shadow .15s ease;
+    }
+
+    a.nav-button:hover{
+      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
+      transform: translateY(-1px);
+    }
+
+    a.nav-button:active{
+      transform: translateY(1px);
+    }
+
+    /* Login overlay */
+    #login-screen{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 22px 14px;
+    }
+
+    .loginModal{
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .loginModal h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .loginModal .muted{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .formRow{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      justify-content: center;
+    }
+
+    input{
+      flex: 1;
+      min-width: 220px;
+      padding: 10px;
+      font: inherit;
+      color: var(--text);
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px;
+      outline:none;
+    }
+
+    input::placeholder{ color: rgba(242,242,245,0.45); }
+    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
+
+    .btn{
+      padding: 10px 16px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border: 1px solid rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn:hover{
+      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Login -->
+  <div id="login-screen">
+    <div class="loginModal">
+      <h3>Please Log In</h3>
+      <div class="muted">Internal tools portal</div>
+
+      <div class="formRow">
+        <input id="username" type="text" placeholder="Username" />
+        <input id="password" type="password" placeholder="Password" />
+      </div>
+
+      <div class="formRow">
+        <button class="btn" onclick="login()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="wrap">
+    <h1>Sydney Tools</h1>
+    <h2>South Australia</h2>
+    <div class="badge">● Internal Navigation</div>
+
+    <div class="panel">
+      <div class="panelHead">
+        Select a tool to continue
+      </div>
+
+      <div class="grid">
+        <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank">RST Approval Request</a>
+        <a class="nav-button" href="https://forms.gle/jovcPTnjmgp5LWW29" target="_blank">Request for Stock Movement</a>
+        <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
+        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">GP Check Fix</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script>
+    const validUsername = "Sydney Tools";
+    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674";
+
+    function md5(str){ return CryptoJS.MD5(str).toString(); }
+
+    if (localStorage.getItem("loggedIn") === "true") {
+      document.getElementById("login-screen").style.display = "none";
+    }
+
+    function login(){
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value;
+
+      if (u === validUsername && md5(p) === validPasswordHash){
+        localStorage.setItem("loggedIn","true");
+        document.getElementById("login-screen").style.display = "none";
+      } else {
+        alert("Access denied.");
+        window.location.href = "https://www.google.com";
+      }
+    }
+  </script>
+</body>
+</html>
+
