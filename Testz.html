@@ -167,41 +167,43 @@
       transform: translateY(1px);
     }
 
-    /* ---------- Reference Image Section ---------- */
+    /* ---------- Dot Legend (replaces the ugly image) ---------- */
     .divider{
       height: 1px;
       background: rgba(255,255,255,0.08);
       margin: 6px 16px 0;
     }
 
-    .refWrap{
+    .legendWrap{
       padding: 16px;
       text-align: left;
     }
 
-    .refHeader{
+    .legendHeader{
       display:flex;
       align-items:flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
     }
 
-    .refTitle{
+    .legendTitle{
       margin:0;
       font-size: 14px;
-      font-weight: 700;
+      font-weight: 800;
       letter-spacing: 0.2px;
     }
 
-    .refSub{
-      margin-top: 4px;
+    .legendSub{
+      margin-top: 5px;
       color: var(--muted);
       font-size: 12px;
       line-height: 1.35;
+      max-width: 720px;
     }
 
-    .refHint{
+    .legendPill{
       display:inline-flex;
       align-items:center;
       gap:8px;
@@ -211,11 +213,10 @@
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.12);
       color: var(--muted);
-      white-space: nowrap;
       user-select: none;
     }
 
-    .refCard{
+    .legendCard{
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 16px;
@@ -223,134 +224,73 @@
       box-shadow: 0 12px 40px rgba(0,0,0,0.35);
     }
 
-    .refImgBtn{
-      all: unset;
-      display:block;
-      cursor: zoom-in;
-    }
-
-    .refImg{
+    .legendTable{
       width: 100%;
-      height: auto;
-      display:block;
-      /* keeps it crisp-ish without blowing out layout */
-      max-height: 520px;
-      object-fit: contain;
-      background: rgba(0,0,0,0.25);
+      border-collapse: collapse;
     }
 
-    .refFooter{
-      padding: 10px 12px;
-      border-top: 1px solid rgba(255,255,255,0.08);
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .refCaption{
-      margin:0;
+    .legendTable thead th{
+      text-align: left;
       font-size: 12px;
-      color: var(--muted);
+      letter-spacing: 0.3px;
+      color: rgba(242,242,245,0.85);
+      padding: 12px 12px;
+      background: rgba(255,255,255,0.06);
+      border-bottom: 1px solid rgba(255,255,255,0.10);
     }
 
-    .refAction{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 12px;
-      border-radius: 12px;
-      font-size: 12px;
-      font-weight: 700;
-      cursor:pointer;
-
-      color: var(--text);
-      background: rgba(255,43,61,0.18);
-      border: 1px solid rgba(255,43,61,0.35);
-      box-shadow: 0 10px 25px rgba(255,43,61,0.10);
-      transition: transform .08s ease, box-shadow .15s ease;
-      user-select: none;
-    }
-
-    .refAction:hover{
-      box-shadow: 0 16px 35px rgba(255,43,61,0.18);
-      transform: translateY(-1px);
-    }
-
-    .refAction:active{ transform: translateY(1px); }
-
-    /* ---------- Lightbox Modal ---------- */
-    .lightbox{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.78);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      z-index: 10000;
-      padding: 18px 14px;
-    }
-
-    .lightbox.show{ display:flex; }
-
-    .lightboxInner{
-      width: min(1100px, 96vw);
-      max-height: 90vh;
-      background: rgba(12,12,18,0.96);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      display:flex;
-      flex-direction: column;
-    }
-
-    .lightboxTop{
-      display:flex;
-      align-items:center;
-      justify-content: space-between;
-      gap: 12px;
+    .legendTable tbody td{
       padding: 12px 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-size: 13px;
+      vertical-align: middle;
     }
 
-    .lightboxTitle{
-      font-size: 13px;
+    .legendTable tbody tr:last-child td{
+      border-bottom: none;
+    }
+
+    .dotRow{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width: 220px;
+    }
+
+    .dot{
+      width: 14px;
+      height: 14px;
+      border-radius: 999px;
+      box-shadow: 0 0 0 2px rgba(0,0,0,0.35);
+      border: 1px solid rgba(255,255,255,0.16);
+      flex: 0 0 14px;
+    }
+
+    .colourName{
       font-weight: 800;
       letter-spacing: 0.2px;
     }
 
-    .lightboxClose{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      width: 40px;
-      height: 36px;
-      border-radius: 12px;
-      cursor:pointer;
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
+    .storeName{
+      font-weight: 650;
+      letter-spacing: 0.15px;
     }
 
-    .lightboxClose:hover{
-      background: rgba(255,255,255,0.10);
-    }
-
-    .lightboxBody{
-      padding: 12px;
-      overflow: auto;
-    }
-
-    .lightboxImg{
-      width: 100%;
-      height: auto;
-      display:block;
-      object-fit: contain;
-      background: rgba(0,0,0,0.25);
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.08);
+    /* Make it comfy on mobile */
+    @media (max-width: 580px){
+      .legendTable thead{ display:none; }
+      .legendTable, .legendTable tbody, .legendTable tr, .legendTable td{ display:block; width:100%; }
+      .legendTable tr{ padding: 10px 12px; }
+      .legendTable td{
+        border: none;
+        padding: 6px 0;
+      }
+      .legendTable tr:not(:last-child){
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+      }
+      .storeName{
+        color: rgba(242,242,245,0.92);
+      }
     }
 
     /* Login overlay */
@@ -450,19 +390,6 @@
     </div>
   </div>
 
-  <!-- Lightbox -->
-  <div id="lightbox" class="lightbox" aria-hidden="true">
-    <div class="lightboxInner" role="dialog" aria-modal="true" aria-label="Colour code reference">
-      <div class="lightboxTop">
-        <div class="lightboxTitle">Coloured Paperwork & Stock Dot Legend</div>
-        <button class="lightboxClose" onclick="closeLightbox()" aria-label="Close">✕</button>
-      </div>
-      <div class="lightboxBody">
-        <img class="lightboxImg" src="Colour Code.png" alt="Sydney Tools Adelaide dot colour legend" />
-      </div>
-    </div>
-  </div>
-
   <!-- Main -->
   <div class="wrap">
 
@@ -488,28 +415,89 @@
         <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">GP Check Fix</a>
       </div>
 
-      <!-- Reference section -->
+      <!-- Dot Legend -->
       <div class="divider"></div>
-      <div class="refWrap">
-        <div class="refHeader">
+      <div class="legendWrap">
+        <div class="legendHeader">
           <div>
-            <p class="refTitle">Reference</p>
-            <div class="refSub">
-              Use this when sending paperwork or stock to the correct Adelaide store.
+            <p class="legendTitle">Coloured Paperwork & Stock Dot Legend</p>
+            <div class="legendSub">
+              Purpose: Coloured dots indicate which Adelaide store the paperwork and stock must be sent to.
             </div>
           </div>
-          <div class="refHint">🔎 Click image to zoom</div>
+          <div class="legendPill">● Use the dot colour</div>
         </div>
 
-        <div class="refCard">
-          <button class="refImgBtn" onclick="openLightbox()" aria-label="Open colour code legend">
-            <img class="refImg" src="Colour Code.png" alt="Sydney Tools Adelaide coloured paperwork and stock dot legend" />
-          </button>
+        <div class="legendCard">
+          <table class="legendTable" aria-label="Dot colour legend">
+            <thead>
+              <tr>
+                <th>Dot Colour</th>
+                <th>Store</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="dotRow">
+                    <span class="dot" style="background:#2b2bff"></span>
+                    <span class="colourName">Blue</span>
+                  </div>
+                </td>
+                <td class="storeName">Windsor Gardens</td>
+              </tr>
 
-          <div class="refFooter">
-            <p class="refCaption">Sydney Tools Adelaide: Coloured Paperwork & Stock Dot Legend</p>
-            <button class="refAction" onclick="openLightbox()">View Full Size</button>
-          </div>
+              <tr>
+                <td>
+                  <div class="dotRow">
+                    <span class="dot" style="background:#2f7a1f"></span>
+                    <span class="colourName">Green</span>
+                  </div>
+                </td>
+                <td class="storeName">Lonsdale</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="dotRow">
+                    <span class="dot" style="background:#f2a324"></span>
+                    <span class="colourName">Orange</span>
+                  </div>
+                </td>
+                <td class="storeName">Seaford</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="dotRow">
+                    <span class="dot" style="background:#e03228"></span>
+                    <span class="colourName">Red</span>
+                  </div>
+                </td>
+                <td class="storeName">Regency Park</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="dotRow">
+                    <span class="dot" style="background:#f3c1cf"></span>
+                    <span class="colourName">Pink</span>
+                  </div>
+                </td>
+                <td class="storeName">Parafield</td>
+              </tr>
+
+              <tr>
+                <td>
+                  <div class="dotRow">
+                    <span class="dot" style="background:#f6f24a"></span>
+                    <span class="colourName">Yellow</span>
+                  </div>
+                </td>
+                <td class="storeName">Munno Para</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
@@ -551,30 +539,6 @@
         window.location.href = "index.html";
       }
     }
-
-    function openLightbox(){
-      const lb = document.getElementById("lightbox");
-      lb.classList.add("show");
-      lb.setAttribute("aria-hidden","false");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeLightbox(){
-      const lb = document.getElementById("lightbox");
-      lb.classList.remove("show");
-      lb.setAttribute("aria-hidden","true");
-      document.body.style.overflow = "";
-    }
-
-    // Close on background click
-    document.getElementById("lightbox").addEventListener("click", (e) => {
-      if (e.target.id === "lightbox") closeLightbox();
-    });
-
-    // Close on Esc
-    window.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") closeLightbox();
-    });
   </script>
 
 </body>
