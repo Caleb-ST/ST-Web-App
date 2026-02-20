@@ -167,7 +167,7 @@
       transform: translateY(1px);
     }
 
-    /* ---------- Dot Legend (replaces the ugly image) ---------- */
+    /* ---------- Dot Legend ---------- */
     .divider{
       height: 1px;
       background: rgba(255,255,255,0.08);
@@ -276,7 +276,6 @@
       letter-spacing: 0.15px;
     }
 
-    /* Make it comfy on mobile */
     @media (max-width: 580px){
       .legendTable thead{ display:none; }
       .legendTable, .legendTable tbody, .legendTable tr, .legendTable td{ display:block; width:100%; }
@@ -293,7 +292,7 @@
       }
     }
 
-    /* Login overlay */
+    /* ---------- Login overlay ---------- */
     #login-screen{
       position: fixed;
       inset: 0;
@@ -368,6 +367,70 @@
     .btn:hover{
       box-shadow: 0 18px 40px rgba(255,43,61,0.35);
     }
+
+    .btn.secondary{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      color: var(--text);
+    }
+
+    .btn.secondary:hover{
+      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
+    }
+
+    /* ---------- Stock Movement Modal ---------- */
+    #stock-modal{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display: none;              /* hidden by default */
+      align-items:center;
+      justify-content:center;
+      z-index: 9998;
+      padding: 22px 14px;
+    }
+
+    #stock-modal[aria-hidden="false"]{
+      display:flex;
+    }
+
+    .stockModal{
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .stockModal h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .stockModal .muted{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .errorText{
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(255,43,61,0.95);
+      min-height: 16px;
+    }
+
+    .modalActions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
   </style>
 </head>
 
@@ -386,6 +449,25 @@
 
       <div class="formRow">
         <button class="btn" onclick="login()">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Movement Modal -->
+  <div id="stock-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="stockTitle">
+    <div class="stockModal">
+      <h3 id="stockTitle">Stock Movement Access</h3>
+      <div class="muted">Enter the courier password to continue.</div>
+
+      <div class="formRow">
+        <input id="stockPass" type="password" placeholder="Password" autocomplete="off" />
+      </div>
+
+      <div id="stockError" class="errorText"></div>
+
+      <div class="modalActions">
+        <button class="btn" id="stockSubmit">Continue</button>
+        <button class="btn secondary" id="stockCancel">Cancel</button>
       </div>
     </div>
   </div>
@@ -411,7 +493,7 @@
       <div class="grid">
         <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank">RST Approval Request</a>
 
-        <!-- Stock movement button now has an ID so we can intercept clicks -->
+        <!-- Stock movement button has an ID so we can intercept -->
         <a class="nav-button" id="stockMovementBtn" href="https://forms.gle/LTQ8EbQrA2N1KTyXA" target="_blank">Request for Stock Movement</a>
 
         <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
@@ -513,7 +595,7 @@
   <script>
     // ----- Primary login (existing) -----
     const validUsername = "Sydney Tools";
-    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674"; // your existing MD5 hash
+    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674"; // existing MD5 hash
 
     // ----- Secondary gate for stock movement -----
     // MD5("courier-trent") = f561f6f8d4e6e261b155066d347adb5e
@@ -548,24 +630,88 @@
       }
     }
 
-    // Intercept ONLY the Stock Movement click and require password
-    (function setupStockMovementGate(){
-      const btn = document.getElementById("stockMovementBtn");
-      if (!btn) return;
+    // ----- Stock Movement Modal Logic -----
+    const stockBtn = document.getElementById("stockMovementBtn");
+    const stockModal = document.getElementById("stock-modal");
+    const stockPass = document.getElementById("stockPass");
+    const stockError = document.getElementById("stockError");
+    const stockSubmit = document.getElementById("stockSubmit");
+    const stockCancel = document.getElementById("stockCancel");
 
-      btn.addEventListener("click", function(e){
+    let pendingStockHref = null;
+    let pendingStockTarget = "_blank";
+
+    function openStockModal(href, target){
+      pendingStockHref = href;
+      pendingStockTarget = target || "_blank";
+
+      stockError.textContent = "";
+      stockPass.value = "";
+
+      stockModal.setAttribute("aria-hidden", "false");
+      // small delay helps focus reliably after display
+      setTimeout(() => stockPass.focus(), 0);
+    }
+
+    function closeStockModal(){
+      stockModal.setAttribute("aria-hidden", "true");
+      pendingStockHref = null;
+      stockError.textContent = "";
+      stockPass.value = "";
+    }
+
+    function submitStockModal(){
+      const entered = stockPass.value;
+
+      if (!entered){
+        stockError.textContent = "Password required.";
+        stockPass.focus();
+        return;
+      }
+
+      if (md5(entered) === stockMovementPasswordHash){
+        closeStockModal();
+        window.open(pendingStockHref, pendingStockTarget);
+      } else {
+        stockError.textContent = "Incorrect password.";
+        stockPass.value = "";
+        stockPass.focus();
+      }
+    }
+
+    // Open modal when clicking stock movement
+    stockBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openStockModal(stockBtn.href, stockBtn.target);
+    });
+
+    // Buttons
+    stockSubmit.addEventListener("click", submitStockModal);
+    stockCancel.addEventListener("click", closeStockModal);
+
+    // Enter to submit
+    stockPass.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
         e.preventDefault();
+        submitStockModal();
+      }
+      if (e.key === "Escape"){
+        e.preventDefault();
+        closeStockModal();
+      }
+    });
 
-        const entered = prompt("Enter password to access Stock Movement:");
-        if (entered === null) return; // user cancelled
+    // Click outside modal to close
+    stockModal.addEventListener("click", (e) => {
+      if (e.target === stockModal) closeStockModal();
+    });
 
-        if (md5(entered) === stockMovementPasswordHash){
-          window.open(btn.href, btn.target || "_blank");
-        } else {
-          alert("Incorrect password.");
-        }
-      });
-    })();
+    // Escape anywhere closes if open
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && stockModal.getAttribute("aria-hidden") === "false"){
+        closeStockModal();
+      }
+    });
   </script>
 
 </body>
