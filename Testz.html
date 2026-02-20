@@ -1,329 +1,311 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Index, Inventory</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Index, Inventory</title>
 
-  <style>
-    :root{
-      --bg0:#07070a;
-      --bg1:#0b0b10;
-      --text:#f2f2f5;
-      --muted:#a4a4b3;
-      --border:rgba(255,255,255,0.08);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
-      --red:#ff2b3d;
-      --red2:#b80c2b;
-      --focus: 0 0 0 3px rgba(255,43,61,0.25);
-    }
+<style>
+:root{
+  --bg0:#07070a;
+  --bg1:#0b0b10;
+  --text:#f2f2f5;
+  --muted:#a4a4b3;
+  --border:rgba(255,255,255,0.08);
+  --shadow:0 20px 60px rgba(0,0,0,0.55);
+  --red:#ff2b3d;
+}
 
-    *{ box-sizing:border-box; }
+*{box-sizing:border-box;}
 
-    body{
-      margin:0;
-      min-height:100vh;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
-        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 26px 14px;
-    }
+body{
+  margin:0;
+  min-height:100vh;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
+    linear-gradient(180deg,var(--bg0),var(--bg1));
+  display:flex;
+  justify-content:center;
+  padding:26px 14px;
+}
 
-    .wrap{
-      width: 100%;
-      max-width: 980px;
-      text-align: center;
-    }
+.wrap{
+  width:100%;
+  max-width:980px;
+  text-align:center;
+}
 
-    h1{
-      margin:0;
-      font-size: 34px;
-      letter-spacing: 0.4px;
-    }
+h1{margin:0;font-size:34px;}
+h2{margin:6px 0;color:var(--muted);font-size:14px;}
 
-    h2{
-      margin: 6px 0 0;
-      font-size: 14px;
-      font-weight: 500;
-      color: var(--muted);
-      letter-spacing: 0.3px;
-    }
+.badge{
+  display:inline-block;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  background:rgba(255,43,61,0.18);
+  border:1px solid rgba(255,43,61,0.35);
+  margin-top:10px;
+}
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: rgba(255,43,61,0.18);
-      border: 1px solid rgba(255,43,61,0.35);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      margin: 10px auto 0;
-    }
+.panel{
+  margin-top:20px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+}
 
-    .backRow{
-      display:flex;
-      justify-content:flex-start;
-      margin-top: 18px;
-      margin-bottom: 8px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+  margin-bottom:25px;
+}
 
-    .backBtn{
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor:pointer;
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-    }
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr;}
+}
 
-    .panel{
-      margin-top: 6px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-    }
+.nav-button{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  border-radius:16px;
+  text-decoration:none;
+  color:#fff;
+  background:linear-gradient(180deg,#ff2b3d,#b80c2b);
+  font-weight:600;
+}
 
-    .panelHead{
-      padding: 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
-    }
+/* -------- Legend -------- */
 
-    .grid{
-      padding: 16px;
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
+.legendTitle{
+  text-align:left;
+  font-weight:700;
+  margin-bottom:8px;
+}
 
-    @media (max-width: 580px){
-      .grid{ grid-template-columns: 1fr; }
-    }
+.legendSub{
+  text-align:left;
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:15px;
+}
 
-    a.nav-button{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-decoration:none;
-      min-height: 92px;
-      padding: 18px;
-      border-radius: 16px;
-      color: var(--text);
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 650;
-    }
+.legendTable{
+  width:100%;
+  border-collapse:collapse;
+  text-align:left;
+}
 
-    /* Stock modal */
-    #stock-modal{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      display: none;
-      align-items:center;
-      justify-content:center;
-      z-index: 9998;
-      padding: 22px 14px;
-    }
+.legendTable th,
+.legendTable td{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,0.08);
+  font-size:14px;
+}
 
-    #stock-modal[aria-hidden="false"]{
-      display:flex;
-    }
+.dot{
+  display:inline-block;
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  margin-right:10px;
+  vertical-align:middle;
+}
 
-    .stockModal{
-      width: 100%;
-      max-width: 520px;
-      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 20px;
-      text-align: center;
-    }
+/* -------- Modal -------- */
 
-    .errorText{
-      margin-top: 10px;
-      font-size: 12px;
-      color: rgba(255,43,61,0.95);
-      min-height: 16px;
-    }
+#stock-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.7);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
 
-    .modalActions{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      margin-top: 14px;
-    }
+#stock-modal.active{
+  display:flex;
+}
 
-    input{
-      width:100%;
-      padding: 10px;
-      margin-top: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(255,255,255,0.06);
-      color: var(--text);
-    }
+.modalBox{
+  background:#111;
+  padding:25px;
+  border-radius:18px;
+  width:100%;
+  max-width:420px;
+  text-align:center;
+  box-shadow:var(--shadow);
+}
 
-    .btn{
-      padding: 10px 16px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 600;
-    }
+.modalBox input{
+  width:100%;
+  padding:10px;
+  margin-top:15px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,0.15);
+  background:#1a1a1f;
+  color:#fff;
+}
 
-    .btn.secondary{
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.14);
-    }
-  </style>
+.modalActions{
+  margin-top:15px;
+  display:flex;
+  gap:10px;
+  justify-content:center;
+}
+
+.btn{
+  padding:8px 16px;
+  border-radius:10px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn.primary{
+  background:#ff2b3d;
+  color:white;
+}
+
+.btn.secondary{
+  background:#333;
+  color:white;
+}
+
+.error{
+  margin-top:8px;
+  font-size:12px;
+  color:#ff2b3d;
+  min-height:14px;
+}
+</style>
 </head>
 
 <body>
 
-  <!-- Stock Movement Modal -->
-  <div id="stock-modal" aria-hidden="true">
-    <div class="stockModal">
-      <h3>Stock Movement Access</h3>
-      <div style="color:var(--muted); font-size:13px;">Enter the courier password to continue.</div>
-
-      <input id="stockPass" type="password" placeholder="Password" autocomplete="off" />
-      <div id="stockError" class="errorText"></div>
-
-      <div class="modalActions">
-        <button class="btn" id="stockSubmit">Continue</button>
-        <button class="btn secondary" id="stockCancel">Cancel</button>
-      </div>
+<!-- Modal -->
+<div id="stock-modal">
+  <div class="modalBox">
+    <h3>Stock Movement Access</h3>
+    <p style="color:#aaa;font-size:13px;">Enter the courier password to continue.</p>
+    <input type="password" id="stockPass" placeholder="Password" />
+    <div id="stockError" class="error"></div>
+    <div class="modalActions">
+      <button class="btn primary" id="stockSubmit">Continue</button>
+      <button class="btn secondary" id="stockCancel">Cancel</button>
     </div>
   </div>
+</div>
 
-  <div class="wrap">
-    <h1>Sydney Tools</h1>
-    <h2>The Index, Inventory</h2>
-    <div class="badge">● Internal Navigation</div>
+<div class="wrap">
+  <h1>Sydney Tools</h1>
+  <h2>The Index, Inventory</h2>
+  <div class="badge">● Internal Navigation</div>
 
-    <div class="backRow">
-      <button class="backBtn" onclick="history.back()">← Back</button>
+  <div class="panel">
+
+    <div class="grid">
+      <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank">
+        RST Approval Request
+      </a>
+
+      <a class="nav-button" id="stockBtn" href="https://forms.gle/LTQ8EbQrA2N1KTyXA" target="_blank">
+        Request for Stock Movement
+      </a>
+
+      <a class="nav-button" href="Capitol Transport.html">
+        Capital Transport
+      </a>
+
+      <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">
+        GP Check Fix
+      </a>
     </div>
 
-    <div class="panel">
-      <div class="panelHead">Select a tool to continue</div>
-
-      <div class="grid">
-        <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank">RST Approval Request</a>
-
-        <a class="nav-button" id="stockMovementBtn" href="https://forms.gle/LTQ8EbQrA2N1KTyXA" target="_blank">
-          Request for Stock Movement
-        </a>
-
-        <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
-        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">
-          GP Check Fix
-        </a>
-      </div>
+    <!-- Legend -->
+    <div class="legendTitle">Coloured Paperwork & Stock Dot Legend</div>
+    <div class="legendSub">
+      Purpose: Coloured dots indicate which Adelaide store the paperwork and stock must be sent to.
     </div>
+
+    <table class="legendTable">
+      <tr>
+        <th>Dot Colour</th>
+        <th>Store</th>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:#2b2bff"></span>Blue</td>
+        <td>Windsor Gardens</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:#2f7a1f"></span>Green</td>
+        <td>Lonsdale</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:#f2a324"></span>Orange</td>
+        <td>Seaford</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:#e03228"></span>Red</td>
+        <td>Regency Park</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:#f3c1cf"></span>Pink</td>
+        <td>Parafield</td>
+      </tr>
+      <tr>
+        <td><span class="dot" style="background:#f6f24a"></span>Yellow</td>
+        <td>Munno Para</td>
+      </tr>
+    </table>
+
   </div>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
 <script>
-  const stockMovementPasswordHash = "f561f6f8d4e6e261b155066d347adb5e";
+const stockHash = "f561f6f8d4e6e261b155066d347adb5e";
 
-  function md5(str){
-    return CryptoJS.MD5(str).toString();
+const modal = document.getElementById("stock-modal");
+const stockBtn = document.getElementById("stockBtn");
+const passInput = document.getElementById("stockPass");
+const errorText = document.getElementById("stockError");
+
+let targetHref = null;
+let targetTarget = "_blank";
+
+stockBtn.addEventListener("click",(e)=>{
+  e.preventDefault();
+  targetHref = stockBtn.href;
+  targetTarget = stockBtn.target;
+  modal.classList.add("active");
+  passInput.focus();
+});
+
+document.getElementById("stockSubmit").addEventListener("click",submitPass);
+document.getElementById("stockCancel").addEventListener("click",()=>modal.classList.remove("active"));
+
+function submitPass(){
+  if(CryptoJS.MD5(passInput.value).toString() === stockHash){
+    modal.classList.remove("active");
+    window.open(targetHref,targetTarget);
+  }else{
+    errorText.textContent="Incorrect password.";
+    passInput.value="";
   }
+}
 
-  const stockBtn = document.getElementById("stockMovementBtn");
-  const stockModal = document.getElementById("stock-modal");
-  const stockPass = document.getElementById("stockPass");
-  const stockError = document.getElementById("stockError");
-  const stockSubmit = document.getElementById("stockSubmit");
-  const stockCancel = document.getElementById("stockCancel");
-
-  let pendingStockHref = null;
-  let pendingStockTarget = "_blank";
-
-  function openStockModal(href, target){
-    pendingStockHref = href;
-    pendingStockTarget = target || "_blank";
-    stockPass.value = "";
-    stockError.textContent = "";
-    stockModal.setAttribute("aria-hidden","false");
-    setTimeout(() => stockPass.focus(), 0);
-  }
-
-  function closeStockModal(){
-    stockModal.setAttribute("aria-hidden","true");
-  }
-
-  function submitStockModal(){
-    const entered = stockPass.value;
-
-    if (!entered){
-      stockError.textContent = "Password required.";
-      stockPass.focus();
-      return;
-    }
-
-    if (md5(entered) === stockMovementPasswordHash){
-      const href = pendingStockHref;
-      const target = pendingStockTarget || "_blank";
-
-      closeStockModal();
-
-      if (href){
-        window.open(href, target);
-      }
-    } else {
-      stockError.textContent = "Incorrect password.";
-      stockPass.value = "";
-      stockPass.focus();
-    }
-  }
-
-  stockBtn.addEventListener("click", (e)=>{
-    e.preventDefault();
-    openStockModal(stockBtn.href, stockBtn.target);
-  });
-
-  stockSubmit.addEventListener("click", submitStockModal);
-  stockCancel.addEventListener("click", closeStockModal);
-
-  stockPass.addEventListener("keydown", (e)=>{
-    if(e.key === "Enter"){
-      e.preventDefault();
-      submitStockModal();
-    }
-    if(e.key === "Escape"){
-      closeStockModal();
-    }
-  });
-
-  stockModal.addEventListener("click",(e)=>{
-    if(e.target === stockModal){
-      closeStockModal();
-    }
-  });
+passInput.addEventListener("keydown",(e)=>{
+  if(e.key==="Enter") submitPass();
+});
 </script>
 
 </body>
