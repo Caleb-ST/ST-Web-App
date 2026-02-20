@@ -599,6 +599,7 @@
     const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674";
 
     // ----- Secondary gate for stock movement -----
+    // UPDATED: MD5("0606") = d1dd210d6b1312cb342b56d02bd5e651
     const stockMovementPasswordHash = "d1dd210d6b1312cb342b56d02bd5e651";
 
     function md5(str){
@@ -657,7 +658,6 @@
       stockModal.setAttribute("aria-hidden", "true");
       stockError.textContent = "";
       stockPass.value = "";
-      // NOTE: do NOT null href/target here, we capture them on submit before close.
     }
 
     function submitStockModal(){
@@ -670,7 +670,6 @@
       }
 
       if (md5(entered) === stockMovementPasswordHash){
-        // capture before closing, so we never open "null"
         const href = pendingStockHref;
         const target = pendingStockTarget || "_blank";
 
@@ -688,17 +687,14 @@
       }
     }
 
-    // Open modal when clicking stock movement
     stockBtn.addEventListener("click", (e) => {
       e.preventDefault();
       openStockModal(stockBtn.href, stockBtn.target);
     });
 
-    // Buttons
     stockSubmit.addEventListener("click", submitStockModal);
     stockCancel.addEventListener("click", closeStockModal);
 
-    // Enter / Escape
     stockPass.addEventListener("keydown", (e) => {
       if (e.key === "Enter"){
         e.preventDefault();
@@ -710,12 +706,10 @@
       }
     });
 
-    // Click outside to close
     stockModal.addEventListener("click", (e) => {
       if (e.target === stockModal) closeStockModal();
     });
 
-    // Escape anywhere closes if open
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && stockModal.getAttribute("aria-hidden") === "false"){
         closeStockModal();
