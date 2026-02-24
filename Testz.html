@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Index, Inventory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supplier Warranty Info</title>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
   <style>
     :root{
@@ -31,30 +32,34 @@
         radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
         radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: 26px 14px;
+      padding: 26px 14px 50px;
     }
 
     .wrap{
-      width: 100%;
-      max-width: 980px;
-      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .topbar{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap: 8px;
+      margin-bottom: 14px;
+      text-align:center;
     }
 
     h1{
       margin:0;
-      font-size: 34px;
-      letter-spacing: 0.4px;
+      font-size: 30px;
+      letter-spacing: .35px;
+      line-height: 1.1;
     }
 
-    h2{
-      margin: 6px 0 0;
-      font-size: 14px;
-      font-weight: 500;
+    .sub{
+      margin: 0;
+      font-size: 13px;
       color: var(--muted);
-      letter-spacing: 0.3px;
     }
 
     .badge{
@@ -67,655 +72,439 @@
       background: var(--pill2);
       border: 1px solid rgba(255,43,61,0.35);
       box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      margin: 10px auto 0;
-      user-select:none;
-    }
-
-    /* Back button row */
-    .backRow{
-      display:flex;
-      justify-content:flex-start;
-      margin-top: 18px;
-      margin-bottom: 8px;
-    }
-
-    .backBtn{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 8px 14px;
-      border-radius: 12px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor:pointer;
-
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-
-      transition: transform .08s ease, box-shadow .15s ease;
-    }
-
-    .backBtn:hover{
-      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
-      transform: translateY(-1px);
-    }
-
-    .backBtn:active{
-      transform: translateY(1px);
+      white-space: nowrap;
     }
 
     .panel{
-      margin-top: 6px;
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
+      overflow: hidden;
       backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      overflow: hidden;
     }
 
-    .panelHead{
-      padding: 16px;
+    .row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      padding: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      text-align: center;
-      color: var(--muted);
-      font-size: 13px;
     }
+    .row:last-child{ border-bottom:none; }
 
-    .grid{
-      padding: 16px;
-      display:grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
-
-    @media (max-width: 580px){
-      .grid{ grid-template-columns: 1fr; }
-      h1{ font-size: 28px; }
-    }
-
-    a.nav-button{
+    .controls{
       display:flex;
+      gap:12px;
+      flex-wrap:wrap;
       align-items:center;
-      justify-content:center;
-      text-align:center;
-      text-decoration:none;
-
-      min-height: 92px;
-      padding: 18px 16px;
-      border-radius: 16px;
-
-      color: var(--text);
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 650;
-      letter-spacing: 0.2px;
-      transition: transform .08s ease, box-shadow .15s ease;
+      min-width: 0;
     }
 
-    a.nav-button:hover{
-      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
-      transform: translateY(-1px);
+    .controls.right{
+      justify-content:flex-end;
     }
 
-    a.nav-button:active{
-      transform: translateY(1px);
-    }
-
-    /* ---------- Dot Legend ---------- */
-    .divider{
-      height: 1px;
-      background: rgba(255,255,255,0.08);
-      margin: 6px 16px 0;
-    }
-
-    .legendWrap{
-      padding: 16px;
-      text-align: left;
-    }
-
-    .legendHeader{
-      display:flex;
-      align-items:flex-start;
-      justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .legendTitle{
-      margin:0;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    .legendSub{
-      margin-top: 5px;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-      max-width: 720px;
-    }
-
-    .legendPill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: var(--muted);
-      user-select: none;
-    }
-
-    .legendCard{
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
-    }
-
-    .legendTable{
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .legendTable thead th{
-      text-align: left;
-      font-size: 12px;
-      letter-spacing: 0.3px;
-      color: rgba(242,242,245,0.85);
-      padding: 12px 12px;
-      background: rgba(255,255,255,0.06);
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-    }
-
-    .legendTable tbody td{
-      padding: 12px 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      font-size: 13px;
-      vertical-align: middle;
-    }
-
-    .legendTable tbody tr:last-child td{
-      border-bottom: none;
-    }
-
-    .dotRow{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      min-width: 220px;
-    }
-
-    .dot{
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      box-shadow: 0 0 0 2px rgba(0,0,0,0.35);
-      border: 1px solid rgba(255,255,255,0.16);
-      flex: 0 0 14px;
-    }
-
-    .colourName{
-      font-weight: 800;
-      letter-spacing: 0.2px;
-    }
-
-    .storeName{
-      font-weight: 650;
-      letter-spacing: 0.15px;
-    }
-
-    @media (max-width: 580px){
-      .legendTable thead{ display:none; }
-      .legendTable, .legendTable tbody, .legendTable tr, .legendTable td{ display:block; width:100%; }
-      .legendTable tr{ padding: 10px 12px; }
-      .legendTable td{
-        border: none;
-        padding: 6px 0;
-      }
-      .legendTable tr:not(:last-child){
-        border-bottom: 1px solid rgba(255,255,255,0.08);
-      }
-      .storeName{ color: rgba(242,242,245,0.92); }
-    }
-
-    /* ---------- Login overlay ---------- */
-    #login-screen{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index: 10000;
-      padding: 22px 14px;
-    }
-
-    .loginModal{
-      width: 100%;
-      max-width: 520px;
-      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 16px;
-      text-align: center;
-    }
-
-    .loginModal h3{
-      margin:0;
-      font-size: 18px;
-    }
-
-    .loginModal .muted{
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .formRow{
-      display:flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 14px;
-      justify-content: center;
-    }
-
-    input{
-      flex: 1;
-      min-width: 220px;
-      padding: 10px;
+    input, button, a.btn{
+      padding: 10px 10px;
       font: inherit;
       color: var(--text);
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
-      outline:none;
+      outline: none;
+    }
+
+    input{
+      min-width:260px;
+      width: 420px;
+      max-width: 92%;
     }
 
     input::placeholder{ color: rgba(242,242,245,0.45); }
-
-    input:focus{
-      box-shadow: var(--focus);
-      border-color: rgba(255,43,61,0.45);
-    }
+    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
 
     .btn{
-      padding: 10px 16px;
-      border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 600;
-      transition: box-shadow .15s ease, transform .08s ease;
-    }
-
-    .btn:hover{
-      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
-      transform: translateY(-1px);
-    }
-
-    .btn:active{ transform: translateY(1px); }
-
-    .btn.secondary{
+      cursor:pointer;
+      border: 1px solid rgba(255,255,255,0.12);
       background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.14);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-    }
-
-    .btn.secondary:hover{
-      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
-    }
-
-    /* ---------- Stock Movement Modal (glass) ---------- */
-    #stock-modal{
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.72);
-      display: none;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      text-decoration:none;
+      display:inline-flex;
       align-items:center;
       justify-content:center;
-      z-index: 9999;
-      padding: 22px 14px;
+      gap:8px;
+      white-space:nowrap;
+      user-select:none;
     }
 
-    #stock-modal[aria-hidden="false"]{ display:flex; }
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border-color: rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      font-weight: 700;
+      letter-spacing: .2px;
+    }
 
-    .stockModal{
+    .btn-sm{
+      padding: 8px 10px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .btn-pdf{
+      border-color: rgba(255,43,61,0.28);
+      box-shadow: 0 12px 34px rgba(0,0,0,0.35);
+    }
+
+    .tableWrap{ padding: 12px; }
+
+    .tables-container{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .card{
+      background: rgba(0,0,0,0.18);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      overflow:hidden;
+    }
+
+    .cardHead{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .cardHead h2{
+      margin:0;
+      font-size: 13px;
+      letter-spacing: .6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.85);
+    }
+
+    .mutedSmall{
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 4px;
+      white-space: nowrap;
+    }
+
+    table{
       width: 100%;
-      max-width: 560px;
+      border-collapse: collapse;
+    }
+
+    th, td{
+      padding: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      vertical-align: middle;
+    }
+
+    th{
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      color: rgba(242,242,245,0.75);
+      background: rgba(255,255,255,0.04);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      text-align:left;
+    }
+
+    tr:hover td{ background: rgba(255,255,255,0.03); }
+
+    .supplier{ font-weight: 700; }
+
+    .button-group{
+      display:flex;
+      justify-content:flex-end;
+      align-items:center;
+      gap: 8px;
+      flex-wrap: nowrap;
+    }
+
+    #modal{
+      display:none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      z-index: 9999;
+      padding: 20px;
+      overflow:auto;
+      align-items:center;
+      justify-content:center;
+    }
+    #modal.open{ display:flex; }
+
+    .modal-content{
+      width: 100%;
+      max-width: 760px;
       background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 18px;
       box-shadow: var(--shadow);
-      padding: 18px;
-      text-align: center;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-    }
-
-    .stockModal h3{
-      margin:0;
-      font-size: 18px;
-    }
-
-    .stockModal .muted{
-      margin-top: 6px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .errorText{
-      margin-top: 10px;
-      font-size: 12px;
-      color: rgba(255,43,61,0.95);
-      min-height: 16px;
-      user-select:none;
-    }
-
-    .modalActions{
-      display:flex;
-      gap:10px;
-      justify-content:center;
-      flex-wrap: wrap;
-      margin-top: 14px;
+      padding: 16px;
     }
   </style>
 </head>
 
 <body>
-
-  <!-- Login -->
-  <div id="login-screen">
-    <div class="loginModal">
-      <h3>Please Log In</h3>
-      <div class="muted">Internal tools portal</div>
-
-      <div class="formRow">
-        <input id="username" type="text" placeholder="Username" />
-        <input id="password" type="password" placeholder="Password" />
-      </div>
-
-      <div class="formRow">
-        <button class="btn" onclick="login()">Login</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Stock Movement Modal -->
-  <div id="stock-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="stockTitle">
-    <div class="stockModal">
-      <h3 id="stockTitle">Stock Movement Access</h3>
-      <div class="muted">Enter the courier password to continue.</div>
-
-      <div class="formRow">
-        <input id="stockPass" type="password" placeholder="Password" autocomplete="off" />
-      </div>
-
-      <div id="stockError" class="errorText"></div>
-
-      <div class="modalActions">
-        <button class="btn" id="stockSubmit">Continue</button>
-        <button class="btn secondary" id="stockCancel">Cancel</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Main -->
   <div class="wrap">
-
-    <h1>Sydney Tools</h1>
-    <h2>The Index, Inventory</h2>
-    <div class="badge">● Internal Navigation</div>
-
-    <div class="backRow">
-      <button class="backBtn" onclick="goBack()">← Back</button>
+    <div class="topbar">
+      <h1>Supplier Warranty Information</h1>
+      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
+      <div class="badge">● Live from Google Sheet</div>
     </div>
 
     <div class="panel">
+      <div class="row">
+        <div class="controls left">
+          <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
+          <input type="text" id="searchInput" placeholder="Search suppliers..." />
+        </div>
 
-      <div class="panelHead">Select a tool to continue</div>
+        <div class="controls right">
+          <a class="btn btn-sm btn-pdf"
+             href="Petrol_Tool_5_Point_Check.pdf"
+             target="_blank"
+             rel="noopener noreferrer">
+            📄 Petrol Tool 5-Point Check
+          </a>
 
-      <div class="grid">
-        <a class="nav-button" href="https://forms.gle/wk4indaqcvYv75AG6" target="_blank">RST Approval Request</a>
-
-        <a class="nav-button" id="stockMovementBtn" href="https://forms.gle/LTQ8EbQrA2N1KTyXA" target="_blank">
-          🔒Request for Stock Movement🔒
-        </a>
-
-        <a class="nav-button" href="Capitol Transport.html">Capital Transport</a>
-
-        <a class="nav-button" href="https://docs.google.com/forms/d/e/1FAIpQLSfURoQotAPeHLxEabuxq09r1bgaW7LyHRbiNcOPTahGxmZLiw/viewform?usp=sharing" target="_blank">
-          GP Check Fix
-        </a>
+          <a class="btn btn-sm btn-pdf"
+             href="https://forms.gle/neKqujWWCwRYfyRY7"
+             target="_blank"
+             rel="noopener noreferrer">
+            📝 Submit Petrol Tool Check
+          </a>
+        </div>
       </div>
 
-      <!-- Dot Legend -->
-      <div class="divider"></div>
-      <div class="legendWrap">
-        <div class="legendHeader">
-          <div>
-            <p class="legendTitle">Coloured Paperwork & Stock Dot Legend</p>
-            <div class="legendSub">
-              Purpose: Coloured dots indicate which Adelaide store the paperwork and stock must be sent to.
+      <!-- EVERYTHING BELOW THIS REMAINS EXACTLY AS YOUR ORIGINAL PAGE -->
+      <!-- Your tables, modal, and script remain unchanged -->
+
+      <div class="tableWrap">
+        <div class="tables-container">
+          <div class="card">
+            <div class="cardHead">
+              <h2>Local Suppliers</h2>
+              <span class="mutedSmall" id="localCount"></span>
             </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="localTable"></tbody>
+            </table>
           </div>
-          <div class="legendPill">● Use the dot colour</div>
-        </div>
 
-        <div class="legendCard">
-          <table class="legendTable" aria-label="Dot colour legend">
-            <thead>
-              <tr>
-                <th>Dot Colour</th>
-                <th>Store</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <div class="dotRow">
-                    <span class="dot" style="background:#2b2bff"></span>
-                    <span class="colourName">Blue</span>
-                  </div>
-                </td>
-                <td class="storeName">Windsor Gardens</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="dotRow">
-                    <span class="dot" style="background:#2f7a1f"></span>
-                    <span class="colourName">Green</span>
-                  </div>
-                </td>
-                <td class="storeName">Lonsdale</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="dotRow">
-                    <span class="dot" style="background:#f2a324"></span>
-                    <span class="colourName">Orange</span>
-                  </div>
-                </td>
-                <td class="storeName">Seaford</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="dotRow">
-                    <span class="dot" style="background:#e03228"></span>
-                    <span class="colourName">Red</span>
-                  </div>
-                </td>
-                <td class="storeName">Regency Park</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="dotRow">
-                    <span class="dot" style="background:#f3c1cf"></span>
-                    <span class="colourName">Pink</span>
-                  </div>
-                </td>
-                <td class="storeName">Parafield</td>
-              </tr>
-
-              <tr>
-                <td>
-                  <div class="dotRow">
-                    <span class="dot" style="background:#f6f24a"></span>
-                    <span class="colourName">Yellow</span>
-                  </div>
-                </td>
-                <td class="storeName">Munno Para</td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="card">
+            <div class="cardHead">
+              <h2>Imported Suppliers</h2>
+              <span class="mutedSmall" id="importCount"></span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th style="width:50%;">Supplier</th>
+                  <th>Options</th>
+                </tr>
+              </thead>
+              <tbody id="importTable"></tbody>
+            </table>
+          </div>
         </div>
       </div>
-
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <div id="modal" aria-hidden="true">
+    <div class="modal-content" role="dialog" aria-modal="true">
+      <div class="modalHead">
+        <div>
+          <h3 id="modalTitle"></h3>
+          <div class="mutedSmall" id="modalSub"></div>
+        </div>
+        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
+      </div>
+
+      <div class="modalBody" id="modalBody"></div>
+
+      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+  </div>
 
   <script>
-    // ----- Primary login (existing) -----
-    const validUsername = "Sydney Tools";
-    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674";
+    const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
+    let suppliers = [];
 
-    // ----- Secondary gate for stock movement -----
-    // UPDATED: MD5("0606") = d1dd210d6b1312cb342b56d02bd5e651
-    const stockMovementPasswordHash = "564f4bcd11273b8ea6b49fbe2dc2ad1c";
+    Papa.parse(csvUrl, {
+      download: true,
+      header: true,
+      complete: function(results) {
+        const rows = (results.data || []).map(row => {
+          const clean = {};
+          for (const key in row) {
+            const normKey = (key || "").trim().replace(/\s+/g, " ");
+            clean[normKey] = (row[key] ?? "").trim();
+          }
+          return clean;
+        });
 
-    function md5(str){
-      return CryptoJS.MD5(str).toString();
-    }
+        suppliers = rows.filter(item => {
+          const hasBrand = !!item["Brands"];
+          const hasWarrantyInfo = !!item["Warranty Information"];
+          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+          return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
+        });
 
-    // Persist login
-    if (localStorage.getItem("loggedIn") === "true"){
-      document.getElementById("login-screen").style.display = "none";
-    }
-
-    function login(){
-      const u = document.getElementById("username").value.trim();
-      const p = document.getElementById("password").value;
-
-      if (u === validUsername && md5(p) === validPasswordHash){
-        localStorage.setItem("loggedIn","true");
-        document.getElementById("login-screen").style.display = "none";
-      } else {
-        alert("Access denied.");
-        window.location.href = "https://www.google.com";
+        renderTables();
       }
+    });
+
+    function escapeHtml(str) {
+      return String(str ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
-    function goBack(){
-      if (window.history.length > 1){
-        window.history.back();
-      } else {
-        window.location.href = "index.html";
-      }
-    }
+    function renderTables(filter = "") {
+      const local = document.getElementById("localTable");
+      const imported = document.getElementById("importTable");
+      const localCount = document.getElementById("localCount");
+      const importCount = document.getElementById("importCount");
 
-    // ----- Stock Movement Modal Logic -----
-    const stockBtn = document.getElementById("stockMovementBtn");
-    const stockModal = document.getElementById("stock-modal");
-    const stockPass = document.getElementById("stockPass");
-    const stockError = document.getElementById("stockError");
-    const stockSubmit = document.getElementById("stockSubmit");
-    const stockCancel = document.getElementById("stockCancel");
+      local.innerHTML = "";
+      imported.innerHTML = "";
 
-    let pendingStockHref = null;
-    let pendingStockTarget = "_blank";
+      let lCount = 0, iCount = 0;
 
-    function openStockModal(href, target){
-      pendingStockHref = href;
-      pendingStockTarget = target || "_blank";
+      suppliers.forEach((item, idx) => {
+        const brand = item["Brands"];
+        const isImported = (item["Import"] || "").toLowerCase() === "true";
 
-      stockError.textContent = "";
-      stockPass.value = "";
+        if (!brand) return;
+        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
 
-      stockModal.setAttribute("aria-hidden", "false");
-      setTimeout(() => stockPass.focus(), 0);
-    }
+        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+        const hasWarrantyInfo = !!item["Warranty Information"];
 
-    function closeStockModal(){
-      stockModal.setAttribute("aria-hidden", "true");
-      stockError.textContent = "";
-      stockPass.value = "";
-    }
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="supplier">${escapeHtml(brand)}</td>
+          <td>
+            <div class="button-group">
+              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
+              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
+            </div>
+          </td>
+        `;
 
-    function submitStockModal(){
-      const entered = stockPass.value;
-
-      if (!entered){
-        stockError.textContent = "Password required.";
-        stockPass.focus();
-        return;
-      }
-
-      if (md5(entered) === stockMovementPasswordHash){
-        const href = pendingStockHref;
-        const target = pendingStockTarget || "_blank";
-
-        closeStockModal();
-
-        if (href){
-          window.open(href, target);
+        if (isImported) {
+          imported.appendChild(row);
+          iCount++;
         } else {
-          alert("Link not set. Refresh the page and try again.");
+          local.appendChild(row);
+          lCount++;
         }
-      } else {
-        stockError.textContent = "Incorrect password.";
-        stockPass.value = "";
-        stockPass.focus();
-      }
+      });
+
+      localCount.textContent = `${lCount} suppliers`;
+      importCount.textContent = `${iCount} suppliers`;
+
+      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
     }
 
-    stockBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      openStockModal(stockBtn.href, stockBtn.target);
-    });
+    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
-    stockSubmit.addEventListener("click", submitStockModal);
-    stockCancel.addEventListener("click", closeStockModal);
+    // ✅ FIXED: the old regex had [^\\s<] which stops at the letter "s" in many URLs.
+    // This version matches full URLs and trims trailing punctuation like "." or ")"
+    function linkify(text) {
+      const urlRegex = /(https?:\/\/[^\s<]+)/g;
 
-    stockPass.addEventListener("keydown", (e) => {
-      if (e.key === "Enter"){
-        e.preventDefault();
-        submitStockModal();
+      return escapeHtml(text).replace(urlRegex, (match) => {
+        const clean = match.replace(/[),.]+$/g, "");
+        const tail = match.slice(clean.length);
+        return `<a href="${clean}" target="_blank" rel="noopener noreferrer">${clean}</a>${escapeHtml(tail)}`;
+      });
+    }
+
+    function showModalByIndex(index, type) {
+      const item = suppliers[index];
+      if (!item) return;
+
+      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
+      const modalSub = document.getElementById("modalSub");
+      const modalBody = document.getElementById("modalBody");
+      modalBody.innerHTML = "";
+
+      if (type === "info") {
+        modalSub.textContent = "Warranty Information";
+        const warrantyInfo = (item["Warranty Information"] || "N/A")
+          .split("\n")
+          .map(line => `<p>${linkify(line)}</p>`)
+          .join("");
+        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
+      } else {
+        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
+        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
+
+        let any = false;
+        for (let i = 1; i <= 6; i++) {
+          const key = prefix + i;
+          if (item[key]) {
+            any = true;
+            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
+          }
+        }
+        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
       }
-      if (e.key === "Escape"){
-        e.preventDefault();
-        closeStockModal();
-      }
-    });
 
-    stockModal.addEventListener("click", (e) => {
-      if (e.target === stockModal) closeStockModal();
-    });
+      openModal();
+    }
 
+    function openModal() {
+      const m = document.getElementById("modal");
+      m.classList.add("open");
+      m.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal() {
+      const m = document.getElementById("modal");
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+    }
+
+    document.getElementById("modal").addEventListener("click", (e) => {
+      if (e.target.id === "modal") closeModal();
+    });
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && stockModal.getAttribute("aria-hidden") === "false"){
-        closeStockModal();
-      }
+      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
     });
   </script>
-
 </body>
 </html>
