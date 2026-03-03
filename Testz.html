@@ -238,7 +238,7 @@
       letter-spacing: 0.6px;
       text-transform: uppercase;
       color: rgba(242,242,245,0.75);
-      background: var(--thead);
+      background: rgba(255,255,255,0.04);
       position: sticky;
       top: 0;
       z-index: 2;
@@ -254,7 +254,7 @@
       margin-left: 6px;
     }
 
-    tr:hover td{ background: var(--rowHover); }
+    tr:hover td{ background: rgba(255,255,255,0.035); }
 
     .code{
       font-weight: 800;
@@ -291,32 +291,6 @@
       font-weight: 700;
     }
 
-    .actions{
-      display:flex;
-      gap:8px;
-      justify-content:flex-end;
-      align-items:center;
-      white-space: nowrap;
-    }
-
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%);
-      background: rgba(15,15,22,0.92);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 14px;
-      padding: 10px 12px;
-      box-shadow: 0 18px 60px rgba(0,0,0,0.55);
-      color: rgba(242,242,245,0.95);
-      font-size: 13px;
-      display:none;
-      z-index: 99999;
-      max-width: 92vw;
-    }
-    .toast.show{ display:block; }
-
     .loading{
       padding: 14px 12px;
       color: rgba(242,242,245,0.85);
@@ -336,7 +310,7 @@
     <div class="topbar">
       <h1>Milwaukee Service Prices</h1>
       <p class="sub">
-        Search by model code or description. Prices shown are <strong>Service Price</strong> 
+        Search by model code or description. Prices shown are <strong>Service Price</strong>
       </p>
       <div class="badgeRow">
         <div class="badge">● Live from Google Sheet</div>
@@ -361,12 +335,6 @@
 
           <button class="btn btn-sm btn-ghost" id="clearBtn" title="Clear filters">Clear</button>
         </div>
-
-        <div class="controls">
-          <button class="btn btn-sm" id="copyVisibleBtn" title="Copy visible rows as TSV (paste into Sheets)">
-            Copy Visible (TSV)
-          </button>
-        </div>
       </div>
 
       <div class="meta">
@@ -376,7 +344,7 @@
         </div>
 
         <div class="hint">
-          Tip: click a column header to sort. Use “Copy Visible (TSV)” to paste the filtered list straight into Sheets.
+          Tip: click a column header to sort.
         </div>
       </div>
 
@@ -390,7 +358,6 @@
               <th data-sort="desc">Description <span class="sort" id="s_desc"></span></th>
               <th data-sort="type">Repair Type <span class="sort" id="s_type"></span></th>
               <th data-sort="price" style="text-align:right;">Service Price <span class="sort" id="s_price"></span></th>
-              <th style="text-align:right;">Actions</th>
             </tr>
           </thead>
           <tbody id="body"></tbody>
@@ -398,8 +365,6 @@
       </div>
     </div>
   </div>
-
-  <div class="toast" id="toast"></div>
 
   <script>
     // ✅ your published CSV
@@ -420,7 +385,6 @@
     const COL_TYPE = "Repair Type";
     const COL_MAX_EX = "Max Service Price (Excl GST)";
 
-    // ---------- helpers ----------
     function escapeHtml(str) {
       return String(str ?? "")
         .replaceAll("&", "&amp;")
@@ -428,14 +392,6 @@
         .replaceAll(">", "&gt;")
         .replaceAll('"', "&quot;")
         .replaceAll("'", "&#039;");
-    }
-
-    function toast(msg){
-      const t = document.getElementById("toast");
-      t.textContent = msg;
-      t.classList.add("show");
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => t.classList.remove("show"), 1700);
     }
 
     function normMoneyToNumber(value){
@@ -479,7 +435,6 @@
     }
 
     function cleanedRow(row){
-      // normalize keys/spaces
       const clean = {};
       for(const k in row){
         const nk = (k || "").trim().replace(/\s+/g, " ");
@@ -521,7 +476,7 @@
           const aIsNaN = !Number.isFinite(an);
           const bIsNaN = !Number.isFinite(bn);
           if(aIsNaN && bIsNaN) return 0;
-          if(aIsNaN) return 1; // last
+          if(aIsNaN) return 1;
           if(bIsNaN) return -1;
 
           return (an - bn) * dir;
@@ -570,13 +525,12 @@
       if(view.length === 0){
         body.innerHTML = `
           <tr>
-            <td colspan="6" class="muted">No results. Try fewer filters.</td>
+            <td colspan="5" class="muted">No results. Try fewer filters.</td>
           </tr>
         `;
         return;
       }
 
-      // render rows
       for(const r of view){
         const service = r[COL_SERVICE] || "";
         const material = r[COL_MATERIAL] || "";
@@ -594,50 +548,9 @@
             <span class="typeBadge ${typeClass(type)}">${escapeHtml(type || "—")}</span>
           </td>
           <td class="price ${isPOA ? "poa" : ""}">${escapeHtml(price || "—")}</td>
-          <td>
-            <div class="actions">
-              <button class="btn btn-sm btn-ghost" data-copy="${escapeHtml(service)}">Copy Service</button>
-              <button class="btn btn-sm" data-copy="${escapeHtml(material)}">Copy Material</button>
-            </div>
-          </td>
         `;
         body.appendChild(tr);
       }
-
-      // wire copy buttons
-      body.querySelectorAll("button[data-copy]").forEach(btn => {
-        btn.addEventListener("click", async () => {
-          const val = btn.getAttribute("data-copy") || "";
-          try{
-            await navigator.clipboard.writeText(val);
-            toast("Copied: " + val);
-          }catch(e){
-            toast("Copy failed (browser blocked it)");
-          }
-        });
-      });
-    }
-
-    function copyVisibleAsTSV(){
-      // header + rows, only the columns we show
-      const header = ["Service Material Number","Material Number","Material Number Description","Repair Type","Service Price"];
-      const lines = [header.join("\t")];
-
-      for(const r of view){
-        const price = servicePriceInc(r[COL_MAX_EX]);
-        lines.push([
-          r[COL_SERVICE] || "",
-          r[COL_MATERIAL] || "",
-          r[COL_DESC] || "",
-          r[COL_TYPE] || "",
-          price || ""
-        ].map(v => String(v).replace(/\t/g," ")).join("\t"));
-      }
-
-      const tsv = lines.join("\n");
-      navigator.clipboard.writeText(tsv)
-        .then(() => toast("Copied visible rows as TSV"))
-        .catch(() => toast("Copy failed (browser blocked it)"));
     }
 
     function setLastUpdated(){
@@ -647,7 +560,6 @@
     }
 
     function init(){
-      // load CSV
       Papa.parse(csvUrl, {
         download: true,
         header: true,
@@ -655,10 +567,8 @@
         complete: function(results){
           const rows = (results.data || []).map(cleanedRow);
 
-          // keep only rows with codes (some sheets love adding blanks)
           raw = rows.filter(r => (r[COL_SERVICE] || "").trim() && (r[COL_MATERIAL] || "").trim());
 
-          // show table
           document.getElementById("loading").style.display = "none";
           document.getElementById("tbl").style.display = "table";
 
@@ -671,7 +581,6 @@
         }
       });
 
-      // events
       document.getElementById("q").addEventListener("input", applyFilters);
       document.getElementById("type").addEventListener("change", applyFilters);
 
@@ -679,12 +588,8 @@
         document.getElementById("q").value = "";
         document.getElementById("type").value = "";
         applyFilters();
-        toast("Cleared");
       });
 
-      document.getElementById("copyVisibleBtn").addEventListener("click", copyVisibleAsTSV);
-
-      // sorting via header click
       document.querySelectorAll("th[data-sort]").forEach(th => {
         th.addEventListener("click", () => {
           const key = th.getAttribute("data-sort");
