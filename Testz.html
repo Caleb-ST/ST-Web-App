@@ -3,609 +3,517 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Index, Milwaukee Service Prices</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <title>The Index - Trailer Run Status</title>
 
   <style>
     :root{
       --bg0:#07070a;
       --bg1:#0b0b10;
+      --panel:#101018;
+      --panel2:#14141d;
       --text:#f2f2f5;
       --muted:#a4a4b3;
       --border:rgba(255,255,255,0.08);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
+      --shadow:0 20px 60px rgba(0,0,0,0.55);
       --red:#ff2b3d;
       --red2:#b80c2b;
+      --green:#1f9d63;
+      --amber:#c98b1f;
+      --pill:rgba(255,255,255,0.06);
       --pill2:rgba(255,43,61,0.18);
-      --focus: 0 0 0 3px rgba(255,43,61,0.25);
-
-      --chip: rgba(255,255,255,0.06);
-      --chipBorder: rgba(255,255,255,0.10);
-
-      --rowHover: rgba(255,255,255,0.035);
-      --thead: rgba(255,255,255,0.04);
-
-      --ok: rgba(80, 200, 120, 0.18);
-      --warn: rgba(255, 215, 0, 0.14);
-      --info: rgba(80, 160, 255, 0.14);
-      --danger: rgba(255, 80, 120, 0.14);
+      --focus:0 0 0 3px rgba(255,43,61,0.25);
     }
 
     *{ box-sizing:border-box; }
 
-    body{
+    html,body{
       margin:0;
-      min-height:100vh;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      min-height:100%;
       background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
-        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 26px 14px 50px;
+        radial-gradient(circle at top left, rgba(255,43,61,0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,255,255,0.04), transparent 22%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      color:var(--text);
+      font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
     }
 
-    .wrap{ max-width: 1320px; margin: 0 auto; }
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
 
-    .topbar{
+    .wrap{
+      width:min(1400px, calc(100% - 32px));
+      margin:0 auto;
+      padding:32px 0 48px;
+    }
+
+    .hero{
       display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap: 8px;
-      margin-bottom: 14px;
-      text-align:center;
-    }
-
-    h1{
-      margin:0;
-      font-size: 30px;
-      letter-spacing: .35px;
-      line-height: 1.1;
-    }
-
-    .sub{
-      margin: 0;
-      font-size: 13px;
-      color: var(--muted);
-      max-width: 980px;
-    }
-
-    .badgeRow{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:center;
-      margin-top: 6px;
-    }
-
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: var(--pill2);
-      border: 1px solid rgba(255,43,61,0.35);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      white-space: nowrap;
-    }
-    .badge.neutral{
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
       justify-content:space-between;
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:22px;
+      flex-wrap:wrap;
     }
 
-    .controls{
+    .hero-left h1{
+      margin:0 0 10px;
+      font-size:clamp(28px, 4vw, 44px);
+      line-height:1.05;
+      letter-spacing:-0.02em;
+    }
+
+    .hero-left p{
+      margin:0;
+      color:var(--muted);
+      max-width:800px;
+      line-height:1.5;
+      font-size:15px;
+    }
+
+    .hero-right{
       display:flex;
       gap:10px;
       flex-wrap:wrap;
       align-items:center;
-      min-width: 0;
     }
-
-    input, select, button, a.btn{
-      padding: 10px 10px;
-      font: inherit;
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      outline: none;
-    }
-
-    input{
-      min-width:260px;
-      width: 460px;
-      max-width: 92vw;
-    }
-    input::placeholder{ color: rgba(242,242,245,0.45); }
-    input:focus, select:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
 
     .btn{
+      appearance:none;
+      border:none;
+      outline:none;
       cursor:pointer;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      white-space:nowrap;
-      user-select:none;
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:700;
+      font-size:14px;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease, background .12s ease;
     }
 
-    .btn:active{ transform: translateY(1px); }
-
-    .btn-primary{
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border-color: rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 700;
-      letter-spacing: .2px;
+    .btn:focus-visible,
+    .search:focus-visible{
+      box-shadow:var(--focus);
     }
 
-    .btn-sm{
-      padding: 8px 10px;
-      border-radius: 12px;
-      font-size: 13px;
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-red{
+      color:white;
+      background:linear-gradient(180deg, var(--red), var(--red2));
+      box-shadow:0 10px 26px rgba(255,43,61,.22);
     }
 
     .btn-ghost{
-      background: rgba(255,255,255,0.04);
-      border-color: rgba(255,255,255,0.10);
+      color:var(--text);
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--border);
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.025));
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      border-radius:24px;
+      overflow:hidden;
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      padding:20px 22px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      flex-wrap:wrap;
+    }
+
+    .toolbar-left h2{
+      margin:0 0 6px;
+      font-size:22px;
+      line-height:1.1;
+    }
+
+    .toolbar-left p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .toolbar-right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .search{
+      width:min(340px, 100%);
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:14px;
+      outline:none;
     }
 
     .meta{
       display:flex;
-      gap:10px;
       flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px;
+      gap:16px;
+      padding:14px 22px 0;
+      color:var(--muted);
+      font-size:14px;
     }
 
-    .chips{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
+    .message{
+      padding:14px 22px 0;
+      color:var(--muted);
+      font-size:14px;
     }
 
-    .chip{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 7px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: var(--chip);
-      border: 1px solid var(--chipBorder);
-      color: rgba(242,242,245,0.92);
-      white-space: nowrap;
-    }
-    .chip strong{ font-weight: 800; }
-
-    .hint{
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-      max-width: 680px;
-    }
-
-    .tableWrap{
-      padding: 0;
-      overflow: auto;
-      max-height: 72vh;
+    .table-wrap{
+      padding:18px 22px 22px;
+      overflow-x:auto;
     }
 
     table{
-      width: 100%;
-      border-collapse: collapse;
-      min-width: 980px;
+      width:100%;
+      min-width:1100px;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:rgba(255,255,255,0.02);
     }
 
-    th, td{
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      vertical-align: middle;
-    }
-
-    th{
-      font-size: 12px;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: rgba(242,242,245,0.75);
-      background: rgba(255,255,255,0.04);
-      position: sticky;
-      top: 0;
-      z-index: 2;
+    thead th{
       text-align:left;
-      cursor: pointer;
-      user-select:none;
-      white-space: nowrap;
+      padding:14px 14px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--muted);
+      background:rgba(255,255,255,0.04);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      position:sticky;
+      top:0;
+      z-index:1;
     }
 
-    th .sort{
-      opacity: 0.6;
-      font-size: 11px;
-      margin-left: 6px;
+    tbody td{
+      padding:14px 14px;
+      font-size:14px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      vertical-align:top;
     }
 
-    tr:hover td{ background: rgba(255,255,255,0.035); }
-
-    .code{
-      font-weight: 800;
-      letter-spacing: 0.2px;
+    tbody tr:hover{
+      background:rgba(255,255,255,0.025);
     }
 
-    .desc{
-      color: rgba(242,242,245,0.9);
+    tbody tr:last-child td{
+      border-bottom:none;
     }
 
-    .typeBadge{
+    .pill{
       display:inline-flex;
       align-items:center;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: 12px;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      white-space: nowrap;
-    }
-    .t-fixed{ background: rgba(80,200,120,0.12); border-color: rgba(80,200,120,0.22); }
-    .t-cal{ background: rgba(80,160,255,0.12); border-color: rgba(80,160,255,0.22); }
-    .t-maint{ background: rgba(255,215,0,0.10); border-color: rgba(255,215,0,0.18); }
-    .t-quote{ background: rgba(255,80,120,0.10); border-color: rgba(255,80,120,0.18); }
-
-    .price{
-      font-weight: 900;
-      text-align: right;
-      white-space: nowrap;
+      gap:8px;
+      padding:7px 11px;
+      border-radius:999px;
+      background:var(--pill);
+      border:1px solid rgba(255,255,255,0.08);
+      font-size:12px;
+      font-weight:700;
+      line-height:1;
+      white-space:nowrap;
     }
 
-    .poa{
-      color: rgba(242,242,245,0.75);
-      font-weight: 700;
+    .pill.red{
+      background:var(--pill2);
+      border-color:rgba(255,43,61,0.2);
     }
 
-    .loading{
-      padding: 14px 12px;
-      color: rgba(242,242,245,0.85);
+    .pill.green{
+      background:rgba(31,157,99,0.16);
+      border-color:rgba(31,157,99,0.25);
     }
-    .muted{ color: var(--muted); }
 
-    @media (max-width: 780px){
-      input{ width: 100%; min-width: 0; }
-      .hint{ max-width: 100%; }
-      table{ min-width: 860px; }
+    .pill.amber{
+      background:rgba(201,139,31,0.16);
+      border-color:rgba(201,139,31,0.25);
+    }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .empty-state{
+      padding:28px 18px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .footer-note{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:right;
+    }
+
+    @media (max-width: 800px){
+      .wrap{
+        width:min(100% - 20px, 1400px);
+        padding:20px 0 34px;
+      }
+
+      .toolbar,
+      .meta,
+      .message,
+      .table-wrap{
+        padding-left:14px;
+        padding-right:14px;
+      }
+
+      .toolbar-right{
+        width:100%;
+      }
+
+      .search{
+        width:100%;
+      }
+
+      .hero-right{
+        width:100%;
+      }
     }
   </style>
 </head>
-
 <body>
   <div class="wrap">
-    <div class="topbar">
-      <h1>Milwaukee Service Prices</h1>
-      <p class="sub">
-        Search by model code or description. Prices shown are <strong>Service Price</strong>
-      </p>
-      <div class="badgeRow">
-        <div class="badge">● Live from Google Sheet</div>
-        <div class="badge neutral" id="lastUpdated">Loading…</div>
+    <section class="hero">
+      <div class="hero-left">
+        <h1>Trailer Run Status</h1>
+        <p>
+          Live view of trailer requests pulled from the master sheet. Refresh the data at any time and
+          use the search box to filter stores, invoice references, names, or status.
+        </p>
       </div>
-    </div>
 
-    <div class="panel">
-      <div class="row">
-        <div class="controls">
-          <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
+      <div class="hero-right">
+        <a class="btn btn-ghost" href="index.html">Back to Index</a>
+      </div>
+    </section>
 
-          <input id="q" type="text" placeholder="Search code or description… e.g. M12FID or circular saw" />
+    <section class="card">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2>Current Requests</h2>
+          <p>Showing Requesting Store, Invoice Reference, Sending Store, Stock Confirmed With, Picking Slip Number, Dispatcher Name, Stock Verified, and Request Status.</p>
+        </div>
 
-          <select id="type">
-            <option value="">All Repair Types</option>
-            <option value="FIXED SERVICE">Fixed Service</option>
-            <option value="CALIBRATION SERVICE">Calibration Service</option>
-            <option value="MAINTENANCE">Maintenance</option>
-            <option value="QUOTATION">Quotation</option>
-          </select>
-
-          <button class="btn btn-sm btn-ghost" id="clearBtn" title="Clear filters">Clear</button>
+        <div class="toolbar-right">
+          <input
+            id="searchInput"
+            class="search"
+            type="search"
+            placeholder="Search trailer requests..."
+            autocomplete="off"
+          />
+          <button id="refreshBtn" class="btn btn-red" type="button">Refresh</button>
         </div>
       </div>
 
       <div class="meta">
-        <div class="chips">
-          <span class="chip">Showing <strong id="shownCount">0</strong> of <strong id="totalCount">0</strong></span>
-          <span class="chip">POA <strong id="poaCount">0</strong></span>
-        </div>
-
-        <div class="hint">
-          Tip: click a column header to sort.
-        </div>
+        <span id="rowCount">0 rows</span>
+        <span id="lastUpdated">Last updated: -</span>
       </div>
 
-      <div class="tableWrap">
-        <div class="loading" id="loading">Loading service list…</div>
-        <table id="tbl" style="display:none;">
+      <div id="message" class="message">Loading trailer data...</div>
+
+      <div class="table-wrap">
+        <table>
           <thead>
             <tr>
-              <th data-sort="service">Service Code <span class="sort" id="s_service"></span></th>
-              <th data-sort="material">Model <span class="sort" id="s_material"></span></th>
-              <th data-sort="desc">Description <span class="sort" id="s_desc"></span></th>
-              <th data-sort="type">Repair Type <span class="sort" id="s_type"></span></th>
-              <th data-sort="price" style="text-align:right;">Service Price <span class="sort" id="s_price"></span></th>
+              <th>Requesting Store</th>
+              <th>Invoice Reference</th>
+              <th>Sending Store</th>
+              <th>Stock Confirmed With</th>
+              <th>Picking Slip Number</th>
+              <th>Dispatcher Name</th>
+              <th>Stock Verified</th>
+              <th>Request Status</th>
             </tr>
           </thead>
-          <tbody id="body"></tbody>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="8" class="empty-state">Loading...</td>
+            </tr>
+          </tbody>
         </table>
       </div>
+    </section>
+
+    <div class="footer-note">
+      Trailer Run Dashboard
     </div>
   </div>
 
   <script>
-    // ✅ your published CSV
-    const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSJgaJHy_T4OqOAMcvizeSr-PYC1lFF1dISfZhf10iHLaBvKIwo2Oxh8wfV4zxXWguKxl9ekT-OzBPk/pub?output=csv";
+    const TRAILER_JSON_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMXgXarWaFp8jw7ChCpEzqV3q-LdkXoe2r-25F_qt5Y6xHopybhVO3O6VtkOwk7JhTOQTG4skguD6Lrwz5qwzp3cj83QxQaLhp8VzJS2ysUsag9wcsBe00AE10las-garySZ2yLKhhAK0-_CQHAyMTtyCaYDCcJwgEf2W06tggzPa1YogJo3Yfq8duA1Zw6rwF-FdEMBDUYZaO3U_n0x_YMbSLMm9tGmG0EnEHTrQ3fxhDvyk8faLrplMRIqy18nP50pO4Ib_BMQC_F5QCJsYWIm8S5Jew&lib=MkcpYsV4Hg_oLiVaxiLsSK2b-W5WaI0Ex';
 
-    // Data state
-    let raw = [];
-    let view = [];
+    const searchInput = document.getElementById('searchInput');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const rowCountEl = document.getElementById('rowCount');
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    const messageEl = document.getElementById('message');
+    const tableBody = document.getElementById('tableBody');
 
-    // Sorting state
-    let sortKey = "service";
-    let sortDir = "asc"; // asc | desc
+    let allRows = [];
 
-    // Column keys (expects headers like your sheet)
-    const COL_SERVICE = "Service Material Number";
-    const COL_MATERIAL = "Material Number";
-    const COL_DESC = "Material Number Description";
-    const COL_TYPE = "Repair Type";
-    const COL_MAX_EX = "Max Service Price (Excl GST)";
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
-    function normMoneyToNumber(value){
-      if(!value) return NaN;
-      const v = String(value).trim();
-      if(!v) return NaN;
-      if(v.toLowerCase().includes("price on assessment")) return NaN;
-      const num = parseFloat(v.replace(/\$/g,"").replace(/,/g,""));
-      return Number.isFinite(num) ? num : NaN;
+    function formatDateTime(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString();
     }
 
-    // Max Service Price (Excl GST) + 10% GST => Service Price (Inc)
-    function servicePriceInc(value){
-      const v = String(value ?? "").trim();
-      if(!v) return "";
-      if(v.toLowerCase().includes("price on assessment")) return "Price on Assessment";
-
-      const ex = normMoneyToNumber(v);
-      if(!Number.isFinite(ex)) return v;
-
-      const inc = ex * 1.10;
-      return "$" + inc.toFixed(2);
+    function normalise(value) {
+      return String(value ?? '').trim();
     }
 
-    function servicePriceIncNumber(value){
-      const v = String(value ?? "").trim();
-      if(!v) return NaN;
-      if(v.toLowerCase().includes("price on assessment")) return NaN;
-      const ex = normMoneyToNumber(v);
-      if(!Number.isFinite(ex)) return NaN;
-      return ex * 1.10;
+    function getStatusClass(status) {
+      const s = String(status || '').toLowerCase();
+
+      if (
+        s.includes('complete') ||
+        s.includes('completed') ||
+        s.includes('delivered') ||
+        s.includes('done')
+      ) return 'green';
+
+      if (
+        s.includes('pending') ||
+        s.includes('waiting') ||
+        s.includes('hold') ||
+        s.includes('planned')
+      ) return 'amber';
+
+      return 'red';
     }
 
-    function typeClass(type){
-      const t = String(type||"").toUpperCase().trim();
-      if(t === "FIXED SERVICE") return "t-fixed";
-      if(t === "CALIBRATION SERVICE") return "t-cal";
-      if(t === "MAINTENANCE") return "t-maint";
-      if(t === "QUOTATION") return "t-quote";
-      return "";
-    }
-
-    function cleanedRow(row){
-      const clean = {};
-      for(const k in row){
-        const nk = (k || "").trim().replace(/\s+/g, " ");
-        clean[nk] = (row[k] ?? "").toString().trim();
-      }
-      return clean;
-    }
-
-    function applyFilters(){
-      const q = document.getElementById("q").value.trim().toLowerCase();
-      const t = document.getElementById("type").value.trim().toUpperCase();
-
-      view = raw.filter(r => {
-        const s = (r[COL_SERVICE] || "").toLowerCase();
-        const m = (r[COL_MATERIAL] || "").toLowerCase();
-        const d = (r[COL_DESC] || "").toLowerCase();
-        const rt = (r[COL_TYPE] || "").toUpperCase();
-
-        if(q && !(s.includes(q) || m.includes(q) || d.includes(q))) return false;
-        if(t && rt !== t) return false;
-        return true;
-      });
-
-      applySort();
-      render();
-    }
-
-    function applySort(){
-      const dir = sortDir === "asc" ? 1 : -1;
-
-      view.sort((a,b) => {
-        const av = a, bv = b;
-
-        if(sortKey === "price"){
-          const an = servicePriceIncNumber(av[COL_MAX_EX]);
-          const bn = servicePriceIncNumber(bv[COL_MAX_EX]);
-
-          // POA always last
-          const aIsNaN = !Number.isFinite(an);
-          const bIsNaN = !Number.isFinite(bn);
-          if(aIsNaN && bIsNaN) return 0;
-          if(aIsNaN) return 1;
-          if(bIsNaN) return -1;
-
-          return (an - bn) * dir;
-        }
-
-        const aStr =
-          (sortKey === "service") ? (av[COL_SERVICE] || "") :
-          (sortKey === "material") ? (av[COL_MATERIAL] || "") :
-          (sortKey === "desc") ? (av[COL_DESC] || "") :
-          (sortKey === "type") ? (av[COL_TYPE] || "") :
-          "";
-
-        const bStr =
-          (sortKey === "service") ? (bv[COL_SERVICE] || "") :
-          (sortKey === "material") ? (bv[COL_MATERIAL] || "") :
-          (sortKey === "desc") ? (bv[COL_DESC] || "") :
-          (sortKey === "type") ? (bv[COL_TYPE] || "") :
-          "";
-
-        return aStr.localeCompare(bStr, undefined, {numeric:true, sensitivity:"base"}) * dir;
-      });
-
-      updateSortIndicators();
-    }
-
-    function updateSortIndicators(){
-      const ids = ["service","material","desc","type","price"];
-      ids.forEach(id => {
-        const el = document.getElementById("s_" + id);
-        if(!el) return;
-        if(id !== sortKey){ el.textContent = ""; return; }
-        el.textContent = sortDir === "asc" ? "▲" : "▼";
-      });
-    }
-
-    function render(){
-      document.getElementById("totalCount").textContent = raw.length.toString();
-      document.getElementById("shownCount").textContent = view.length.toString();
-
-      const poa = view.filter(r => String(r[COL_MAX_EX]||"").toLowerCase().includes("price on assessment")).length;
-      document.getElementById("poaCount").textContent = poa.toString();
-
-      const body = document.getElementById("body");
-      body.innerHTML = "";
-
-      if(view.length === 0){
-        body.innerHTML = `
+    function renderRows(rows) {
+      if (!rows.length) {
+        tableBody.innerHTML = `
           <tr>
-            <td colspan="5" class="muted">No results. Try fewer filters.</td>
+            <td colspan="8" class="empty-state">No trailer requests found.</td>
           </tr>
         `;
         return;
       }
 
-      for(const r of view){
-        const service = r[COL_SERVICE] || "";
-        const material = r[COL_MATERIAL] || "";
-        const desc = r[COL_DESC] || "";
-        const type = (r[COL_TYPE] || "").toUpperCase();
-        const price = servicePriceInc(r[COL_MAX_EX]);
-        const isPOA = String(price).toLowerCase().includes("price on assessment");
+      tableBody.innerHTML = rows.map(row => {
+        const requestStatus = normalise(row['Request Status']) || '-';
+        const statusClass = getStatusClass(requestStatus);
 
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td class="code">${escapeHtml(service)}</td>
-          <td>${escapeHtml(material)}</td>
-          <td class="desc">${escapeHtml(desc)}</td>
-          <td>
-            <span class="typeBadge ${typeClass(type)}">${escapeHtml(type || "—")}</span>
-          </td>
-          <td class="price ${isPOA ? "poa" : ""}">${escapeHtml(price || "—")}</td>
+        return `
+          <tr>
+            <td>${escapeHtml(normalise(row['Requesting Store']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Invoice Reference']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Sending Store']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Stock Confirmed With']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Picking Slip Number']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Dispatcher Name']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Stock Verified']) || '-')}</td>
+            <td><span class="pill ${statusClass}">${escapeHtml(requestStatus)}</span></td>
+          </tr>
         `;
-        body.appendChild(tr);
+      }).join('');
+    }
+
+    function filterRows() {
+      const term = searchInput.value.trim().toLowerCase();
+
+      if (!term) {
+        renderRows(allRows);
+        rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
+        return;
+      }
+
+      const filtered = allRows.filter(row => {
+        return [
+          row['Requesting Store'],
+          row['Invoice Reference'],
+          row['Sending Store'],
+          row['Stock Confirmed With'],
+          row['Picking Slip Number'],
+          row['Dispatcher Name'],
+          row['Stock Verified'],
+          row['Request Status']
+        ].some(value => String(value ?? '').toLowerCase().includes(term));
+      });
+
+      renderRows(filtered);
+      rowCountEl.textContent = `${filtered.length} row${filtered.length === 1 ? '' : 's'} (filtered)`;
+    }
+
+    async function loadTrailerData() {
+      messageEl.textContent = 'Loading trailer data...';
+      refreshBtn.disabled = true;
+
+      try {
+        const res = await fetch(TRAILER_JSON_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        allRows = Array.isArray(data.rows) ? data.rows : [];
+
+        renderRows(allRows);
+        rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
+        lastUpdatedEl.textContent = `Last updated: ${formatDateTime(data.lastUpdated)}`;
+        messageEl.textContent = allRows.length
+          ? 'Trailer data loaded successfully.'
+          : 'No trailer requests found.';
+      } catch (error) {
+        console.error('Failed to load trailer data:', error);
+        allRows = [];
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty-state">Failed to load trailer data.</td>
+          </tr>
+        `;
+        rowCountEl.textContent = '0 rows';
+        lastUpdatedEl.textContent = 'Last updated: -';
+        messageEl.textContent = 'Failed to load trailer data.';
+      } finally {
+        refreshBtn.disabled = false;
       }
     }
 
-    function setLastUpdated(){
-      const el = document.getElementById("lastUpdated");
-      const now = new Date();
-      el.textContent = "Loaded " + now.toLocaleString();
-    }
+    searchInput.addEventListener('input', filterRows);
+    refreshBtn.addEventListener('click', loadTrailerData);
 
-    function init(){
-      Papa.parse(csvUrl, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: function(results){
-          const rows = (results.data || []).map(cleanedRow);
-
-          raw = rows.filter(r => (r[COL_SERVICE] || "").trim() && (r[COL_MATERIAL] || "").trim());
-
-          document.getElementById("loading").style.display = "none";
-          document.getElementById("tbl").style.display = "table";
-
-          setLastUpdated();
-          applyFilters();
-        },
-        error: function(){
-          document.getElementById("loading").innerHTML =
-            "Couldn’t load the sheet. Either Google is having a moment, or the link is wrong.";
-        }
-      });
-
-      document.getElementById("q").addEventListener("input", applyFilters);
-      document.getElementById("type").addEventListener("change", applyFilters);
-
-      document.getElementById("clearBtn").addEventListener("click", () => {
-        document.getElementById("q").value = "";
-        document.getElementById("type").value = "";
-        applyFilters();
-      });
-
-      document.querySelectorAll("th[data-sort]").forEach(th => {
-        th.addEventListener("click", () => {
-          const key = th.getAttribute("data-sort");
-          if(key === sortKey){
-            sortDir = (sortDir === "asc") ? "desc" : "asc";
-          }else{
-            sortKey = key;
-            sortDir = "asc";
-          }
-          applySort();
-          render();
-        });
-      });
-    }
-
-    init();
+    loadTrailerData();
   </script>
 </body>
 </html>
