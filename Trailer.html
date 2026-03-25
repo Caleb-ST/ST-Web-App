@@ -1,1 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>The Index - Trailer Run Status</title>
 
+  <style>
+    :root{
+      --bg0:#07070a;
+      --bg1:#0b0b10;
+      --panel:#101018;
+      --panel2:#14141d;
+      --text:#f2f2f5;
+      --muted:#a4a4b3;
+      --border:rgba(255,255,255,0.08);
+      --shadow:0 20px 60px rgba(0,0,0,0.55);
+      --red:#ff2b3d;
+      --red2:#b80c2b;
+      --green:#1f9d63;
+      --amber:#c98b1f;
+      --pill:rgba(255,255,255,0.06);
+      --pill2:rgba(255,43,61,0.18);
+      --focus:0 0 0 3px rgba(255,43,61,0.25);
+    }
+
+    *{ box-sizing:border-box; }
+
+    html,body{
+      margin:0;
+      min-height:100%;
+      background:
+        radial-gradient(circle at top left, rgba(255,43,61,0.08), transparent 28%),
+        radial-gradient(circle at top right, rgba(255,255,255,0.04), transparent 22%),
+        linear-gradient(180deg, var(--bg1), var(--bg0));
+      color:var(--text);
+      font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    a{
+      color:inherit;
+      text-decoration:none;
+    }
+
+    .wrap{
+      width:min(1400px, calc(100% - 32px));
+      margin:0 auto;
+      padding:32px 0 48px;
+    }
+
+    .hero{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:22px;
+      flex-wrap:wrap;
+    }
+
+    .hero-left h1{
+      margin:0 0 10px;
+      font-size:clamp(28px, 4vw, 44px);
+      line-height:1.05;
+      letter-spacing:-0.02em;
+    }
+
+    .hero-left p{
+      margin:0;
+      color:var(--muted);
+      max-width:800px;
+      line-height:1.5;
+      font-size:15px;
+    }
+
+    .hero-right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .btn{
+      appearance:none;
+      border:none;
+      outline:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:12px 16px;
+      font-weight:700;
+      font-size:14px;
+      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease, background .12s ease;
+    }
+
+    .btn:focus-visible,
+    .search:focus-visible{
+      box-shadow:var(--focus);
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
+    }
+
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-red{
+      color:white;
+      background:linear-gradient(180deg, var(--red), var(--red2));
+      box-shadow:0 10px 26px rgba(255,43,61,.22);
+    }
+
+    .btn-ghost{
+      color:var(--text);
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--border);
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.025));
+      border:1px solid var(--border);
+      box-shadow:var(--shadow);
+      border-radius:24px;
+      overflow:hidden;
+    }
+
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:14px;
+      padding:20px 22px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      flex-wrap:wrap;
+    }
+
+    .toolbar-left h2{
+      margin:0 0 6px;
+      font-size:22px;
+      line-height:1.1;
+    }
+
+    .toolbar-left p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .toolbar-right{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+
+    .search{
+      width:min(340px, 100%);
+      background:rgba(255,255,255,0.05);
+      border:1px solid var(--border);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 14px;
+      font-size:14px;
+      outline:none;
+    }
+
+    .meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:16px;
+      padding:14px 22px 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .message{
+      padding:14px 22px 0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .table-wrap{
+      padding:18px 22px 22px;
+      overflow-x:auto;
+    }
+
+    table{
+      width:100%;
+      min-width:1100px;
+      border-collapse:separate;
+      border-spacing:0;
+      overflow:hidden;
+      border:1px solid var(--border);
+      border-radius:18px;
+      background:rgba(255,255,255,0.02);
+    }
+
+    thead th{
+      text-align:left;
+      padding:14px 14px;
+      font-size:13px;
+      font-weight:700;
+      color:var(--muted);
+      background:rgba(255,255,255,0.04);
+      border-bottom:1px solid rgba(255,255,255,0.06);
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+
+    tbody td{
+      padding:14px 14px;
+      font-size:14px;
+      border-bottom:1px solid rgba(255,255,255,0.05);
+      vertical-align:top;
+    }
+
+    tbody tr:hover{
+      background:rgba(255,255,255,0.025);
+    }
+
+    tbody tr:last-child td{
+      border-bottom:none;
+    }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:7px 11px;
+      border-radius:999px;
+      background:var(--pill);
+      border:1px solid rgba(255,255,255,0.08);
+      font-size:12px;
+      font-weight:700;
+      line-height:1;
+      white-space:nowrap;
+    }
+
+    .pill.red{
+      background:var(--pill2);
+      border-color:rgba(255,43,61,0.2);
+    }
+
+    .pill.green{
+      background:rgba(31,157,99,0.16);
+      border-color:rgba(31,157,99,0.25);
+    }
+
+    .pill.amber{
+      background:rgba(201,139,31,0.16);
+      border-color:rgba(201,139,31,0.25);
+    }
+
+    .small{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .empty-state{
+      padding:28px 18px;
+      text-align:center;
+      color:var(--muted);
+    }
+
+    .footer-note{
+      margin-top:16px;
+      color:var(--muted);
+      font-size:12px;
+      text-align:right;
+    }
+
+    @media (max-width: 800px){
+      .wrap{
+        width:min(100% - 20px, 1400px);
+        padding:20px 0 34px;
+      }
+
+      .toolbar,
+      .meta,
+      .message,
+      .table-wrap{
+        padding-left:14px;
+        padding-right:14px;
+      }
+
+      .toolbar-right{
+        width:100%;
+      }
+
+      .search{
+        width:100%;
+      }
+
+      .hero-right{
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-left">
+        <h1>Trailer Run Status</h1>
+        <p>
+          Live view of trailer requests pulled from the master sheet. Refresh the data at any time and
+          use the search box to filter stores, invoice references, names, or status.
+        </p>
+      </div>
+
+      <div class="hero-right">
+        <a class="btn btn-ghost" href="index.html">Back to Index</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2>Current Requests</h2>
+          <p>Showing Requesting Store, Invoice Reference, Sending Store, Stock Confirmed With, Picking Slip Number, Dispatcher Name, Stock Verified, and Request Status.</p>
+        </div>
+
+        <div class="toolbar-right">
+  <input
+    id="searchInput"
+    class="search"
+    type="search"
+    placeholder="Search trailer requests..."
+    autocomplete="off"
+  />
+
+  <a
+    href="https://docs.google.com/forms/d/e/1FAIpQLScQ7DJSNDJlawRqSm85EoU7mrFwlDCoZmJxr22hbISUw2G9SQ/viewform"
+    target="_blank"
+    class="btn btn-ghost"
+  >
+    New Request
+  </a>
+
+  <button id="refreshBtn" class="btn btn-red" type="button">Refresh</button>
+</div>
+      </div>
+
+      <div class="meta">
+        <span id="rowCount">0 rows</span>
+        <span id="lastUpdated">Last updated: -</span>
+      </div>
+
+      <div id="message" class="message">Loading trailer data...</div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Requesting Store</th>
+              <th>Invoice Reference</th>
+              <th>Sending Store</th>
+              <th>Stock Confirmed With</th>
+              <th>Picking Slip Number</th>
+              <th>Dispatcher Name</th>
+              <th>Stock Verified</th>
+              <th>Request Status</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr>
+              <td colspan="8" class="empty-state">Loading...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Trailer Run Dashboard
+    </div>
+  </div>
+
+  <script>
+    const TRAILER_JSON_URL = 'https://script.googleusercontent.com/macros/echo?user_content_key=AWDtjMXgXarWaFp8jw7ChCpEzqV3q-LdkXoe2r-25F_qt5Y6xHopybhVO3O6VtkOwk7JhTOQTG4skguD6Lrwz5qwzp3cj83QxQaLhp8VzJS2ysUsag9wcsBe00AE10las-garySZ2yLKhhAK0-_CQHAyMTtyCaYDCcJwgEf2W06tggzPa1YogJo3Yfq8duA1Zw6rwF-FdEMBDUYZaO3U_n0x_YMbSLMm9tGmG0EnEHTrQ3fxhDvyk8faLrplMRIqy18nP50pO4Ib_BMQC_F5QCJsYWIm8S5Jew&lib=MkcpYsV4Hg_oLiVaxiLsSK2b-W5WaI0Ex';
+
+    const searchInput = document.getElementById('searchInput');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const rowCountEl = document.getElementById('rowCount');
+    const lastUpdatedEl = document.getElementById('lastUpdated');
+    const messageEl = document.getElementById('message');
+    const tableBody = document.getElementById('tableBody');
+
+    let allRows = [];
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function formatDateTime(value) {
+      if (!value) return '-';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return value;
+      return date.toLocaleString();
+    }
+
+    function normalise(value) {
+      return String(value ?? '').trim();
+    }
+
+    function getStatusClass(status) {
+      const s = String(status || '').toLowerCase();
+
+      if (
+        s.includes('complete') ||
+        s.includes('completed') ||
+        s.includes('delivered') ||
+        s.includes('done')
+      ) return 'green';
+
+      if (
+        s.includes('pending') ||
+        s.includes('waiting') ||
+        s.includes('hold') ||
+        s.includes('planned')
+      ) return 'amber';
+
+      return 'red';
+    }
+
+    function renderRows(rows) {
+      if (!rows.length) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty-state">No trailer requests found.</td>
+          </tr>
+        `;
+        return;
+      }
+
+      tableBody.innerHTML = rows.map(row => {
+        const requestStatus = normalise(row['Request Status']) || '-';
+        const statusClass = getStatusClass(requestStatus);
+
+        return `
+          <tr>
+            <td>${escapeHtml(normalise(row['Requesting Store']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Invoice Reference']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Sending Store']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Stock Confirmed With']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Picking Slip Number']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Dispatcher Name']) || '-')}</td>
+            <td>${escapeHtml(normalise(row['Stock Verified']) || '-')}</td>
+            <td><span class="pill ${statusClass}">${escapeHtml(requestStatus)}</span></td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function filterRows() {
+      const term = searchInput.value.trim().toLowerCase();
+
+      if (!term) {
+        renderRows(allRows);
+        rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
+        return;
+      }
+
+      const filtered = allRows.filter(row => {
+        return [
+          row['Requesting Store'],
+          row['Invoice Reference'],
+          row['Sending Store'],
+          row['Stock Confirmed With'],
+          row['Picking Slip Number'],
+          row['Dispatcher Name'],
+          row['Stock Verified'],
+          row['Request Status']
+        ].some(value => String(value ?? '').toLowerCase().includes(term));
+      });
+
+      renderRows(filtered);
+      rowCountEl.textContent = `${filtered.length} row${filtered.length === 1 ? '' : 's'} (filtered)`;
+    }
+
+    async function loadTrailerData() {
+      messageEl.textContent = 'Loading trailer data...';
+      refreshBtn.disabled = true;
+
+      try {
+        const res = await fetch(TRAILER_JSON_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const data = await res.json();
+        allRows = Array.isArray(data.rows) ? data.rows : [];
+
+        renderRows(allRows);
+        rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
+        lastUpdatedEl.textContent = `Last updated: ${formatDateTime(data.lastUpdated)}`;
+        messageEl.textContent = allRows.length
+          ? 'Trailer data loaded successfully.'
+          : 'No trailer requests found.';
+      } catch (error) {
+        console.error('Failed to load trailer data:', error);
+        allRows = [];
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="8" class="empty-state">Failed to load trailer data.</td>
+          </tr>
+        `;
+        rowCountEl.textContent = '0 rows';
+        lastUpdatedEl.textContent = 'Last updated: -';
+        messageEl.textContent = 'Failed to load trailer data.';
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    searchInput.addEventListener('input', filterRows);
+    refreshBtn.addEventListener('click', loadTrailerData);
+
+    loadTrailerData();
+  </script>
+</body>
+</html>
