@@ -20,6 +20,19 @@
       --focus: 0 0 0 3px rgba(255,43,61,0.25);
     }
 
+    .warranty-notice{
+  margin-top: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(255,43,61,0.08);
+  border: 1px solid rgba(255,43,61,0.35);
+  box-shadow: 0 10px 30px rgba(255,43,61,0.15);
+  font-size: 18px;
+  line-height: 1.5;
+  color: rgba(242,242,245,0.9);
+  max-width: 900px;
+}
+
     *{ box-sizing:border-box; }
 
     body{
@@ -262,8 +275,13 @@
   <div class="wrap">
     <div class="topbar">
       <h1>Supplier Warranty Information</h1>
-      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
+      <p class="sub">Search suppliers and view warranty processes.</p>
       <div class="badge">● Live from Google Sheet</div>
+      <div class="warranty-notice">
+  <p>
+    A warranty covers faults caused by manufacturing defects only. It does not cover normal wear and tear, consumable parts (such as drill chucks, brushes, blades, or belts), accidental damage, misuse, or modifications. Any damage caused by improper use, lack of maintenance, or external factors is excluded. If the product shows signs of physical damage, tampering, or unauthorised repair, the warranty is void. Proof of purchase is required for all claims.
+  </p>
+</div>
     </div>
 
     <div class="panel">
@@ -280,18 +298,9 @@
              rel="noopener noreferrer">
             📄 Petrol Tool 5-Point Check
           </a>
-
-          <a class="btn btn-sm btn-pdf"
-             href="https://forms.gle/neKqujWWCwRYfyRY7"
-             target="_blank"
-             rel="noopener noreferrer">
-            📝 Transfer Repairs to Regency
-          </a>
         </div>
       </div>
 
-      <!-- EVERYTHING BELOW THIS REMAINS EXACTLY AS YOUR ORIGINAL PAGE -->
-      <!-- Your tables, modal, and script remain unchanged -->
 
       <div class="tableWrap">
         <div class="tables-container">
@@ -439,8 +448,6 @@
 
     document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
-    // ✅ FIXED: the old regex had [^\\s<] which stops at the letter "s" in many URLs.
-    // This version matches full URLs and trims trailing punctuation like "." or ")"
     function linkify(text) {
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
 
