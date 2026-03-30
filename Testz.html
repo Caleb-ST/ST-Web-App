@@ -275,7 +275,7 @@
   <div class="wrap">
     <div class="topbar">
       <h1>Supplier Warranty Information</h1>
-      <p class="sub">Search suppliers and view warranty processes without digging through 30 tabs.</p>
+      <p class="sub">Search suppliers and view warranty processes.</p>
       <div class="badge">● Live from Google Sheet</div>
       <div class="warranty-notice">
   <p>
@@ -298,18 +298,9 @@
              rel="noopener noreferrer">
             📄 Petrol Tool 5-Point Check
           </a>
-
-          <a class="btn btn-sm btn-pdf"
-             href="https://forms.gle/neKqujWWCwRYfyRY7"
-             target="_blank"
-             rel="noopener noreferrer">
-            📝 Transfer Repairs to Regency
-          </a>
         </div>
       </div>
 
-      <!-- EVERYTHING BELOW THIS REMAINS EXACTLY AS YOUR ORIGINAL PAGE -->
-      <!-- Your tables, modal, and script remain unchanged -->
 
       <div class="tableWrap">
         <div class="tables-container">
@@ -457,8 +448,6 @@
 
     document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
-    // ✅ FIXED: the old regex had [^\\s<] which stops at the letter "s" in many URLs.
-    // This version matches full URLs and trims trailing punctuation like "." or ")"
     function linkify(text) {
       const urlRegex = /(https?:\/\/[^\s<]+)/g;
 
