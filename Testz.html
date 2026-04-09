@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>The Index, Warranties</title>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Index</title>
 
   <style>
     :root{
@@ -16,22 +15,8 @@
       --shadow: 0 20px 60px rgba(0,0,0,0.55);
       --red:#ff2b3d;
       --red2:#b80c2b;
-      --pill2:rgba(255,43,61,0.18);
       --focus: 0 0 0 3px rgba(255,43,61,0.25);
     }
-
-    .warranty-notice{
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(255,43,61,0.08);
-  border: 1px solid rgba(255,43,61,0.35);
-  box-shadow: 0 10px 30px rgba(255,43,61,0.15);
-  font-size: 18px;
-  line-height: 1.5;
-  color: rgba(242,242,245,0.9);
-  max-width: 900px;
-}
 
     *{ box-sizing:border-box; }
 
@@ -45,34 +30,30 @@
         radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
         radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
         linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 26px 14px 50px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 26px 14px;
     }
 
     .wrap{
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .topbar{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap: 8px;
-      margin-bottom: 14px;
-      text-align:center;
+      width: 100%;
+      max-width: 980px;
+      text-align: center;
     }
 
     h1{
       margin:0;
-      font-size: 30px;
-      letter-spacing: .35px;
-      line-height: 1.1;
+      font-size: 34px;
+      letter-spacing: 0.4px;
     }
 
-    .sub{
-      margin: 0;
-      font-size: 13px;
+    h2{
+      margin: 6px 0 0;
+      font-size: 14px;
+      font-weight: 500;
       color: var(--muted);
+      letter-spacing: 0.3px;
     }
 
     .badge{
@@ -82,435 +63,383 @@
       padding: 6px 12px;
       border-radius: 999px;
       font-size: 12px;
-      background: var(--pill2);
+      background: rgba(255,43,61,0.18);
       border: 1px solid rgba(255,43,61,0.35);
       box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      white-space: nowrap;
+      margin: 10px auto 0;
     }
 
     .panel{
+      margin-top: 18px;
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border: 1px solid var(--border);
       border-radius: 18px;
       box-shadow: var(--shadow);
-      overflow: hidden;
       backdrop-filter: blur(10px);
+      overflow: hidden;
     }
 
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px;
+    .panelHead{
+      padding: 16px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
+      text-align: center;
+      color: var(--muted);
+      font-size: 13px;
     }
-    .row:last-child{ border-bottom:none; }
 
-    .controls{
+    .grid{
+      padding: 16px;
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 900px){
+      .grid{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 580px){
+      .grid{ grid-template-columns: 1fr; }
+      h1{ font-size: 28px; }
+    }
+
+    a.nav-button{
       display:flex;
-      gap:12px;
-      flex-wrap:wrap;
       align-items:center;
-      min-width: 0;
+      justify-content:center;
+      text-align:center;
+      text-decoration:none;
+
+      min-height: 92px;
+      padding: 18px 16px;
+      border-radius: 16px;
+
+      color: var(--text);
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border: 1px solid rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      font-weight: 650;
+      letter-spacing: 0.2px;
+      transition: transform .08s ease, box-shadow .15s ease;
     }
 
-    .controls.right{
-      justify-content:flex-end;
+    a.nav-button:hover{
+      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
+      transform: translateY(-1px);
     }
 
-    input, button, a.btn{
-      padding: 10px 10px;
+    a.nav-button:active{
+      transform: translateY(1px);
+    }
+
+    /* Login overlay */
+    #login-screen{
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.72);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index: 9999;
+      padding: 22px 14px;
+    }
+
+    .loginModal{
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .loginModal h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .loginModal .muted{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .formRow{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+      justify-content: center;
+    }
+
+    input{
+      flex: 1;
+      min-width: 220px;
+      padding: 10px;
       font: inherit;
       color: var(--text);
       background: rgba(255,255,255,0.06);
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 12px;
-      outline: none;
-    }
-
-    input{
-      min-width:260px;
-      width: 420px;
-      max-width: 92%;
+      outline:none;
     }
 
     input::placeholder{ color: rgba(242,242,245,0.45); }
     input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
 
     .btn{
-      cursor:pointer;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      white-space:nowrap;
-      user-select:none;
-    }
-
-    .btn-primary{
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border-color: rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-
-    .btn-sm{
-      padding: 8px 10px;
+      padding: 10px 16px;
       border-radius: 12px;
-      font-size: 13px;
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border: 1px solid rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
+      transition: box-shadow .15s ease, transform .08s ease;
     }
 
-    .btn-pdf{
-      border-color: rgba(255,43,61,0.28);
-      box-shadow: 0 12px 34px rgba(0,0,0,0.35);
+    .btn:hover{
+      box-shadow: 0 18px 40px rgba(255,43,61,0.35);
+      transform: translateY(-1px);
     }
 
-    .tableWrap{ padding: 12px; }
-
-    .tables-container{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .btn:active{
+      transform: translateY(1px);
     }
 
-    .card{
-      background: rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      overflow:hidden;
+    .btn.secondary{
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
     }
 
-    .cardHead{
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
+    .btn.secondary:hover{
+      box-shadow: 0 14px 30px rgba(0,0,0,0.5);
     }
 
-    .cardHead h2{
-      margin:0;
-      font-size: 13px;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      color: rgba(242,242,245,0.85);
-    }
-
-    .mutedSmall{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-      white-space: nowrap;
-    }
-
-    table{
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td{
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      vertical-align: middle;
-    }
-
-    th{
-      font-size: 12px;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: rgba(242,242,245,0.75);
-      background: rgba(255,255,255,0.04);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      text-align:left;
-    }
-
-    tr:hover td{ background: rgba(255,255,255,0.03); }
-
-    .supplier{ font-weight: 700; }
-
-    .button-group{
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      gap: 8px;
-      flex-wrap: nowrap;
-    }
-
-    #modal{
-      display:none;
+    /* Trailer password modal */
+    #trailer-modal{
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.65);
-      z-index: 9999;
-      padding: 20px;
-      overflow:auto;
+      background: rgba(0,0,0,0.72);
+      display: none;
       align-items:center;
       justify-content:center;
+      z-index: 9998;
+      padding: 22px 14px;
     }
-    #modal.open{ display:flex; }
 
-    .modal-content{
+    #trailer-modal[aria-hidden="false"]{
+      display:flex;
+    }
+
+    .trailerModal{
       width: 100%;
-      max-width: 760px;
+      max-width: 520px;
       background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
       border: 1px solid rgba(255,255,255,0.10);
       border-radius: 18px;
       box-shadow: var(--shadow);
       padding: 16px;
+      text-align: center;
+    }
+
+    .trailerModal h3{
+      margin:0;
+      font-size: 18px;
+    }
+
+    .trailerModal .muted{
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .errorText{
+      margin-top: 10px;
+      font-size: 12px;
+      color: rgba(255,43,61,0.95);
+      min-height: 16px;
+      user-select:none;
+    }
+
+    .modalActions{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap: wrap;
+      margin-top: 14px;
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <h1>Supplier Warranty Information</h1>
-      <p class="sub">Search suppliers and view warranty processes.</p>
-      <div class="badge">● Live from Google Sheet</div>
-      <div class="warranty-notice">
-  <p>
-    A warranty covers faults caused by manufacturing defects only. It does not cover normal wear and tear, consumable parts (such as drill chucks, brushes, blades, or belts), accidental damage, misuse, or modifications. Any damage caused by improper use, lack of maintenance, or external factors is excluded. If the product shows signs of physical damage, tampering, or unauthorised repair, the warranty is void. Proof of purchase is required for all claims.
-  </p>
-</div>
+
+  <!-- Login -->
+  <div id="login-screen">
+    <div class="loginModal">
+      <h3>Please Log In</h3>
+      <div class="muted">Internal Index Portal</div>
+
+      <div class="formRow">
+        <input id="username" type="text" placeholder="Username" />
+        <input id="password" type="password" placeholder="Password" />
+      </div>
+
+      <div class="formRow">
+        <button class="btn" onclick="login()">Login</button>
+      </div>
     </div>
+  </div>
+
+  <!-- Trailer Password Modal -->
+  <div id="trailer-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="trailerTitle">
+    <div class="trailerModal">
+      <h3 id="trailerTitle">Trailer Access</h3>
+      <div class="muted">Enter the trailer password to continue.</div>
+
+      <div class="formRow">
+        <input id="trailerPass" type="password" placeholder="Password" autocomplete="off" />
+      </div>
+
+      <div id="trailerError" class="errorText"></div>
+
+      <div class="modalActions">
+        <button class="btn" id="trailerSubmit">Continue</button>
+        <button class="btn secondary" id="trailerCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="wrap">
+    <h1>Sydney Tools</h1>
+    <h2>The Index</h2>
+    <div class="badge">● Internal Navigation</div>
 
     <div class="panel">
-      <div class="row">
-        <div class="controls left">
-          <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
-          <input type="text" id="searchInput" placeholder="Search suppliers..." />
-        </div>
-
-        <div class="controls right">
-          <a class="btn btn-sm btn-pdf"
-             href="Petrol_Tool_5_Point_Check.pdf"
-             target="_blank"
-             rel="noopener noreferrer">
-            📄 Petrol Tool 5-Point Check
-          </a>
-        </div>
+      <div class="panelHead">
+        Select a tool to continue
       </div>
 
-
-      <div class="tableWrap">
-        <div class="tables-container">
-          <div class="card">
-            <div class="cardHead">
-              <h2>Local Suppliers</h2>
-              <span class="mutedSmall" id="localCount"></span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:50%;">Supplier</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-              <tbody id="localTable"></tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <div class="cardHead">
-              <h2>Imported Suppliers</h2>
-              <span class="mutedSmall" id="importCount"></span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:50%;">Supplier</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-              <tbody id="importTable"></tbody>
-            </table>
-          </div>
-        </div>
+      <div class="grid">
+        <a class="nav-button" href="Rep Directory.html">Rep Contacts</a>
+        <a class="nav-button" href="Warranty1.html">Warranties</a>
+        <a class="nav-button" id="trailerBtn" href="Trailer.html">🔒Trailer🔒</a>
+        <a class="nav-button" id="trailerBtn" href="https://docs.google.com/forms/d/e/1FAIpQLSd0whyvqebdknq-vO_ZkX89qI4xBA9wXyb5HriOqRUN5M8ZAA/viewform" target="_blank">RST Request Form</a>
       </div>
     </div>
   </div>
 
-  <div id="modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true">
-      <div class="modalHead">
-        <div>
-          <h3 id="modalTitle"></h3>
-          <div class="mutedSmall" id="modalSub"></div>
-        </div>
-        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
-      </div>
-
-      <div class="modalBody" id="modalBody"></div>
-
-      <div class="row" style="border-bottom:none; justify-content:flex-end;">
-        <button class="btn btn-primary" onclick="closeModal()">Close</button>
-      </div>
-    </div>
-  </div>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
   <script>
-    const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
-    let suppliers = [];
+    const validUsername = "Sydney Tools";
+    const validPasswordHash = "e4fe4d3883049cdd56e94ef785da9674";
 
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const rows = (results.data || []).map(row => {
-          const clean = {};
-          for (const key in row) {
-            const normKey = (key || "").trim().replace(/\s+/g, " ");
-            clean[normKey] = (row[key] ?? "").trim();
-          }
-          return clean;
-        });
+    const trailerPasswordHash = "564f4bcd11273b8ea6b49fbe2dc2ad1c"; // 0606
 
-        suppliers = rows.filter(item => {
-          const hasBrand = !!item["Brands"];
-          const hasWarrantyInfo = !!item["Warranty Information"];
-          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
-          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
-          return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
-        });
+    function md5(str){ return CryptoJS.MD5(str).toString(); }
 
-        renderTables();
-      }
-    });
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    if (localStorage.getItem("loggedIn") === "true") {
+      document.getElementById("login-screen").style.display = "none";
     }
 
-    function renderTables(filter = "") {
-      const local = document.getElementById("localTable");
-      const imported = document.getElementById("importTable");
-      const localCount = document.getElementById("localCount");
-      const importCount = document.getElementById("importCount");
+    function login(){
+      const u = document.getElementById("username").value.trim();
+      const p = document.getElementById("password").value;
 
-      local.innerHTML = "";
-      imported.innerHTML = "";
-
-      let lCount = 0, iCount = 0;
-
-      suppliers.forEach((item, idx) => {
-        const brand = item["Brands"];
-        const isImported = (item["Import"] || "").toLowerCase() === "true";
-
-        if (!brand) return;
-        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
-
-        const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
-        const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
-        const hasWarrantyInfo = !!item["Warranty Information"];
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td class="supplier">${escapeHtml(brand)}</td>
-          <td>
-            <div class="button-group">
-              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
-              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
-              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
-            </div>
-          </td>
-        `;
-
-        if (isImported) {
-          imported.appendChild(row);
-          iCount++;
-        } else {
-          local.appendChild(row);
-          lCount++;
-        }
-      });
-
-      localCount.textContent = `${lCount} suppliers`;
-      importCount.textContent = `${iCount} suppliers`;
-
-      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
-      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
-    }
-
-    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
-
-    function linkify(text) {
-      const urlRegex = /(https?:\/\/[^\s<]+)/g;
-
-      return escapeHtml(text).replace(urlRegex, (match) => {
-        const clean = match.replace(/[),.]+$/g, "");
-        const tail = match.slice(clean.length);
-        return `<a href="${clean}" target="_blank" rel="noopener noreferrer">${clean}</a>${escapeHtml(tail)}`;
-      });
-    }
-
-    function showModalByIndex(index, type) {
-      const item = suppliers[index];
-      if (!item) return;
-
-      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
-      const modalSub = document.getElementById("modalSub");
-      const modalBody = document.getElementById("modalBody");
-      modalBody.innerHTML = "";
-
-      if (type === "info") {
-        modalSub.textContent = "Warranty Information";
-        const warrantyInfo = (item["Warranty Information"] || "N/A")
-          .split("\n")
-          .map(line => `<p>${linkify(line)}</p>`)
-          .join("");
-        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
+      if (u === validUsername && md5(p) === validPasswordHash){
+        localStorage.setItem("loggedIn","true");
+        document.getElementById("login-screen").style.display = "none";
       } else {
-        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
-        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
+        alert("Access denied.");
+        window.location.href = "https://www.google.com";
+      }
+    }
 
-        let any = false;
-        for (let i = 1; i <= 6; i++) {
-          const key = prefix + i;
-          if (item[key]) {
-            any = true;
-            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
-          }
-        }
-        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
+    const trailerBtn = document.getElementById("trailerBtn");
+    const trailerModal = document.getElementById("trailer-modal");
+    const trailerPass = document.getElementById("trailerPass");
+    const trailerError = document.getElementById("trailerError");
+    const trailerSubmit = document.getElementById("trailerSubmit");
+    const trailerCancel = document.getElementById("trailerCancel");
+
+    let pendingTrailerHref = null;
+    let pendingTrailerTarget = "_blank";
+
+    function openTrailerModal(href, target){
+      pendingTrailerHref = href;
+      pendingTrailerTarget = target || "_blank";
+
+      trailerError.textContent = "";
+      trailerPass.value = "";
+
+      trailerModal.setAttribute("aria-hidden", "false");
+      setTimeout(() => trailerPass.focus(), 0);
+    }
+
+    function closeTrailerModal(){
+      trailerModal.setAttribute("aria-hidden", "true");
+      trailerError.textContent = "";
+      trailerPass.value = "";
+    }
+
+    function submitTrailerModal(){
+      const entered = trailerPass.value;
+
+      if (!entered){
+        trailerError.textContent = "Password required.";
+        trailerPass.focus();
+        return;
       }
 
-      openModal();
+      if (md5(entered) === trailerPasswordHash){
+        const href = pendingTrailerHref;
+        const target = pendingTrailerTarget || "_blank";
+
+        closeTrailerModal();
+
+        if (href){
+          window.open(href, target);
+        } else {
+          alert("Link not set. Refresh the page and try again.");
+        }
+      } else {
+        trailerError.textContent = "Incorrect password.";
+        trailerPass.value = "";
+        trailerPass.focus();
+      }
     }
 
-    function openModal() {
-      const m = document.getElementById("modal");
-      m.classList.add("open");
-      m.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeModal() {
-      const m = document.getElementById("modal");
-      m.classList.remove("open");
-      m.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    document.getElementById("modal").addEventListener("click", (e) => {
-      if (e.target.id === "modal") closeModal();
+    trailerBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      openTrailerModal(trailerBtn.href, trailerBtn.target);
     });
+
+    trailerSubmit.addEventListener("click", submitTrailerModal);
+    trailerCancel.addEventListener("click", closeTrailerModal);
+
+    trailerPass.addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        submitTrailerModal();
+      }
+      if (e.key === "Escape"){
+        e.preventDefault();
+        closeTrailerModal();
+      }
+    });
+
+    trailerModal.addEventListener("click", (e) => {
+      if (e.target === trailerModal) closeTrailerModal();
+    });
+
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+      if (e.key === "Escape" && trailerModal.getAttribute("aria-hidden") === "false"){
+        closeTrailerModal();
+      }
     });
   </script>
 </body>
