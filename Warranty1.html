@@ -20,19 +20,6 @@
       --focus: 0 0 0 3px rgba(255,43,61,0.25);
     }
 
-    .warranty-notice{
-  margin-top: 12px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  background: rgba(255,43,61,0.08);
-  border: 1px solid rgba(255,43,61,0.35);
-  box-shadow: 0 10px 30px rgba(255,43,61,0.15);
-  font-size: 18px;
-  line-height: 1.5;
-  color: rgba(242,242,245,0.9);
-  max-width: 900px;
-}
-
     *{ box-sizing:border-box; }
 
     body{
@@ -88,6 +75,19 @@
       white-space: nowrap;
     }
 
+    .warranty-notice{
+      margin-top: 12px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(255,43,61,0.08);
+      border: 1px solid rgba(255,43,61,0.35);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.15);
+      font-size: 18px;
+      line-height: 1.5;
+      color: rgba(242,242,245,0.9);
+      max-width: 900px;
+    }
+
     .panel{
       background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
       border: 1px solid var(--border);
@@ -106,7 +106,10 @@
       padding: 12px;
       border-bottom: 1px solid rgba(255,255,255,0.08);
     }
-    .row:last-child{ border-bottom:none; }
+
+    .row:last-child{
+      border-bottom:none;
+    }
 
     .controls{
       display:flex;
@@ -136,8 +139,14 @@
       max-width: 92%;
     }
 
-    input::placeholder{ color: rgba(242,242,245,0.45); }
-    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
+    input::placeholder{
+      color: rgba(242,242,245,0.45);
+    }
+
+    input:focus{
+      box-shadow: var(--focus);
+      border-color: rgba(255,43,61,0.45);
+    }
 
     .btn{
       cursor:pointer;
@@ -153,12 +162,21 @@
       user-select:none;
     }
 
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.10);
+    }
+
     .btn-primary{
       background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
       border-color: rgba(255,43,61,0.55);
       box-shadow: 0 10px 30px rgba(255,43,61,0.22);
       font-weight: 700;
       letter-spacing: .2px;
+    }
+
+    .btn-primary:hover{
+      filter: brightness(1.05);
     }
 
     .btn-sm{
@@ -172,7 +190,9 @@
       box-shadow: 0 12px 34px rgba(0,0,0,0.35);
     }
 
-    .tableWrap{ padding: 12px; }
+    .tableWrap{
+      padding: 12px;
+    }
 
     .tables-container{
       display:grid;
@@ -234,9 +254,13 @@
       text-align:left;
     }
 
-    tr:hover td{ background: rgba(255,255,255,0.03); }
+    tr:hover td{
+      background: rgba(255,255,255,0.03);
+    }
 
-    .supplier{ font-weight: 700; }
+    .supplier{
+      font-weight: 700;
+    }
 
     .button-group{
       display:flex;
@@ -257,7 +281,10 @@
       align-items:center;
       justify-content:center;
     }
-    #modal.open{ display:flex; }
+
+    #modal.open{
+      display:flex;
+    }
 
     .modal-content{
       width: 100%;
@@ -268,6 +295,116 @@
       box-shadow: var(--shadow);
       padding: 16px;
     }
+
+    .modalHead{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 14px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .modalHead h3{
+      margin:0;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .modalBody{
+      padding: 6px 2px 10px;
+    }
+
+    .modalBody p{
+      margin: 0 0 14px;
+      line-height: 1.6;
+      font-size: 16px;
+      color: rgba(242,242,245,0.95);
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .step-link-group{
+      margin: 10px 0 16px 0;
+    }
+
+    .step-link-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      padding:10px 14px;
+      border-radius:12px;
+      background: rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.14);
+      color: var(--text);
+      text-decoration:none;
+      font-weight:700;
+      font-size:14px;
+      line-height:1.2;
+      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+      margin-top: 8px;
+    }
+
+    .step-link-btn:hover{
+      background: rgba(255,255,255,0.14);
+      border-color: rgba(255,255,255,0.22);
+      transform: translateY(-1px);
+    }
+
+    .step-link-btn.primary{
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border-color: rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+    }
+
+    .step-link-btn.primary:hover{
+      filter: brightness(1.06);
+    }
+
+    .inline-email-link{
+      color: #ff8a95;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 1px dotted rgba(255,138,149,0.45);
+    }
+
+    .inline-email-link:hover{
+      color: #ffb3ba;
+    }
+
+    @media (max-width: 920px){
+      .tables-container{
+        grid-template-columns: 1fr;
+      }
+
+      .button-group{
+        flex-wrap: wrap;
+        justify-content:flex-start;
+      }
+
+      .modalHead h3{
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 600px){
+      input{
+        width: 100%;
+        min-width: 0;
+      }
+
+      .row{
+        align-items:stretch;
+      }
+
+      .controls.left,
+      .controls.right{
+        width:100%;
+      }
+    }
   </style>
 </head>
 
@@ -277,11 +414,15 @@
       <h1>Supplier Warranty Information</h1>
       <p class="sub">Search suppliers and view warranty processes.</p>
       <div class="badge">● Live from Google Sheet</div>
+
       <div class="warranty-notice">
-  <p>
-    A warranty covers faults caused by manufacturing defects only. It does not cover normal wear and tear, consumable parts (such as drill chucks, brushes, blades, or belts), accidental damage, misuse, or modifications. Any damage caused by improper use, lack of maintenance, or external factors is excluded. If the product shows signs of physical damage, tampering, or unauthorised repair, the warranty is void. Proof of purchase is required for all claims.
-  </p>
-</div>
+        <p>
+          A warranty covers faults caused by manufacturing defects only. It does not cover normal wear and tear, consumable parts
+          (such as drill chucks, brushes, blades, or belts), accidental damage, misuse, or modifications. Any damage caused by
+          improper use, lack of maintenance, or external factors is excluded. If the product shows signs of physical damage,
+          tampering, or unauthorised repair, the warranty is void. Proof of purchase is required for all claims.
+        </p>
+      </div>
     </div>
 
     <div class="panel">
@@ -300,7 +441,6 @@
           </a>
         </div>
       </div>
-
 
       <div class="tableWrap">
         <div class="tables-container">
@@ -352,7 +492,7 @@
 
       <div class="modalBody" id="modalBody"></div>
 
-      <div class="row" style="border-bottom:none; justify-content:flex-end;">
+      <div class="row" style="border-bottom:none; justify-content:flex-end; padding: 8px 0 0;">
         <button class="btn btn-primary" onclick="closeModal()">Close</button>
       </div>
     </div>
@@ -396,6 +536,56 @@
         .replaceAll("'", "&#039;");
     }
 
+    function getLinkLabel(url) {
+      const lower = url.toLowerCase();
+
+      if (lower.includes("guaranteedtough.com.au")) return "Open Warranty Portal";
+      if (lower.includes("docs.google.com")) return "Open Replacement Form";
+      if (lower.includes("dropbox.com")) return "Open File";
+      if (lower.includes("sharepoint.com")) return "Open Document";
+      if (lower.includes("onedrive.live.com")) return "Open Document";
+
+      return "Open Link";
+    }
+
+    function getLinkClass(url) {
+      const lower = url.toLowerCase();
+
+      if (
+        lower.includes("guaranteedtough.com.au") ||
+        lower.includes("docs.google.com") ||
+        lower.includes("sharepoint.com") ||
+        lower.includes("onedrive.live.com")
+      ) {
+        return "step-link-btn primary";
+      }
+
+      return "step-link-btn";
+    }
+
+    function linkify(text) {
+      let safe = escapeHtml(text);
+
+      const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+      safe = safe.replace(emailRegex, (email) => {
+        return `<a href="mailto:${email}" class="inline-email-link">${email}</a>`;
+      });
+
+      const urlRegex = /(https?:\/\/[^\s<]+)/g;
+      safe = safe.replace(urlRegex, (match) => {
+        const clean = match.replace(/[),.]+$/g, "");
+        const tail = match.slice(clean.length);
+        const label = getLinkLabel(clean);
+        const btnClass = getLinkClass(clean);
+
+        return `<div class="step-link-group">
+          <a href="${clean}" target="_blank" rel="noopener noreferrer" class="${btnClass}">${label}</a>
+        </div>${escapeHtml(tail)}`;
+      });
+
+      return safe;
+    }
+
     function renderTables(filter = "") {
       const local = document.getElementById("localTable");
       const imported = document.getElementById("importTable");
@@ -405,7 +595,8 @@
       local.innerHTML = "";
       imported.innerHTML = "";
 
-      let lCount = 0, iCount = 0;
+      let lCount = 0;
+      let iCount = 0;
 
       suppliers.forEach((item, idx) => {
         const brand = item["Brands"];
@@ -424,7 +615,7 @@
           <td>
             <div class="button-group">
               ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
-              ${hasWarrantySteps ? `<button class="btn btn-sm btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+              ${hasWarrantySteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
               ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
             </div>
           </td>
@@ -442,21 +633,18 @@
       localCount.textContent = `${lCount} suppliers`;
       importCount.textContent = `${iCount} suppliers`;
 
-      if (!lCount) local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
-      if (!iCount) imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      if (!lCount) {
+        local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      }
+
+      if (!iCount) {
+        imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
+      }
     }
 
-    document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
-
-    function linkify(text) {
-      const urlRegex = /(https?:\/\/[^\s<]+)/g;
-
-      return escapeHtml(text).replace(urlRegex, (match) => {
-        const clean = match.replace(/[),.]+$/g, "");
-        const tail = match.slice(clean.length);
-        return `<a href="${clean}" target="_blank" rel="noopener noreferrer">${clean}</a>${escapeHtml(tail)}`;
-      });
-    }
+    document.getElementById("searchInput").addEventListener("input", e => {
+      renderTables(e.target.value);
+    });
 
     function showModalByIndex(index, type) {
       const item = suppliers[index];
@@ -469,24 +657,33 @@
 
       if (type === "info") {
         modalSub.textContent = "Warranty Information";
+
         const warrantyInfo = (item["Warranty Information"] || "N/A")
           .split("\n")
+          .filter(line => line.trim() !== "")
           .map(line => `<p>${linkify(line)}</p>`)
           .join("");
+
         modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
       } else {
         const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
         modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
 
         let any = false;
+
         for (let i = 1; i <= 6; i++) {
           const key = prefix + i;
           if (item[key]) {
             any = true;
-            modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`;
+            modalBody.innerHTML += `
+              <p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>
+            `;
           }
         }
-        if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
+
+        if (!any) {
+          modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
+        }
       }
 
       openModal();
@@ -509,8 +706,11 @@
     document.getElementById("modal").addEventListener("click", (e) => {
       if (e.target.id === "modal") closeModal();
     });
+
     document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) {
+        closeModal();
+      }
     });
   </script>
 </body>
