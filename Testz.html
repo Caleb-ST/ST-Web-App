@@ -109,24 +109,22 @@
       font-weight: 700;
       color: var(--text);
       text-decoration: none;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.24);
-      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
+      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
+      border: 1px solid rgba(255,43,61,0.55);
+      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
       text-align: center;
     }
 
     .store-btn:hover{
       transform: translateY(-1px);
-      background: rgba(255,255,255,0.10);
-      border-color: rgba(255,43,61,0.35);
-      box-shadow: 0 12px 28px rgba(255,43,61,0.16);
+      filter: brightness(1.06);
+      box-shadow: 0 12px 32px rgba(255,43,61,0.28);
     }
 
-    .store-btn.active{
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border-color: rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
+    .store-btn:focus-visible{
+      box-shadow: var(--focus);
+      outline: none;
     }
 
     .panel{
@@ -480,7 +478,7 @@
         <a class="store-btn" href="LonsdaleWarranties.html">Lonsdale</a>
         <a class="store-btn" href="WindsorWarranties.html">Windsor Gardens</a>
         <a class="store-btn" href="RegencyWarranties.html">Regency Park</a>
-        <a class="store-btn active" href="ParafieldWarranty.html">Parafield</a>
+        <a class="store-btn" href="ParafieldWarranty.html">Parafield</a>
         <a class="store-btn" href="MunnoWarranty.html">Munno Para</a>
       </div>
     </div>
