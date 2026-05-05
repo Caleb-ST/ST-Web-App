@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Warranty Jobs</title>
+  <style>
+    :root{
+      --bg0:#07070a;--bg1:#0b0b10;--panel:#101018;--panel2:#14141d;
+      --text:#f2f2f5;--muted:#a4a4b3;--border:rgba(255,255,255,0.08);
+      --shadow:0 20px 60px rgba(0,0,0,0.55);
+      --red:#ff2b3d;--red2:#b80c2b;--green:#1f9d63;--amber:#c98b1f;--blue:#3b82f6;
+      --pill:rgba(255,255,255,0.06);--pill2:rgba(255,43,61,0.18);
+      --focus:0 0 0 3px rgba(255,43,61,0.25);
+    }
+    *{box-sizing:border-box;}
+    html,body{
+      margin:0;min-height:100%;
+      background:radial-gradient(circle at top left,rgba(255,43,61,0.08),transparent 28%),
+        radial-gradient(circle at top right,rgba(255,255,255,0.04),transparent 22%),
+        linear-gradient(180deg,var(--bg1),var(--bg0));
+      color:var(--text);
+      font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    }
+    a{color:inherit;text-decoration:none;}
+    .wrap{width:min(1400px,calc(100% - 32px));margin:0 auto;padding:32px 0 48px;}
+    .hero{display:flex;justify-content:space-between;align-items:flex-start;gap:18px;margin-bottom:22px;flex-wrap:wrap;}
+    .hero-left h1{margin:0 0 10px;font-size:clamp(28px,4vw,44px);line-height:1.05;letter-spacing:-0.02em;}
+    .hero-left p{margin:0;color:var(--muted);max-width:800px;line-height:1.5;font-size:15px;}
+    .hero-right{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .btn{appearance:none;border:none;outline:none;cursor:pointer;border-radius:14px;padding:12px 16px;font-weight:700;font-size:14px;transition:transform .12s,box-shadow .12s,opacity .12s,background .12s;}
+    .btn:hover{transform:translateY(-1px);}
+    .btn:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+    .btn-red{color:white;background:linear-gradient(180deg,var(--red),var(--red2));box-shadow:0 10px 26px rgba(255,43,61,.22);}
+    .btn-ghost{color:var(--text);background:rgba(255,255,255,0.05);border:1px solid var(--border);}
+    .card{background:linear-gradient(180deg,rgba(255,255,255,0.04),rgba(255,255,255,0.025));border:1px solid var(--border);box-shadow:var(--shadow);border-radius:24px;overflow:hidden;}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:20px 22px 16px;border-bottom:1px solid rgba(255,255,255,0.05);flex-wrap:wrap;}
+    .toolbar-left h2{margin:0 0 6px;font-size:22px;line-height:1.1;}
+    .toolbar-left p{margin:0;color:var(--muted);font-size:14px;}
+    .toolbar-right{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .search{width:min(340px,100%);background:rgba(255,255,255,0.05);border:1px solid var(--border);color:var(--text);border-radius:14px;padding:12px 14px;font-size:14px;outline:none;}
+    .meta{display:flex;flex-wrap:wrap;gap:16px;padding:14px 22px 0;color:var(--muted);font-size:14px;}
+    .message{padding:14px 22px 0;color:var(--muted);font-size:14px;}
+    .table-wrap{padding:18px 22px 22px;overflow-x:auto;}
+    table{width:100%;min-width:950px;border-collapse:separate;border-spacing:0;overflow:hidden;border:1px solid var(--border);border-radius:18px;background:rgba(255,255,255,0.02);}
+    thead th{text-align:left;padding:14px;font-size:13px;font-weight:700;color:var(--muted);background:rgba(255,255,255,0.04);border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:0;z-index:1;white-space:nowrap;}
+    tbody td{padding:14px;font-size:14px;border-bottom:1px solid rgba(255,255,255,0.05);vertical-align:top;}
+    tbody tr:hover{background:rgba(255,255,255,0.025);}
+    tbody tr:last-child td{border-bottom:none;}
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:7px 11px;border-radius:999px;background:var(--pill);border:1px solid rgba(255,255,255,0.08);font-size:12px;font-weight:700;line-height:1;white-space:nowrap;}
+    .pill.red{background:var(--pill2);border-color:rgba(255,43,61,0.2);}
+    .pill.green{background:rgba(31,157,99,0.16);border-color:rgba(31,157,99,0.25);}
+    .pill.blue{background:rgba(59,130,246,0.16);border-color:rgba(59,130,246,0.25);}
+    .pill.amber{background:rgba(201,139,31,0.16);border-color:rgba(201,139,31,0.25);}
+    .job-number{font-weight:700;letter-spacing:0.01em;}
+    .tool-cell{min-width:260px;line-height:1.4;}
+    .empty-state{padding:28px 18px;text-align:center;color:var(--muted);}
+    .footer-note{margin-top:16px;color:var(--muted);font-size:12px;text-align:right;}
+    @media(max-width:800px){
+      .wrap{width:min(100% - 20px,1400px);padding:20px 0 34px;}
+      .toolbar,.meta,.message,.table-wrap{padding-left:14px;padding-right:14px;}
+      .toolbar-right,.hero-right{width:100%;}
+      .search{width:100%;}
+      table{min-width:800px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-left">
+        <h1 id="pageTitle">Warranty Jobs</h1>
+        <p>Live view of warranty jobs pulled from the sheet. Search by job number, date, tool, status, operator or customer.</p>
+      </div>
+      <div class="hero-right">
+        <a class="btn btn-ghost" href="index.html">Back to Index</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <h2 id="cardTitle">Current Warranty Jobs</h2>
+          <p>Showing Job Number, Date, Tool, Status, Booked in by, and Customer.</p>
+        </div>
+        <div class="toolbar-right">
+          <input id="searchInput" class="search" type="search" placeholder="Search warranty jobs..." autocomplete="off"/>
+          <button id="refreshBtn" class="btn btn-red" type="button">Refresh</button>
+        </div>
+      </div>
+      <div class="meta">
+        <span id="rowCount">0 rows</span>
+        <span id="lastUpdated">Last updated: -</span>
+      </div>
+      <div id="message" class="message">Loading...</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Job Number</th>
+              <th>Date</th>
+              <th>Tool</th>
+              <th>Status</th>
+              <th>Booked in by</th>
+              <th>Customer</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr><td colspan="6" class="empty-state">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer-note">Warranty Dashboard</div>
+  </div>
+
+  <script>
+    // ── PER-PAGE SETTING — change this one line for each store's HTML file ────
+    const STORE_NAME = 'Seaford Meadows';
+    // Valid values: 'Regency Park' | 'Windsor Gardens' | 'Parafield' |
+    //               'Munno Para'   | 'Lonsdale'        | 'Seaford Meadows'
+    // ──────────────────────────────────────────────────────────────────────────
+
+    const SCRIPT_URL      = 'https://script.google.com/macros/s/AKfycbxDnwso87RMPdXs-qZk_4w5YQQFEM7-4oTt8Qj9seUljg0-jCE3AehMx_IlOOdHy0NY/exec';
+    const WARRANTY_JSON_URL = `${SCRIPT_URL}?store=${encodeURIComponent(STORE_NAME)}`;
+
+    // Set page titles
+    document.getElementById('pageTitle').textContent = `${STORE_NAME} — Warranty Jobs`;
+    document.getElementById('cardTitle').textContent  = `${STORE_NAME} — Current Warranty Jobs`;
+    document.title = `${STORE_NAME} Warranty Jobs`;
+
+    const searchInput  = document.getElementById('searchInput');
+    const refreshBtn   = document.getElementById('refreshBtn');
+    const rowCountEl   = document.getElementById('rowCount');
+    const lastUpdatedEl= document.getElementById('lastUpdated');
+    const messageEl    = document.getElementById('message');
+    const tableBody    = document.getElementById('tableBody');
+
+    let allRows = [];
+
+    function esc(v) {
+      return String(v ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+    }
+
+    function statusClass(status) {
+      const s = String(status || '').toLowerCase();
+      // Green — fully resolved
+      if (s.includes('complet') || s.includes('collect') || s.includes('done') ||
+          s.includes('finished') || s.includes('closed')) return 'green';
+      // Blue — in progress at service centre
+      if (s.includes('sent out') || s.includes('sent to')) return 'blue';
+      // Amber — action pending
+      if (s.includes('waiting') || s.includes('quoted') || s.includes('awaiting') ||
+          s.includes('ordered') || s.includes('parts') || s.includes('inspected') ||
+          s.includes('import warranty') || s.includes('form to be')) return 'amber';
+      // Red — needs attention
+      return 'red';
+    }
+
+    function renderRows(rows) {
+      if (!rows.length) {
+        tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">No warranty jobs found.</td></tr>';
+        return;
+      }
+      tableBody.innerHTML = rows.map(row => {
+        const status = String(row['Status'] || '').trim() || '-';
+        return `<tr>
+          <td class="job-number">${esc(row['Job Number'] || '-')}</td>
+          <td>${esc(row['Date'] || '-')}</td>
+          <td class="tool-cell">${esc(row['Tool'] || '-')}</td>
+          <td><span class="pill ${statusClass(status)}">${esc(status)}</span></td>
+          <td>${esc(row['Booked in by'] || '-')}</td>
+          <td>${esc(row['Customer'] || '-')}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    function filterRows() {
+      const term = searchInput.value.trim().toLowerCase();
+      if (!term) {
+        renderRows(allRows);
+        rowCountEl.textContent = `${allRows.length} row${allRows.length===1?'':'s'}`;
+        return;
+      }
+      const filtered = allRows.filter(row =>
+        ['Job Number','Date','Tool','Status','Booked in by','Customer']
+          .some(k => String(row[k] ?? '').toLowerCase().includes(term))
+      );
+      renderRows(filtered);
+      rowCountEl.textContent = `${filtered.length} row${filtered.length===1?'':'s'} (filtered)`;
+    }
+
+    async function loadData() {
+      messageEl.textContent = 'Loading...';
+      refreshBtn.disabled   = true;
+      try {
+        const res  = await fetch(WARRANTY_JSON_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Script returned failure');
+        allRows = Array.isArray(data.rows) ? data.rows : [];
+        renderRows(allRows);
+        rowCountEl.textContent  = `${allRows.length} row${allRows.length===1?'':'s'}`;
+        lastUpdatedEl.textContent = `Last updated: ${new Date(data.lastUpdated).toLocaleString()}`;
+        messageEl.textContent   = allRows.length ? 'Data loaded.' : 'No jobs found.';
+      } catch (err) {
+        console.error(err);
+        allRows = [];
+        tableBody.innerHTML = '<tr><td colspan="6" class="empty-state">Failed to load data. Check console for details.</td></tr>';
+        rowCountEl.textContent    = '0 rows';
+        messageEl.textContent     = `Error: ${err.message}`;
+        lastUpdatedEl.textContent = 'Last updated: -';
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    searchInput.addEventListener('input', filterRows);
+    refreshBtn.addEventListener('click', loadData);
+    loadData();
+  </script>
+</body>
+</html>
