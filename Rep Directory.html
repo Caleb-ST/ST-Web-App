@@ -5,6 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Rep Directory</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script>
+    document.documentElement.style.visibility = "hidden";
+    (async () => {
+      const _sb = supabase.createClient(
+        "https://hidkyhsedsmptfqkonad.supabase.co",
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
+      );
+      const { data: { session } } = await _sb.auth.getSession();
+      if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
+        window.location.href = "index.html";
+        return;
+      }
+      document.documentElement.style.visibility = "";
+    })();
+  </script>
+
   <style>
     :root{
       --bg0:#07070a;
