@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repair Job Importer — Sydney Tools SA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script src="https://accounts.google.com/gsi/client" onload="initGIS()" async defer></script>
+<style>
+:root {
+  --red:#e30613;--red-d:#a80410;--red-dim:rgba(227,6,19,0.12);
+  --bg:#080808;--s1:#0f0f0f;--s2:#161616;--s3:#1e1e1e;--s4:#252525;
+  --border:rgba(255,255,255,0.07);--text:#f2f2f2;--sub:#666;--sub2:#3a3a3a;
+  --green:#22c55e;--amber:#f59e0b;--blue:#3b82f6;--purple:#a855f7;
+  --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:var(--font);font-size:14px;overflow:hidden;}
+.app{display:flex;flex-direction:column;height:100vh;}
+.header{background:var(--red);padding:0 20px;height:50px;display:flex;align-items:center;gap:14px;flex-shrink:0;position:relative;overflow:hidden;}
+.header::after{content:'';position:absolute;right:-50px;top:-50px;width:200px;height:200px;background:rgba(255,255,255,0.04);border-radius:50%;}
+.hlogo{font-size:16px;font-weight:700;color:white;display:flex;align-items:center;gap:9px;}
+.hlogo-icon{width:26px;height:26px;background:rgba(255,255,255,0.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.hsub{font-size:12px;color:rgba(255,255,255,0.55);}
+.hright{margin-left:auto;font-size:11px;color:rgba(255,255,255,0.35);font-family:var(--mono);}
+.hbadge{background:rgba(255,255,255,0.15);border-radius:20px;padding:2px 10px;font-size:11px;color:white;font-weight:600;cursor:pointer;}
+.hbadge:hover{background:rgba(255,255,255,0.25);}
+.hback{background:rgba(255,255,255,0.1);border-radius:6px;padding:4px 10px;font-size:12px;color:white;text-decoration:none;font-weight:500;}
+.hback:hover{background:rgba(255,255,255,0.2);}
+.nav{background:var(--s1);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:2px;flex-shrink:0;}
+.nav-tab{padding:0 14px;height:43px;display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;user-select:none;border-radius:6px 6px 0 0;white-space:nowrap;}
+.nav-tab:hover{color:var(--text);background:var(--s2);}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--red);background:var(--s2);}
+.content{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0;}
+.tab-panel{display:none;flex:1;overflow-y:auto;padding:18px;flex-direction:column;gap:14px;min-height:0;}
+.tab-panel.active{display:flex;animation:fadeIn .18s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.statusbar{background:var(--s1);border-top:1px solid var(--border);height:27px;display:flex;align-items:center;padding:0 14px;font-size:11.5px;color:var(--sub);font-family:var(--mono);flex-shrink:0;gap:8px;}
+.sb-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;}
+.sb-dot.loading{background:var(--amber);animation:pulse 1s infinite;}
+.sb-dot.error{background:var(--red);}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.card{background:var(--s2);border:1px solid var(--border);border-radius:11px;overflow:hidden;}
+.card-hdr{padding:10px 14px 8px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);border-bottom:1px solid var(--border);}
+.card-body{padding:14px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:0 14px;height:34px;border-radius:7px;font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;border:none;transition:all .12s;white-space:nowrap;}
+.btn-red{background:var(--red);color:white;}.btn-red:hover{background:var(--red-d);}
+.btn-green{background:var(--green);color:#000;}.btn-green:hover{background:#16a34a;}
+.btn-ghost{background:var(--s3);color:var(--text);border:1px solid var(--border);}.btn-ghost:hover{background:var(--s4);}
+.btn-amber{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.3);}.btn-amber:hover{background:rgba(245,158,11,.25);}
+.btn-sm{height:30px;padding:0 11px;font-size:12px;border-radius:6px;}
+.btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none;}
+.row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.field{display:flex;align-items:center;gap:7px;}
+.field label{font-size:12px;color:var(--sub);font-weight:500;white-space:nowrap;}
+input[type=text],select,textarea{background:var(--s1);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:var(--font);font-size:13px;padding:0 11px;height:34px;outline:none;transition:border-color .15s;}
+input[type=text]:focus,select:focus{border-color:rgba(227,6,19,.5);}
+select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;padding-right:26px;}
+select option{background:var(--s3);}
+textarea{height:auto;padding:10px 11px;resize:vertical;font-family:var(--mono);font-size:12px;line-height:1.6;}
+.paste-area{background:var(--s1);border:1px solid var(--border);border-radius:9px;font-family:var(--mono);font-size:12px;color:#94a3b8;padding:13px;min-height:130px;resize:vertical;width:100%;line-height:1.65;}
+.paste-area:focus{outline:none;border-color:rgba(227,6,19,.4);}
+.paste-area::placeholder{color:var(--sub2);}
+.tbl-wrap{overflow:auto;border-radius:9px;border:1px solid var(--border);flex:1;}
+table{width:100%;border-collapse:collapse;font-size:12.5px;}
+thead tr{background:var(--s3);}
+thead th{padding:9px 12px;text-align:left;font-weight:600;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--sub);white-space:nowrap;cursor:pointer;user-select:none;border-bottom:1px solid var(--border);}
+thead th:hover{color:var(--text);}
+tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+tbody tr:hover{background:var(--s3);}
+tbody tr:last-child{border-bottom:none;}
+tbody td{padding:9px 12px;font-family:var(--mono);color:#ccc;white-space:nowrap;max-width:260px;overflow:hidden;text-overflow:ellipsis;}
+tbody td.name{font-family:var(--font);font-weight:500;color:var(--text);}
+.chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;font-family:var(--font);}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:16px;font-size:10.5px;font-weight:700;}
+.badge-new{background:rgba(34,197,94,.15);color:#22c55e;}
+.badge-updated{background:rgba(59,130,246,.15);color:#60a5fa;}
+.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;}
+.metric{background:var(--s2);border:1px solid var(--border);border-radius:11px;padding:14px 16px;}
+.metric.red{border-color:rgba(227,6,19,.25);}
+.metric.green{border-color:rgba(34,197,94,.2);}
+.metric.amber{border-color:rgba(245,158,11,.2);}
+.metric-val{font-size:28px;font-weight:700;letter-spacing:-1px;line-height:1;}
+.metric-lbl{font-size:11.5px;color:var(--sub);font-weight:500;margin-top:3px;}
+.dash-charts{display:grid;grid-template-columns:1fr 2fr;gap:12px;}
+.dash-tables{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.stat-item{display:flex;align-items:center;gap:9px;margin-bottom:6px;}
+.stat-lbl{font-size:11.5px;color:var(--sub);width:150px;text-align:right;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stat-bar-wrap{flex:1;background:var(--s3);border-radius:3px;height:7px;overflow:hidden;}
+.stat-bar{height:100%;border-radius:3px;transition:width .7s cubic-bezier(.16,1,.3,1);}
+.stat-count{font-family:var(--mono);font-size:11.5px;color:var(--text);width:26px;text-align:right;flex-shrink:0;}
+.store-row{display:flex;align-items:center;gap:9px;margin-bottom:8px;}
+.store-lbl{font-size:11.5px;color:var(--sub);width:110px;text-align:right;flex-shrink:0;}
+.store-bar{flex:1;height:18px;display:flex;border-radius:4px;overflow:hidden;}
+.store-seg{height:100%;transition:width .7s cubic-bezier(.16,1,.3,1);}
+.store-total{font-family:var(--mono);font-size:11.5px;color:var(--text);width:26px;margin-left:6px;flex-shrink:0;}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--sub);}
+.legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.warn-strip{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:9px 14px;display:flex;align-items:center;gap:11px;font-size:12.5px;}
+.warn-check{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.warn-check input{width:15px;height:15px;accent-color:var(--amber);cursor:pointer;}
+.test-strip{background:var(--s2);border:1px solid var(--border);border-radius:9px;padding:11px 14px;display:flex;align-items:center;gap:11px;}
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast-wrap{position:fixed;bottom:40px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:999;}
+.toast{background:var(--s3);border:1px solid var(--border);border-radius:9px;padding:11px 16px;font-size:13px;min-width:240px;max-width:360px;animation:slideIn .2s ease;display:flex;align-items:center;gap:10px;}
+.toast.success{border-color:rgba(34,197,94,.3);}.toast.error{border-color:rgba(227,6,19,.3);}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.modal-wrap{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(3px);}
+.modal-wrap.hidden{display:none;}
+.modal{background:var(--s2);border:1px solid var(--border);border-radius:12px;width:860px;max-height:85vh;display:flex;flex-direction:column;overflow:hidden;}
+.modal-hdr{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;font-weight:600;flex-shrink:0;}
+.modal-body{flex:1;overflow:auto;padding:16px;font-family:var(--mono);font-size:11.5px;color:#94a3b8;line-height:1.7;white-space:pre-wrap;word-break:break-all;}
+.date-wrap{position:relative;display:inline-flex;align-items:center;}
+.date-wrap input{padding-right:28px;cursor:pointer;caret-color:transparent;}
+.cal-icon{position:absolute;right:8px;font-size:12px;color:var(--sub);pointer-events:none;}
+.cal-popup{position:fixed;z-index:900;background:var(--s3);border:1px solid var(--border);border-radius:12px;padding:14px;box-shadow:0 16px 48px rgba(0,0,0,.7);min-width:260px;user-select:none;}
+.cal-popup.hidden{display:none;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.cal-header span{font-size:13px;font-weight:600;color:var(--text);}
+.cal-nav{background:none;border:none;color:var(--sub);font-size:16px;cursor:pointer;width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.cal-nav:hover{background:var(--s4);color:var(--text);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;}
+.cal-dow{font-size:10px;font-weight:600;color:var(--sub);text-align:center;padding:4px 0;}
+.cal-day{font-size:12px;text-align:center;padding:6px 2px;border-radius:6px;cursor:pointer;color:#ccc;transition:background .1s;}
+.cal-day:hover{background:var(--s4);color:var(--text);}
+.cal-day.today{color:var(--red);font-weight:700;}
+.cal-day.selected{background:var(--red);color:white;font-weight:700;}
+.cal-day.other-month{color:var(--sub2);}
+.cal-day.empty{cursor:default;}
+/* Auth gate */
+#auth-gate{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;flex-direction:column;gap:12px;font-size:13px;color:var(--sub);}
+#app-wrap{display:none;height:100%;}
+/* Google auth banner */
+.gauth-banner{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px;font-size:12.5px;}
+</style>
+</head>
+<body>
+
+<!-- Auth gate — shown while checking Supabase session -->
+<div id="auth-gate"><div class="spin" style="border-top-color:var(--red)"></div>Loading...</div>
+
+<!-- Main app — revealed after auth check -->
+<div id="app-wrap">
+<div class="app">
+  <div class="header">
+    <div class="hlogo"><div class="hlogo-icon">⚙</div>REPAIR JOB IMPORTER</div>
+    <span class="hsub">Sydney Tools — SA Stores</span>
+    <a href="/" class="hback" style="margin-left:16px">← Index</a>
+    <span class="hright">sydneytools.com.au</span>
+  </div>
+
+  <div class="nav">
+    <div class="nav-tab active" onclick="tab('dashboard',this)">📊 Dashboard</div>
+    <div class="nav-tab" onclick="tab('import',this)">📥 Import</div>
+    <div class="nav-tab" onclick="tab('rules',this)">⚡ Rules</div>
+    <div class="nav-tab" onclick="tab('archive',this)">🗄 Archive</div>
+    <div class="nav-tab" onclick="tab('search',this)">🔍 Search</div>
+    <div class="nav-tab" onclick="tab('setup',this)">🔧 Setup</div>
+    <div class="nav-tab" onclick="tab('help',this)">❓ Help</div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="tab-panel active" id="tab-dashboard">
+      <div class="metrics">
+        <div class="metric red"><div class="metric-val" id="m-total">—</div><div class="metric-lbl">Active Jobs</div></div>
+        <div class="metric"><div class="metric-val" id="m-sent">—</div><div class="metric-lbl">Sent Out</div></div>
+        <div class="metric"><div class="metric-val" id="m-looked">—</div><div class="metric-lbl">To be Looked At</div></div>
+        <div class="metric amber"><div class="metric-val" id="m-stale">—</div><div class="metric-lbl">Stale &gt;14 days</div></div>
+        <div class="metric green"><div class="metric-val" id="m-credit">—</div><div class="metric-lbl">Request Credit</div></div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <button class="btn btn-green btn-sm" onclick="refreshAll()">🔄 Refresh All</button>
+        <span id="dash-updated" style="font-size:12px;color:var(--sub)"></span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <label style="font-size:12px;color:var(--sub)">Flag stale after</label>
+          <input type="text" id="stale-days" value="14" style="width:46px;text-align:center">
+          <span style="font-size:12px;color:var(--sub)">days</span>
+        </div>
+      </div>
+      <div class="dash-charts">
+        <div class="card"><div class="card-hdr">Jobs by Status</div><div class="card-body" id="status-bars" style="min-height:200px"></div></div>
+        <div class="card"><div class="card-hdr">Jobs by Store</div><div class="card-body" id="store-bars" style="min-height:200px"></div></div>
+      </div>
+      <div class="dash-tables">
+        <div class="card"><div class="card-hdr">Stale Jobs</div><div class="tbl-wrap" id="stale-tbl-wrap" style="overflow:auto"><div style="padding:24px;text-align:center;color:var(--sub)">Click Refresh to load</div></div></div>
+        <div class="card"><div class="card-hdr">Oldest Outstanding</div><div class="tbl-wrap" id="oldest-tbl-wrap" style="overflow:auto"><div style="padding:24px;text-align:center;color:var(--sub)">Click Refresh to load</div></div></div>
+      </div>
+    </div>
+
+    <!-- IMPORT -->
+    <div class="tab-panel" id="tab-import">
+      <div id="gauth-banner" class="gauth-banner" style="display:none">
+        <span style="font-size:15px">⚠️</span>
+        <span style="color:#d97706;font-weight:600">Google Sheets not connected.</span>
+        <span style="color:var(--sub)">Go to Setup tab and click Connect.</span>
+        <button class="btn btn-amber btn-sm" onclick="tab('setup',document.querySelectorAll('.nav-tab')[5])">→ Setup</button>
+      </div>
+      <div class="card">
+        <div class="card-hdr">Report Settings</div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:11px">
+          <div class="row">
+            <div class="field"><label>Store</label><select id="store-sel" style="width:172px"><option>Regency Park</option><option>Windsor Gardens</option><option>Parafield</option><option>Munno Para</option><option>Lonsdale</option><option>Seaford Meadows</option></select></div>
+            <div class="field"><label>From</label>
+              <div class="date-wrap"><input type="text" id="date-from" value="01-Apr-26" style="width:106px" readonly onclick="openCal('date-from',this)"><span class="cal-icon">📅</span></div></div>
+            <div class="field"><label>To</label>
+              <div class="date-wrap"><input type="text" id="date-to" style="width:106px" readonly onclick="openCal('date-to',this)"><span class="cal-icon">📅</span></div></div>
+            <div style="display:flex;gap:7px;margin-left:4px">
+              <button class="btn btn-green" id="parse-btn" onclick="doParse()">▶ Parse</button>
+              <button class="btn btn-red" id="send-btn" disabled onclick="doSend()">☁ Send to Sheet</button>
+              <button class="btn btn-ghost btn-sm" id="undo-btn" disabled onclick="doUndo()">↩ Undo</button>
+              <button class="btn btn-ghost btn-sm" onclick="doClear()">✕</button>
+            </div>
+            <span id="parse-count" style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--red);margin-left:auto"></span>
+          </div>
+          <div class="warn-strip">
+            <span style="font-size:15px">⚠️</span>
+            <label class="warn-check"><input type="checkbox" id="auto-complete"><span style="color:#d97706;font-weight:600">Mark jobs NOT in this report as Completed</span><span style="color:var(--sub);margin-left:4px">— only tick when report covers ALL active jobs for this store in date range</span></label>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">Paste Report Text Here</div>
+        <div class="card-body" style="padding:10px">
+          <textarea class="paste-area" id="paste-area" rows="8" placeholder="Paste the ERP Enquiries &amp; Sales Actions Report text here&#10;&#10;Tab-separated data starting with the job ref numbers..." oninput="autoDetectReport(this.value)"></textarea>
+        </div>
+      </div>
+      <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+        <div class="card-hdr">Preview — review matched statuses before sending</div>
+        <div class="tbl-wrap" id="preview-wrap" style="display:none;overflow:auto;">
+          <table><thead><tr><th>Action</th><th>Ref No</th><th>Date</th><th>Operator</th><th>Tool Description</th><th>Matched Status</th><th>Customer</th></tr></thead><tbody id="preview-body"></tbody></table>
+        </div>
+        <div id="preview-empty" style="padding:28px;text-align:center;color:var(--sub)">Paste a report and click Parse to preview jobs</div>
+      </div>
+    </div>
+
+    <!-- RULES -->
+    <div class="tab-panel" id="tab-rules">
+      <div class="test-strip">
+        <label style="font-size:12px;color:var(--sub);white-space:nowrap">🧪 Test a note:</label>
+        <input type="text" id="test-input" placeholder="e.g. SENT TO MILWAUKEE FOR REPAIR 5/4/26" style="flex:1;max-width:480px" oninput="testRule(this.value)">
+        <div id="test-result" style="font-family:var(--mono);font-size:12.5px;color:var(--sub)">type something to test a rule</div>
+      </div>
+      <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+        <div class="card-hdr">Status Rules — all matches found, highest priority wins</div>
+        <div class="tbl-wrap" style="max-height:340px">
+          <table><thead><tr><th>Keyword</th><th>→ Status</th><th>Priority</th></tr></thead><tbody id="rules-body"></tbody></table>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="field"><label>Keyword</label><input type="text" id="new-kw" placeholder="e.g. replacement received" style="width:250px"></div>
+            <div class="field"><label>Status</label>
+              <select id="new-status" style="width:210px">
+                <option>To be Looked At</option><option>Waiting Parts</option><option>Wty waiting approval</option>
+                <option>Quoted</option><option>Inspected</option><option>Import Warranty</option>
+                <option>Request Credit</option><option>Completed</option><option>Collected by Customer</option>
+                <option>Missing</option><option>Salesman following up</option><option>To be Done</option>
+                <option>Follow up requested</option><option>Sent out</option><option>To be Sent out</option>
+                <option>Form to be Filled and sent</option><option>To be sent to Regency</option>
+              </select>
+            </div>
+            <button class="btn btn-green btn-sm" onclick="addRule()">＋ Add</button>
+            <button class="btn btn-ghost btn-sm" style="color:#ef4444" onclick="delRule()">✕ Delete</button>
+            <button class="btn btn-red btn-sm" onclick="saveRules()">💾 Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ARCHIVE -->
+    <div class="tab-panel" id="tab-archive">
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="loadArchives()">🔄 Refresh</button>
+        <button class="btn btn-ghost btn-sm" onclick="viewArchive()">👁 View Selected</button>
+      </div>
+      <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+        <div class="card-hdr">Saved Reports</div>
+        <div class="tbl-wrap">
+          <table><thead><tr><th>Filename</th><th>Archived At</th></tr></thead><tbody id="archive-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="tab-panel" id="tab-search">
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            <div class="field"><label>Search</label><input type="text" id="search-q" placeholder="ref, tool, customer..." style="width:220px" oninput="filterSearch()"></div>
+            <div class="field"><label>Store</label>
+              <select id="search-store" style="width:156px" onchange="filterSearch()">
+                <option>All Stores</option><option>Regency Park</option><option>Windsor Gardens</option>
+                <option>Parafield</option><option>Munno Para</option><option>Lonsdale</option><option>Seaford Meadows</option>
+              </select>
+            </div>
+            <div class="field"><label>Status</label>
+              <select id="search-status" style="width:190px" onchange="filterSearch()">
+                <option>All Statuses</option><option>To be Looked At</option><option>Waiting Parts</option>
+                <option>Wty waiting approval</option><option>Quoted</option><option>Inspected</option>
+                <option>Import Warranty</option><option>Request Credit</option><option>Completed</option>
+                <option>Collected by Customer</option><option>Missing</option><option>Salesman following up</option>
+                <option>To be Done</option><option>Follow up requested</option><option>Sent out</option>
+                <option>To be Sent out</option><option>Form to be Filled and sent</option><option>To be sent to Regency</option>
+              </select>
+            </div>
+            <button class="btn btn-red btn-sm" onclick="loadSearch()">🔄 Load / Refresh</button>
+            <button class="btn btn-ghost btn-sm" onclick="clearSearch()">✕ Clear</button>
+            <span id="search-count" style="margin-left:auto;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--red)"></span>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="flex:1;min-height:0;display:flex;flex-direction:column;">
+        <div class="card-hdr">Results — click row to copy ref number</div>
+        <div class="tbl-wrap" style="flex:1;overflow:auto;">
+          <table><thead><tr><th>Ref No</th><th>Date</th><th>Store</th><th>Status</th><th>Tool</th><th>Customer</th><th>Booked By</th></tr></thead><tbody id="search-body"></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETUP -->
+    <div class="tab-panel" id="tab-setup">
+      <div class="card">
+        <div class="card-hdr">1. Google Sheets Connection</div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          <p style="font-size:13px;color:var(--sub)">Click below to connect to Google Sheets. A popup will ask you to sign in and grant access. This is required before using Import or Dashboard.</p>
+          <div style="display:flex;gap:8px;align-items:center">
+            <button class="btn btn-green" onclick="doAuth()">🔑 Connect Google Sheets</button>
+            <div id="auth-status" style="font-size:12px;color:var(--sub)">Not connected</div>
+          </div>
+          <p style="font-size:11.5px;color:var(--sub2)">Token lasts 1 hour. If Sheets calls start failing, click Connect again.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-hdr">2. Connected Spreadsheet</div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-family:var(--mono);font-size:12px;color:var(--green)">Spreadsheet ID:  1-9fgf-5D857W7I2jqh6ijK9WKmGANsU8Yo1r8PO4tmI</div>
+          <div style="font-family:var(--mono);font-size:12px;color:var(--green)">Writing to tab:  Job Sheet</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HELP -->
+    <div class="tab-panel" id="tab-help">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="card"><div class="card-hdr">Daily Workflow</div><div class="card-body" style="color:#999;font-size:13px;line-height:1.9"><ol style="padding-left:16px"><li>Go to Setup → Connect Google Sheets</li><li>Run Enquiries &amp; Sales Actions Report (ERP via RDP)</li><li>Copy ALL the report text</li><li>Select Store + date range in Import tab</li><li>Paste → Parse → review preview → Send to Sheet</li></ol></div></div>
+        <div class="card"><div class="card-hdr">Status Rules</div><div class="card-body" style="color:#999;font-size:13px;line-height:1.9">All note lines combined and checked against every rule. Highest priority match wins. Use the 🧪 Test box to debug rules instantly.</div></div>
+        <div class="card"><div class="card-hdr">Auto-Complete Toggle</div><div class="card-body" style="color:#999;font-size:13px;line-height:1.9">Only tick when the report covers ALL active jobs in that date window. Jobs outside the window are never touched regardless.</div></div>
+        <div class="card"><div class="card-hdr">Undo Last Send</div><div class="card-body" style="color:#999;font-size:13px;line-height:1.9">Restores all previous statuses and clears newly added rows. One level of undo only. Click before doing anything else.</div></div>
+        <div class="card"><div class="card-hdr">Google Auth</div><div class="card-body" style="color:#999;font-size:13px;line-height:1.9">Token lasts 1 hour per session. If you get auth errors while working, go to Setup → Connect Google Sheets again. No data is lost.</div></div>
+        <div class="card"><div class="card-hdr">Tips</div><div class="card-body" style="color:#999;font-size:13px;line-height:1.9"><ul style="padding-left:14px"><li>Run one store per day</li><li>Add rules as you spot wrong statuses</li><li>Use Undo if you process the wrong store</li><li>Archive saves every report automatically</li><li>Search tab loads all jobs — use to look up any ref</li></ul></div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="statusbar"><div class="sb-dot" id="sb-dot"></div><span id="sb-text">Loading...</span></div>
+</div>
+</div>
+
+<!-- Archive modal -->
+<div class="modal-wrap hidden" id="archive-modal">
+  <div class="modal">
+    <div class="modal-hdr"><span id="modal-title">Archive</span><button class="btn btn-ghost btn-sm" onclick="closeModal()">✕ Close</button></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toast-wrap"></div>
+
+<!-- Calendar popup -->
+<div class="cal-popup hidden" id="cal-popup">
+  <div class="cal-header">
+    <button class="cal-nav" onclick="calNav(-1)">‹</button>
+    <span id="cal-month-lbl"></span>
+    <button class="cal-nav" onclick="calNav(1)">›</button>
+  </div>
+  <div class="cal-grid" id="cal-days"></div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// CONFIG — update GOOGLE_CLIENT_ID after creating a Web App credential
+// ══════════════════════════════════════════════════════════════════════════════
+const SUPABASE_URL     = 'https://hidkyhsedsmptfqkonad.supabase.co';
+const SUPABASE_ANON    = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM';
+const GOOGLE_CLIENT_ID = 'PASTE_YOUR_WEB_APP_CLIENT_ID_HERE';  // ← REPLACE THIS
+const SPREADSHEET_ID   = '1-9fgf-5D857W7I2jqh6ijK9WKmGANsU8Yo1r8PO4tmI';
+const JOB_SHEET        = 'Job Sheet';
+const SHEETS_BASE      = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}`;
+
+// ══════════════════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════════════════
+let supabaseClient, rules = [], parsedJobs = [], searchData = [], googleToken = null, tokenClient;
+const REF_RE  = /^\d{7,8}$/;
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MON_IDX = {jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};
+
+const STATUS_PRIORITY = {
+  'Collected by Customer':1,'Completed':2,'Missing':3,'Sent out':4,'To be Sent out':5,
+  'Request Credit':6,'Form to be Filled and sent':7,'Wty waiting approval':8,'Waiting Parts':9,
+  'Quoted':10,'Inspected':11,'Import Warranty':12,'To be Done':13,'To be sent to Regency':14,
+  'Salesman following up':15,'Follow up requested':16,'To be Looked At':17
+};
+const STATUS_COLS = {
+  'Collected by Customer':'#2bff00','Completed':'#78b36d','Missing':'#95a5a6',
+  'Sent out':'#3b82f6','To be Sent out':'#5dade2','Request Credit':'#a855f7',
+  'Form to be Filled and sent':'#8e44ad','Wty waiting approval':'#e67e22',
+  'Waiting Parts':'#f59e0b','Quoted':'#f1c40f','Inspected':'#1abc9c',
+  'Import Warranty':'#16a085','To be Done':'#e74c3c','To be sent to Regency':'#c0392b',
+  'Salesman following up':'#fd79a8','Follow up requested':'#fdcb6e','To be Looked At':'#e30613'
+};
+const SEG_COLS = {
+  'Sent out':'#3b82f6','To be Looked At':'#e30613','Request Credit':'#a855f7',
+  'Waiting Parts':'#f59e0b','To be Done':'#e74c3c','Wty waiting approval':'#e67e22',
+  'Quoted':'#f1c40f','Form to be Filled and sent':'#8e44ad','Follow up requested':'#fdcb6e',
+  'Inspected':'#1abc9c','Import Warranty':'#16a085'
+};
+
+// ══════════════════════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════════════════════
+function initGIS() {
+  if (GOOGLE_CLIENT_ID === 'PASTE_YOUR_WEB_APP_CLIENT_ID_HERE') return;
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: GOOGLE_CLIENT_ID,
+    scope: 'https://www.googleapis.com/auth/spreadsheets',
+    callback: (resp) => {
+      if (resp.error) { toast('Google auth failed: ' + resp.error, 'error'); return; }
+      googleToken = resp.access_token;
+      document.getElementById('auth-status').innerHTML = '<span style="color:var(--green)">✅ Connected — ready to use</span>';
+      document.getElementById('gauth-banner').style.display = 'none';
+      setStatus('Google Sheets connected', 'ok');
+      toast('Google Sheets connected');
+    }
+  });
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  // Init Supabase
+  supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+
+  // Auth gate
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) { window.location.href = '/'; return; }
+
+  // Show app
+  document.getElementById('auth-gate').style.display = 'none';
+  document.getElementById('app-wrap').style.display = 'block';
+
+  // Set today's date
+  document.getElementById('date-to').value = fmtDateToday();
+
+  setStatus('Loading rules...', 'loading');
+  await loadRules();
+
+  // Check undo availability
+  checkUndoAvailable();
+
+  setStatus('Ready — connect Google Sheets in Setup tab, then paste a report', 'ok');
+
+  // Show Google auth banner if client ID not set
+  if (GOOGLE_CLIENT_ID === 'PASTE_YOUR_WEB_APP_CLIENT_ID_HERE') {
+    document.getElementById('gauth-banner').style.display = 'flex';
+    document.getElementById('auth-status').innerHTML = '<span style="color:#ef4444">⚠️ Client ID not configured — see Setup</span>';
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DATE HELPERS
+// ══════════════════════════════════════════════════════════════════════════════
+function fmtDateToday() {
+  const d = new Date();
+  return `${String(d.getDate()).padStart(2,'0')}-${MON[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`;
+}
+
+function fmtDate(s) {
+  if (!s) return s;
+  s = s.trim();
+  let m;
+  if ((m = s.match(/^(\d{1,2})[\s-]([A-Za-z]+)[\s-](\d{4})$/))) {
+    const mo = MON_IDX[m[2].slice(0,3).toLowerCase()];
+    if (mo !== undefined) { const yr = String(parseInt(m[3])).slice(-2); return `${String(parseInt(m[1])).padStart(2,'0')}-${MON[mo]}-${yr}`; }
+  }
+  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/))) {
+    const yr = String(parseInt(m[3])).slice(-2);
+    return `${String(parseInt(m[1])).padStart(2,'0')}-${MON[parseInt(m[2])-1]}-${yr}`;
+  }
+  return s;
+}
+
+function parseAppDate(s) {
+  if (!s) return null;
+  s = s.trim();
+  let m;
+  if ((m = s.match(/^(\d{1,2})-([A-Za-z]{3})-(\d{2})$/))) {
+    const mo = MON_IDX[m[2].toLowerCase()];
+    if (mo !== undefined) return new Date(2000 + parseInt(m[3]), mo, parseInt(m[1]));
+  }
+  if ((m = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/)))
+    return new Date(parseInt(m[3]), parseInt(m[2])-1, parseInt(m[1]));
+  return null;
+}
+
+function daysSince(s) {
+  const d = parseAppDate(s);
+  if (!d) return null;
+  return Math.floor((new Date() - d) / 86400000);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UI HELPERS
+// ══════════════════════════════════════════════════════════════════════════════
+function tab(id, el) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+function setStatus(msg, type='ok') {
+  document.getElementById('sb-text').textContent = msg;
+  const dot = document.getElementById('sb-dot');
+  dot.className = 'sb-dot' + (type==='loading'?' loading':type==='error'?' error':'');
+}
+
+function toast(msg, type='success') {
+  const w = document.getElementById('toast-wrap');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = `<span>${type==='success'?'✅':'❌'}</span> ${msg}`;
+  w.appendChild(t);
+  setTimeout(() => t.remove(), 4500);
+}
+
+function chipHtml(status) {
+  const col = STATUS_COLS[status] || '#555';
+  return `<span class="chip" style="background:${col}22;color:${col}">${status}</span>`;
+}
+
+function copyRef(ref) {
+  try { navigator.clipboard.writeText(ref).then(() => setStatus('Copied ' + ref, 'ok')); }
+  catch(e) {
+    const el = document.createElement('input'); el.value = ref;
+    document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+    setStatus('Copied ' + ref, 'ok');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GOOGLE SHEETS API
+// ══════════════════════════════════════════════════════════════════════════════
+function gHeader() {
+  if (!googleToken) throw new Error('Not connected to Google Sheets. Go to Setup → Connect.');
+  return { 'Authorization': `Bearer ${googleToken}`, 'Content-Type': 'application/json' };
+}
+
+async function sheetsGet(range) {
+  const r = await fetch(`${SHEETS_BASE}/values/${encodeURIComponent(range)}`, { headers: gHeader() });
+  if (!r.ok) {
+    const e = await r.json(); 
+    if (r.status === 401) { googleToken = null; throw new Error('Google token expired — go to Setup → Connect again'); }
+    throw new Error(e.error?.message || r.statusText);
+  }
+  return (await r.json()).values || [];
+}
+
+async function sheetsBatchGetValues(ranges) {
+  // Chunk into batches of 50 to avoid URL length limits
+  const results = [];
+  for (let i = 0; i < ranges.length; i += 50) {
+    const chunk = ranges.slice(i, i + 50);
+    const params = chunk.map(r => 'ranges=' + encodeURIComponent(r)).join('&');
+    const resp = await fetch(`${SHEETS_BASE}/values:batchGet?${params}`, { headers: gHeader() });
+    if (!resp.ok) { const e = await resp.json(); throw new Error(e.error?.message || resp.statusText); }
+    const data = await resp.json();
+    for (const vr of (data.valueRanges || [])) results.push(vr.values?.[0]?.[0] || '');
+  }
+  return results;
+}
+
+async function sheetsBatchUpdate(updateData) {
+  const r = await fetch(`${SHEETS_BASE}/values:batchUpdate`, {
+    method: 'POST', headers: gHeader(),
+    body: JSON.stringify({ valueInputOption: 'USER_ENTERED', data: updateData })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.statusText); }
+  return r.json();
+}
+
+async function sheetsWriteRows(startRow, rows) {
+  const r = await fetch(`${SHEETS_BASE}/values/${encodeURIComponent(`'${JOB_SHEET}'!A${startRow}`)}?valueInputOption=USER_ENTERED`, {
+    method: 'PUT', headers: gHeader(), body: JSON.stringify({ values: rows })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.statusText); }
+  return r.json();
+}
+
+async function sheetsAppendRows(rows) {
+  const r = await fetch(`${SHEETS_BASE}/values/${encodeURIComponent(`'${JOB_SHEET}'!A1`)}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`, {
+    method: 'POST', headers: gHeader(), body: JSON.stringify({ values: rows })
+  });
+  if (!r.ok) { const e = await r.json(); throw new Error(e.error?.message || r.statusText); }
+  return r.json();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SUPABASE OPERATIONS
+// ══════════════════════════════════════════════════════════════════════════════
+async function loadRules() {
+  const { data, error } = await supabaseClient.from('repair_rules').select('rules').eq('id', 1).single();
+  if (error || !data) { setStatus('Using default rules (Supabase not set up?)', 'error'); rules = []; }
+  else rules = data.rules;
+  renderRules();
+}
+
+async function saveRulesToDB(r) {
+  const { error } = await supabaseClient.from('repair_rules').upsert({ id: 1, rules: r }, { onConflict: 'id' });
+  if (error) throw new Error(error.message);
+}
+
+async function saveArchive(filename, store, df, dt, content) {
+  await supabaseClient.from('repair_archives').insert({ filename, store, date_from: df, date_to: dt, content });
+}
+
+async function loadArchivesDB() {
+  const { data } = await supabaseClient.from('repair_archives').select('filename, archived_at').order('archived_at', { ascending: false });
+  return data || [];
+}
+
+async function loadArchiveContent(filename) {
+  const { data } = await supabaseClient.from('repair_archives').select('content').eq('filename', filename).single();
+  return data?.content || '';
+}
+
+async function saveUndo(data) {
+  await supabaseClient.from('repair_undo').upsert({ id: 1, data, updated_at: new Date().toISOString() }, { onConflict: 'id' });
+}
+
+async function loadUndoDB() {
+  const { data } = await supabaseClient.from('repair_undo').select('data').eq('id', 1).single();
+  return data?.data || null;
+}
+
+async function clearUndo() {
+  await supabaseClient.from('repair_undo').delete().eq('id', 1);
+}
+
+async function updateStatusLog(pairs) {
+  const today = fmtDateToday();
+  const rows = pairs.map(([ref, status]) => ({ ref, status, logged_date: today }));
+  await supabaseClient.from('repair_status_log').upsert(rows, { onConflict: 'ref' });
+}
+
+async function loadStatusLog() {
+  const { data } = await supabaseClient.from('repair_status_log').select('ref, status, logged_date');
+  const log = {};
+  (data || []).forEach(r => log[r.ref] = { status: r.status, date: r.logged_date });
+  return log;
+}
+
+async function checkUndoAvailable() {
+  const undo = await loadUndoDB();
+  const btn = document.getElementById('undo-btn');
+  if (undo) { btn.disabled = false; btn.style.color = '#f59e0b'; }
+  else { btn.disabled = true; btn.style.color = ''; }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PARSER (ported from Python)
+// ══════════════════════════════════════════════════════════════════════════════
+const SKIP_RE = /^(Ref No|Sub Total|Grand Total|Page \d|From:|Enquiries|Prepared by|SYDNEY TOOLS PTY|.*PTY LTD.*PARK)\b/i;
+const NOT_TOOL = /^(booked|inv[:\s]|inv-|dop|purchased on|proof of|customer|labour|parts on|waiting|sent to|sending|brga|agol|aifu|jwhi|ktur|nfan|fame|jlen|fixed|email|contact|\w{4}\s)/i;
+
+function parseReport(raw) {
+  const jobs = {}, order = [];
+  for (let rawLine of raw.split('\n')) {
+    let line = rawLine.trim();
+    if (!line || SKIP_RE.test(line)) continue;
+    line = line.replace(/Page \d+\s+Prepared by:.*?(?=\d{7,8}|$)/gi, '').trim();
+    if (!line) continue;
+    const parts = line.split('\t').map(p => p.trim());
+    const ref = parts[0] || '';
+    if (!REF_RE.test(ref)) continue;
+    const dateRaw  = parts[1] || '';
+    const operator = parts[2] || '';
+    const desc     = parts[3] || '';
+    const customer = parts[4] || '';
+    const qty      = parts[7] || '';
+    if (!jobs[ref]) {
+      order.push(ref);
+      jobs[ref] = { ref, date: fmtDate(dateRaw), operator: operator.toUpperCase(), tool: '', customer: customer.toUpperCase(), notes: [] };
+    } else {
+      if (customer.length > jobs[ref].customer.length) jobs[ref].customer = customer.toUpperCase();
+    }
+    if (desc) jobs[ref].notes.push(desc);
+    if (qty && qty !== '' && qty !== '0' && desc) jobs[ref].tool = desc.toUpperCase();
+  }
+  for (const ref of order) {
+    if (!jobs[ref].tool) {
+      for (const note of jobs[ref].notes) {
+        if (!NOT_TOOL.test(note.trim())) { jobs[ref].tool = note.toUpperCase(); break; }
+      }
+      if (!jobs[ref].tool && jobs[ref].notes.length) jobs[ref].tool = jobs[ref].notes[0].toUpperCase();
+    }
+  }
+  return order.map(r => jobs[r]);
+}
+
+function matchStatus(notes) {
+  const combined = notes.join(' ').toLowerCase();
+  let best = null;
+  for (const r of rules) {
+    if (combined.includes(r.keyword.toLowerCase())) {
+      const pri = STATUS_PRIORITY[r.status] || 99;
+      if (!best || pri < best.pri) best = { ...r, pri };
+    }
+  }
+  return best ? best.status : 'To be Looked At';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTO-DETECT
+// ══════════════════════════════════════════════════════════════════════════════
+function autoDetectReport(text) {
+  if (!text || text.length < 20) return;
+  const STORE_MAP = {
+    'regency park':'Regency Park','windsor gardens':'Windsor Gardens','parafield':'Parafield',
+    'munno para':'Munno Para','lonsdale':'Lonsdale','seaford meadows':'Seaford Meadows'
+  };
+  const lower = text.toLowerCase();
+  for (const [k, v] of Object.entries(STORE_MAP)) {
+    if (lower.includes(k)) { document.getElementById('store-sel').value = v; break; }
+  }
+  const dateRe = /\b(\d{1,2}[\s/-][A-Za-z]{3}[\s/-]\d{2,4}|\d{1,2}\/\d{1,2}\/\d{4})\b/g;
+  const matches = [...text.matchAll(dateRe)].map(m => m[0]);
+  if (matches.length >= 2) {
+    const sorted = matches.slice(0, 20).map(s => ({ s, d: parseAppDate(fmtDate(s)) }))
+      .filter(x => x.d).sort((a, b) => a.d - b.d);
+    if (sorted.length >= 2) {
+      setDateField('date-from', fmtDate(sorted[0].s));
+      setDateField('date-to', fmtDate(sorted[sorted.length - 1].s));
+    }
+  }
+}
+
+function setDateField(id, val) {
+  if (val) document.getElementById(id).value = val;
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// PARSE
+// ══════════════════════════════════════════════════════════════════════════════
+async function doParse() {
+  const raw = document.getElementById('paste-area').value.trim();
+  if (!raw) { toast('Paste a report first', 'error'); return; }
+  const btn = document.getElementById('parse-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Parsing...';
+  setStatus('Parsing report...', 'loading');
+  try {
+    const store = document.getElementById('store-sel').value;
+    const parsed = parseReport(raw);
+    if (!parsed.length) throw new Error('No job numbers found in the pasted text');
+    parsedJobs = parsed.map(j => ({ ...j, status: matchStatus(j.notes), store }));
+    renderPreview(parsedJobs);
+    document.getElementById('send-btn').disabled = false;
+    document.getElementById('parse-count').textContent = `${parsedJobs.length} jobs`;
+    setStatus(`Parsed ${parsedJobs.length} jobs — review statuses then Send to Sheet`, 'ok');
+  } catch(e) { toast(e.message, 'error'); setStatus('Parse error: ' + e.message, 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '▶ Parse'; }
+}
+
+function renderPreview(jobs) {
+  document.getElementById('preview-wrap').style.display = 'block';
+  document.getElementById('preview-empty').style.display = 'none';
+  document.getElementById('preview-body').innerHTML = jobs.map(j => {
+    const col = STATUS_COLS[j.status] || '#555';
+    return `<tr>
+      <td><span class="badge badge-new">NEW</span></td>
+      <td class="name">${j.ref}</td>
+      <td>${j.date}</td>
+      <td style="color:var(--sub)">${j.operator}</td>
+      <td>${j.tool.substring(0,50)}</td>
+      <td><span class="chip" style="background:${col}22;color:${col}">${j.status}</span></td>
+      <td style="color:var(--sub)">${j.customer}</td>
+    </tr>`;
+  }).join('');
+}
+
+function doClear() {
+  document.getElementById('paste-area').value = '';
+  document.getElementById('preview-wrap').style.display = 'none';
+  document.getElementById('preview-empty').style.display = 'block';
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('parse-count').textContent = '';
+  parsedJobs = [];
+  setStatus('Cleared', 'ok');
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SEND TO SHEET
+// ══════════════════════════════════════════════════════════════════════════════
+async function doSend() {
+  if (!parsedJobs.length) return;
+  if (!googleToken) { toast('Connect Google Sheets first (Setup tab)', 'error'); return; }
+  const auto  = document.getElementById('auto-complete').checked;
+  const store = document.getElementById('store-sel').value;
+  const df    = document.getElementById('date-from').value;
+  const dt    = document.getElementById('date-to').value;
+  if (auto && !confirm(`Mark ${store} jobs between ${df} and ${dt} NOT in this report as Completed?\n\nContinue?`)) return;
+  const btn = document.getElementById('send-btn');
+  btn.disabled = true; btn.innerHTML = '<span class="spin"></span> Sending...';
+  setStatus('Reading sheet...', 'loading');
+  try {
+    const raw = document.getElementById('paste-area').value;
+    const result = await syncToSheets(parsedJobs, store, df, dt, raw, auto);
+    let msg = `✅ ${result.added} added, ${result.updated} updated`;
+    if (result.auto_completed) msg += `, ${result.auto_completed} auto-completed`;
+    toast(msg);
+    setStatus(msg.replace('✅ ', ''), 'ok');
+    document.getElementById('undo-btn').disabled = false;
+    document.getElementById('undo-btn').style.color = '#f59e0b';
+    refreshAll();
+  } catch(e) { toast(e.message, 'error'); setStatus('Send error: ' + e.message, 'error'); }
+  finally { btn.disabled = false; btn.innerHTML = '☁ Send to Sheet'; }
+}
+
+async function syncToSheets(jobs, store, df, dt, rawText, autoComplete) {
+  const today = fmtDateToday();
+
+  // 1. Read full sheet
+  setStatus('Reading existing jobs...', 'loading');
+  const rows = await sheetsGet(`'${JOB_SHEET}'!A:Q`);
+
+  // 2. Build existing map
+  const existing = {};
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    if (row && row[0] && REF_RE.test(row[0].trim()))
+      existing[row[0].trim()] = { rowNum: i + 1, store: (row[5] || '').trim() };
+  }
+
+  const reportRefSet = new Set(jobs.map(j => j.ref));
+  const newJobs  = jobs.filter(j => !existing[j.ref]);
+  const updates  = jobs.filter(j => existing[j.ref]).map(j => ({ rowNum: existing[j.ref].rowNum, status: j.status }));
+  const undo     = { updated_rows: [], added_rows: [] };
+
+  // 3. Auto-complete
+  const allUpdates = [...updates];
+  let autoCount = 0;
+  if (autoComplete) {
+    const dfd = parseAppDate(df), dtd = parseAppDate(dt);
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      if (!row || !row[0] || !REF_RE.test(row[0].trim())) continue;
+      const ref2 = row[0].trim();
+      if (!existing[ref2] || reportRefSet.has(ref2)) continue;
+      const rowStore = (row[5] || '').trim().toLowerCase().replace(/ /g,'');
+      if (rowStore !== store.toLowerCase().replace(/ /g,'')) continue;
+      if (dfd && dtd) {
+        const jdt = parseAppDate((row[1] || '').trim());
+        if (!jdt || jdt < dfd || jdt > dtd) continue;
+      }
+      allUpdates.push({ rowNum: i + 1, status: 'Collected by Customer' });
+      autoCount++;
+    }
+  }
+
+  // 4. Batch update existing rows
+  if (allUpdates.length > 0) {
+    setStatus(`Updating ${allUpdates.length} statuses...`, 'loading');
+    const dRanges = allUpdates.map(u => `'${JOB_SHEET}'!D${u.rowNum}`);
+    const qRanges = allUpdates.map(u => `'${JOB_SHEET}'!Q${u.rowNum}`);
+    const aRanges = allUpdates.map(u => `'${JOB_SHEET}'!A${u.rowNum}`);
+    const [prevD, prevQ, prevA] = await Promise.all([
+      sheetsBatchGetValues(dRanges),
+      sheetsBatchGetValues(qRanges),
+      sheetsBatchGetValues(aRanges)
+    ]);
+
+    const updateData = [];
+    const changedPairs = [];
+    for (let i = 0; i < allUpdates.length; i++) {
+      const { rowNum, status } = allUpdates[i];
+      const oldStatus = prevD[i] || '', oldQ = prevQ[i] || '', ref = prevA[i] || '';
+      undo.updated_rows.push({ row: rowNum, old_status: oldStatus, old_q: oldQ });
+      updateData.push({ range: `'${JOB_SHEET}'!D${rowNum}`, values: [[status]] });
+      if (status !== oldStatus) {
+        updateData.push({ range: `'${JOB_SHEET}'!Q${rowNum}`, values: [[today]] });
+        if (ref) changedPairs.push([ref, status]);
+      }
+    }
+    await sheetsBatchUpdate(updateData);
+    if (changedPairs.length) await updateStatusLog(changedPairs);
+  }
+
+  // 5. Append new rows
+  if (newJobs.length > 0) {
+    setStatus(`Adding ${newJobs.length} new jobs...`, 'loading');
+    const nextRow = rows.length + 1;
+    const newRows = newJobs.map(j => {
+      const r = new Array(17).fill('');
+      r[0]=j.ref; r[1]=j.date; r[2]=j.tool; r[3]=j.status; r[5]=j.store;
+      r[13]=j.customer; r[14]=j.operator; r[16]=today;
+      return r;
+    });
+    await sheetsWriteRows(nextRow, newRows);
+    undo.added_rows = Array.from({ length: newJobs.length }, (_, i) => nextRow + i);
+    await updateStatusLog(newJobs.map(j => [j.ref, j.status]));
+  }
+
+  // 6. Archive
+  const ts = new Date();
+  const tsPad = n => String(n).padStart(2,'0');
+  const tsStr = `${ts.getFullYear()}${tsPad(ts.getMonth()+1)}${tsPad(ts.getDate())}_${tsPad(ts.getHours())}${tsPad(ts.getMinutes())}${tsPad(ts.getSeconds())}`;
+  const filename = `${tsStr}_${store.replace(/ /g,'_')}_${df.replace(/[-]/g,'')}_to_${dt.replace(/[-]/g,'')}.txt`;
+  const content = `Store: ${store}\nFrom: ${df}  To: ${dt}\nArchived: ${ts.toLocaleString('en-AU')}\n${'='.repeat(60)}\n${rawText}`;
+  await saveArchive(filename, store, df, dt, content);
+
+  // 7. Save undo
+  undo.description = `${store} | ${df}→${dt} | ${newJobs.length} added, ${allUpdates.length} updated`;
+  undo.timestamp = ts.toLocaleString('en-AU');
+  await saveUndo(undo);
+
+  return { added: newJobs.length, updated: updates.length, auto_completed: autoCount };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UNDO
+// ══════════════════════════════════════════════════════════════════════════════
+async function doUndo() {
+  if (!googleToken) { toast('Connect Google Sheets first (Setup tab)', 'error'); return; }
+  const undo = await loadUndoDB();
+  if (!undo) { toast('Nothing to undo', 'error'); return; }
+  if (!confirm(`Undo last send?\n\n${undo.description}\nAt: ${undo.timestamp}\n\nRestores ${undo.updated_rows?.length||0} status(es), clears ${undo.added_rows?.length||0} row(s).`)) return;
+  setStatus('Undoing...', 'loading');
+  try {
+    const updateData = [];
+    for (const r of (undo.updated_rows || [])) {
+      updateData.push({ range: `'${JOB_SHEET}'!D${r.row}`, values: [[r.old_status]] });
+      updateData.push({ range: `'${JOB_SHEET}'!Q${r.row}`, values: [[r.old_q || '']] });
+    }
+    if (updateData.length) await sheetsBatchUpdate(updateData);
+    if (undo.added_rows?.length) {
+      const blank = undo.added_rows.map(() => new Array(17).fill(''));
+      await sheetsWriteRows(Math.min(...undo.added_rows), blank);
+    }
+    await clearUndo();
+    toast(`Undo complete — restored ${undo.updated_rows?.length||0}, cleared ${undo.added_rows?.length||0}`);
+    setStatus('Undo complete', 'ok');
+    document.getElementById('undo-btn').disabled = true;
+    document.getElementById('undo-btn').style.color = '';
+  } catch(e) { toast(e.message, 'error'); setStatus('Undo error: ' + e.message, 'error'); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════════════════════════
+async function refreshAll() {
+  setStatus('Refreshing...', 'loading');
+  if (googleToken) await Promise.all([loadDashboard(), loadArchives(), loadSearch()]);
+  else { await loadArchives(); setStatus('Archives refreshed (connect Google Sheets for live data)', 'ok'); }
+}
+
+async function loadDashboard() {
+  if (!googleToken) { setStatus('Connect Google Sheets to load dashboard', 'error'); return; }
+  setStatus('Loading dashboard...', 'loading');
+  document.getElementById('dash-updated').textContent = 'Loading...';
+  try {
+    const rows = await sheetsGet(`'${JOB_SHEET}'!A:Q`);
+    const statusLog = await loadStatusLog();
+    const INACTIVE = new Set(['Completed','Collected by Customer']);
+    const STORE_CANON = {'regencypark':'Regency Park','windsorgardens':'Windsor Gardens','parafield':'Parafield','munnopara':'Munno Para','lonsdale':'Lonsdale','seafordmeadows':'Seaford Meadows'};
+    const today = new Date();
+    const jobs = [];
+    for (const row of rows.slice(2)) {
+      if (!row || !row[0] || !REF_RE.test(row[0].trim())) continue;
+      const ref = row[0].trim(), status = (row[3]||'').trim(), store = (row[5]||'').trim();
+      if (!status || INACTIVE.has(status)) continue;
+      const canonStore = STORE_CANON[store.toLowerCase().replace(/ /g,'')] || store;
+      let days = null, source = 'booked';
+      const colQ = (row[16]||'').trim();
+      if (colQ) { days = daysSince(colQ); source = 'sheet'; }
+      if (days === null && statusLog[ref]) { days = daysSince(statusLog[ref].date); source = 'log'; }
+      if (days === null) days = daysSince((row[1]||'').trim()) || 0;
+      jobs.push({ ref, tool: (row[2]||'').substring(0,40), status, store: canonStore, days, source });
+    }
+    const statusCounts = {}, storeStatus = {};
+    for (const j of jobs) {
+      statusCounts[j.status] = (statusCounts[j.status]||0) + 1;
+      storeStatus[j.store] = storeStatus[j.store] || {};
+      storeStatus[j.store][j.status] = (storeStatus[j.store][j.status]||0) + 1;
+    }
+    renderDashboard({ jobs, status_counts: statusCounts, store_status: storeStatus, total: jobs.length });
+    document.getElementById('dash-updated').textContent = `Updated ${new Date().toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'})}`;
+    setStatus(`Dashboard loaded — ${jobs.length} active jobs`, 'ok');
+  } catch(e) { setStatus('Dashboard error: '+e.message, 'error'); toast(e.message, 'error'); }
+}
+
+function renderDashboard(data) {
+  const staleLim = parseInt(document.getElementById('stale-days').value) || 14;
+  document.getElementById('m-total').textContent  = data.total;
+  document.getElementById('m-sent').textContent   = data.status_counts['Sent out']||0;
+  document.getElementById('m-looked').textContent = data.status_counts['To be Looked At']||0;
+  document.getElementById('m-stale').textContent  = data.jobs.filter(j=>j.days>=staleLim).length;
+  document.getElementById('m-credit').textContent = data.status_counts['Request Credit']||0;
+  const sc = data.status_counts, maxV = Math.max(...Object.values(sc), 1);
+  document.getElementById('status-bars').innerHTML = Object.entries(sc).sort((a,b)=>b[1]-a[1]).map(([k,v])=>{
+    const col = STATUS_COLS[k]||'#555';
+    return `<div class="stat-item"><span class="stat-lbl">${k}</span><div class="stat-bar-wrap"><div class="stat-bar" style="background:${col};width:${Math.round(v/maxV*100)}%"></div></div><span class="stat-count">${v}</span></div>`;
+  }).join('');
+  const ss = data.store_status, maxT = Math.max(...Object.values(ss).map(s=>Object.values(s).reduce((a,b)=>a+b,0)),1);
+  const allSt = Object.keys(SEG_COLS).filter(st=>Object.values(ss).some(s=>s[st]));
+  document.getElementById('store-bars').innerHTML = Object.entries(ss)
+    .sort((a,b)=>Object.values(b[1]).reduce((x,y)=>x+y,0)-Object.values(a[1]).reduce((x,y)=>x+y,0))
+    .map(([store,smap])=>{
+      const total = Object.values(smap).reduce((a,b)=>a+b,0);
+      const segs = allSt.map(st=>`<div class="store-seg" style="background:${SEG_COLS[st]};width:${smap[st]?Math.round(smap[st]/maxT*100):0}%" title="${st}: ${smap[st]||0}"></div>`).join('');
+      return `<div class="store-row"><span class="store-lbl">${store}</span><div class="store-bar">${segs}</div><span class="store-total">${total}</span></div>`;
+    }).join('') + `<div class="legend">${allSt.map(st=>`<div class="legend-item"><div class="legend-dot" style="background:${SEG_COLS[st]}"></div>${st}</div>`).join('')}</div>`;
+  const SL = {sheet:'Col Q',log:'App log',booked:'Booked in'};
+  const stale = data.jobs.filter(j=>j.days>=staleLim).sort((a,b)=>b.days-a.days);
+  document.getElementById('stale-tbl-wrap').innerHTML = stale.length
+    ? `<table><thead><tr><th>Ref No</th><th>Store</th><th>Status</th><th>Days</th><th>Date From</th><th>Tool</th></tr></thead><tbody>${stale.map(j=>`<tr><td class="name">${j.ref}</td><td>${j.store}</td><td>${chipHtml(j.status)}</td><td style="color:${j.days>=staleLim*2?'#ef4444':'#f59e0b'};font-weight:600">${j.days}d</td><td style="color:var(--sub)">${SL[j.source]||'?'}</td><td>${j.tool}</td></tr>`).join('')}</tbody></table>`
+    : '<div style="padding:24px;text-align:center;color:var(--sub)">No stale jobs 🎉</div>';
+  const oldest = [...data.jobs].sort((a,b)=>b.days-a.days).slice(0,25);
+  document.getElementById('oldest-tbl-wrap').innerHTML = oldest.length
+    ? `<table><thead><tr><th>Ref No</th><th>Store</th><th>Status</th><th>Days</th><th>Date From</th><th>Tool</th></tr></thead><tbody>${oldest.map(j=>`<tr><td class="name">${j.ref}</td><td>${j.store}</td><td>${chipHtml(j.status)}</td><td style="font-weight:600">${j.days}d</td><td style="color:var(--sub)">${SL[j.source]||'?'}</td><td>${j.tool}</td></tr>`).join('')}</tbody></table>`
+    : '<div style="padding:24px;text-align:center;color:var(--sub)">No data</div>';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RULES
+// ══════════════════════════════════════════════════════════════════════════════
+function renderRules() {
+  document.getElementById('rules-body').innerHTML = rules.map((r,i)=>{
+    const col = STATUS_COLS[r.status]||'#555', pri = STATUS_PRIORITY[r.status]||99;
+    return `<tr data-idx="${i}" onclick="this.classList.toggle('selected')" style="cursor:pointer">
+      <td class="name">${r.keyword}</td>
+      <td><span class="chip" style="background:${col}22;color:${col}">${r.status}</span></td>
+      <td style="color:var(--sub);font-family:var(--mono)">${pri}</td>
+    </tr>`;
+  }).join('');
+}
+
+function testRule(val) {
+  const el = document.getElementById('test-result');
+  if (!val.trim()) { el.innerHTML = '<span style="color:var(--sub)">type something to test</span>'; return; }
+  const status = matchStatus([val]);
+  const col = STATUS_COLS[status]||'#555';
+  const matched = rules.find(r => val.toLowerCase().includes(r.keyword.toLowerCase()) && r.status === status);
+  el.innerHTML = `<span style="color:var(--sub)">→ </span><span style="color:${col};font-weight:600">${status}</span>${matched?`<span style="color:var(--sub);font-size:11px"> (matched: "${matched.keyword}")</span>`:''}`;
+}
+
+function addRule() {
+  const kw = document.getElementById('new-kw').value.trim().toLowerCase();
+  const st = document.getElementById('new-status').value;
+  if (!kw) { toast('Enter a keyword first', 'error'); return; }
+  rules.unshift({ keyword: kw, status: st });
+  renderRules();
+  document.getElementById('new-kw').value = '';
+  setStatus(`Rule added: "${kw}" → ${st}`, 'ok');
+}
+
+function delRule() {
+  const sel = document.querySelectorAll('#rules-body tr.selected');
+  if (!sel.length) { toast('Select a rule first', 'error'); return; }
+  [...sel].map(r=>parseInt(r.dataset.idx)).sort((a,b)=>b-a).forEach(i=>rules.splice(i,1));
+  renderRules();
+}
+
+async function saveRules() {
+  try {
+    await saveRulesToDB(rules);
+    toast(`Saved ${rules.length} rules`);
+    setStatus('Rules saved', 'ok');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ARCHIVE
+// ══════════════════════════════════════════════════════════════════════════════
+async function loadArchives() {
+  const archives = await loadArchivesDB();
+  document.getElementById('archive-body').innerHTML = archives.map(a =>
+    `<tr onclick="window.selectedArchive='${a.filename}';this.parentElement.querySelectorAll('tr').forEach(r=>r.style.background='');this.style.background='var(--s3)'"
+     ><td class="name">${a.filename}</td><td style="color:var(--sub)">${a.archived_at ? new Date(a.archived_at).toLocaleString('en-AU') : ''}</td></tr>`
+  ).join('');
+}
+
+async function viewArchive() {
+  if (!window.selectedArchive) { toast('Select an archive first', 'error'); return; }
+  try {
+    const content = await loadArchiveContent(window.selectedArchive);
+    document.getElementById('modal-title').textContent = window.selectedArchive;
+    document.getElementById('modal-body').textContent  = content;
+    document.getElementById('archive-modal').classList.remove('hidden');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+function closeModal() { document.getElementById('archive-modal').classList.add('hidden'); }
+
+// ══════════════════════════════════════════════════════════════════════════════
+// SEARCH
+// ══════════════════════════════════════════════════════════════════════════════
+async function loadSearch() {
+  if (!googleToken) { setStatus('Connect Google Sheets to use search', 'error'); return; }
+  setStatus('Loading jobs...', 'loading');
+  try {
+    const rows = await sheetsGet(`'${JOB_SHEET}'!A:O`);
+    const STORE_CANON = {'regencypark':'Regency Park','windsorgardens':'Windsor Gardens','parafield':'Parafield','munnopara':'Munno Para','lonsdale':'Lonsdale','seafordmeadows':'Seaford Meadows'};
+    searchData = [];
+    for (const row of rows.slice(2)) {
+      if (!row || !row[0] || !REF_RE.test(row[0].trim())) continue;
+      const rawStore = (row[5]||'').trim();
+      searchData.push({
+        ref:    row[0].trim(),
+        date:   (row[1]||'').trim(),
+        tool:   (row[2]||'').trim(),
+        status: (row[3]||'').trim(),
+        store:  STORE_CANON[rawStore.toLowerCase().replace(/ /g,'')] || rawStore,
+        cust:   (row[13]||'').trim(),
+        booked: (row[14]||'').trim()
+      });
+    }
+    filterSearch();
+    setStatus(`Search loaded — ${searchData.length} rows`, 'ok');
+  } catch(e) { toast(e.message, 'error'); setStatus('Search error: '+e.message, 'error'); }
+}
+
+function filterSearch() {
+  const q   = document.getElementById('search-q').value.trim().toLowerCase();
+  const fs  = document.getElementById('search-store').value;
+  const fst = document.getElementById('search-status').value;
+  const filtered = searchData.filter(j => {
+    if (fs !== 'All Stores'    && j.store  !== fs)  return false;
+    if (fst !== 'All Statuses' && j.status !== fst) return false;
+    if (q) { const hay = (j.ref+j.tool+j.cust+j.status+j.store+j.booked).toLowerCase(); return q.split(' ').every(w=>hay.includes(w)); }
+    return true;
+  });
+  document.getElementById('search-count').textContent = filtered.length + ' results';
+  document.getElementById('search-body').innerHTML = filtered.map(j =>
+    `<tr onclick="copyRef('${j.ref}')" style="cursor:pointer">
+      <td class="name">${j.ref}</td><td>${j.date}</td><td>${j.store}</td>
+      <td>${chipHtml(j.status)}</td><td>${j.tool}</td><td style="color:var(--sub)">${j.cust}</td><td style="color:var(--sub)">${j.booked}</td>
+    </tr>`
+  ).join('');
+}
+
+function clearSearch() {
+  document.getElementById('search-q').value = '';
+  document.getElementById('search-store').value = 'All Stores';
+  document.getElementById('search-status').value = 'All Statuses';
+  document.getElementById('search-body').innerHTML = '';
+  document.getElementById('search-count').textContent = '';
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// AUTH (Google)
+// ══════════════════════════════════════════════════════════════════════════════
+function doAuth() {
+  if (GOOGLE_CLIENT_ID === 'PASTE_YOUR_WEB_APP_CLIENT_ID_HERE') {
+    toast('Client ID not configured. See Setup instructions.', 'error'); return;
+  }
+  if (!tokenClient) { toast('Google Identity Services still loading, try again', 'error'); return; }
+  tokenClient.requestAccessToken({ prompt: googleToken ? '' : 'consent' });
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CALENDAR
+// ══════════════════════════════════════════════════════════════════════════════
+let calTarget = null, calDate = new Date();
+
+function openCal(inputId, inputEl) {
+  calTarget = inputId;
+  const existing = parseAppDate(inputEl.value);
+  calDate = existing || new Date();
+  const rect = inputEl.getBoundingClientRect();
+  const popup = document.getElementById('cal-popup');
+  popup.style.left = rect.left + 'px';
+  popup.style.top  = (rect.bottom + 4) + 'px';
+  popup.classList.remove('hidden');
+  renderCal();
+  setTimeout(() => document.addEventListener('click', closeCal), 0);
+}
+
+function closeCal(e) {
+  if (!document.getElementById('cal-popup').contains(e.target)) {
+    document.getElementById('cal-popup').classList.add('hidden');
+    document.removeEventListener('click', closeCal);
+  }
+}
+
+function calNav(dir) { calDate = new Date(calDate.getFullYear(), calDate.getMonth() + dir, 1); renderCal(); }
+
+function renderCal() {
+  const y = calDate.getFullYear(), m = calDate.getMonth();
+  document.getElementById('cal-month-lbl').textContent = `${MON[m]} ${y}`;
+  const first = new Date(y, m, 1).getDay();
+  const days  = new Date(y, m + 1, 0).getDate();
+  const today = new Date();
+  const selVal = document.getElementById(calTarget)?.value;
+  const selDate = selVal ? parseAppDate(selVal) : null;
+  const DOWS = ['Su','Mo','Tu','We','Th','Fr','Sa'];
+  let html = DOWS.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+  for (let i=0; i<first; i++) html += `<div class="cal-day empty"></div>`;
+  for (let d=1; d<=days; d++) {
+    const isToday = d===today.getDate()&&m===today.getMonth()&&y===today.getFullYear();
+    const isSel   = selDate && d===selDate.getDate()&&m===selDate.getMonth()&&y===selDate.getFullYear();
+    html += `<div class="cal-day${isToday?' today':''}${isSel?' selected':''}" onclick="calPick(${d})">${d}</div>`;
+  }
+  document.getElementById('cal-days').innerHTML = html;
+}
+
+function calPick(day) {
+  const d = new Date(calDate.getFullYear(), calDate.getMonth(), day);
+  const yr = String(d.getFullYear()).slice(-2);
+  document.getElementById(calTarget).value = `${String(d.getDate()).padStart(2,'0')}-${MON[d.getMonth()]}-${yr}`;
+  document.getElementById('cal-popup').classList.add('hidden');
+  document.removeEventListener('click', closeCal);
+}
+</script>
+</body>
+</html>
