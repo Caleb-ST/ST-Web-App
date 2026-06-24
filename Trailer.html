@@ -1,547 +1,249 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Index - Trailer Run</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sydney Tools — Trailer Run</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script>
-    document.documentElement.style.visibility = "hidden";
-    (async () => {
-      const _sb = supabase.createClient(
-        "https://hidkyhsedsmptfqkonad.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
-      );
-      const { data: { session } } = await _sb.auth.getSession();
-      if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
-        window.location.href = "index.html";
-        return;
-      }
-      document.documentElement.style.visibility = "";
-    })();
-  </script>
-  <style>
-    :root{
-      --bg0:#07070a;
-      --bg1:#0b0b10;
-      --panel:#101018;
-      --panel2:#14141d;
-      --text:#f2f2f5;
-      --muted:#a4a4b3;
-      --border:rgba(255,255,255,0.08);
-      --shadow:0 20px 60px rgba(0,0,0,0.55);
-      --red:#ff2b3d;
-      --red2:#b80c2b;
-      --green:#1f9d63;
-      --amber:#c98b1f;
-      --pill:rgba(255,255,255,0.06);
-      --pill2:rgba(255,43,61,0.18);
-      --focus:0 0 0 3px rgba(255,43,61,0.25);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  document.documentElement.style.visibility = "hidden";
+  (async () => {
+    const _sb = supabase.createClient(
+      "https://hidkyhsedsmptfqkonad.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
+    );
+    const { data: { session } } = await _sb.auth.getSession();
+    if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
+      window.location.href = "index.html";
+      return;
     }
+    document.documentElement.style.visibility = "";
+  })();
+</script>
 
-    *{ box-sizing:border-box; }
+<style>
+:root{
+  --void:#0a0a0d; --graphite:#15151b; --graphite2:#1b1b22;
+  --steel:#6b6f7a; --paper:#f5f3ef;
+  --signal:#ff2230; --signal-dim:rgba(255,34,48,.16); --spark:#ffb020; --go:#2bb673;
+  --line:rgba(245,243,239,.09); --line-bright:rgba(255,34,48,.35);
+  --display:'Barlow Condensed',sans-serif; --body:'Work Sans',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;min-height:100vh;}
+body{ background:var(--void); color:var(--paper); font-family:var(--body); padding:28px 18px 60px; }
+a{ color:inherit; }
+.wrap{ max-width:1320px; margin:0 auto; }
 
-    html,body{
-      margin:0;
-      min-height:100%;
-      background:
-        radial-gradient(circle at top left, rgba(255,43,61,0.08), transparent 28%),
-        radial-gradient(circle at top right, rgba(255,255,255,0.04), transparent 22%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
-      color:var(--text);
-      font-family:ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    }
+.plate{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.plate-dot{ width:7px; height:7px; border-radius:50%; background:var(--spark); box-shadow:0 0 10px var(--spark); }
+.plate-label{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--steel); }
 
-    a{
-      color:inherit;
-      text-decoration:none;
-    }
+.hero{ display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; margin-bottom:6px; }
+.hero h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp(32px,5vw,44px); text-transform:uppercase; letter-spacing:.01em; }
+.hero p{ margin:6px 0 0; max-width:680px; color:var(--steel); font-size:13.5px; line-height:1.55; }
+.btn-back{ font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--steel); text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px; transition:border-color .15s,color .15s; white-space:nowrap; }
+.btn-back:hover{ border-color:var(--line-bright); color:var(--paper); }
 
-    .wrap{
-      width:min(1400px, calc(100% - 32px));
-      margin:0 auto;
-      padding:32px 0 48px;
-    }
+.hairline{ height:1px; margin:22px 0 20px; background:linear-gradient(90deg, var(--line-bright), transparent 60%); }
 
-    .hero{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:18px;
-      margin-bottom:22px;
-      flex-wrap:wrap;
-    }
+.toolbar{ display:flex; justify-content:space-between; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:16px; }
+.toolbar h2{ margin:0 0 4px; font-family:var(--display); font-weight:600; font-size:19px; text-transform:uppercase; }
+.toolbar-sub{ color:var(--steel); font-size:12.5px; margin:0; }
+.toolbar-right{ display:flex; gap:9px; flex-wrap:wrap; align-items:center; }
 
-    .hero-left h1{
-      margin:0 0 10px;
-      font-size:clamp(28px, 4vw, 44px);
-      line-height:1.05;
-      letter-spacing:-0.02em;
-    }
+.search{ width:min(320px,100%); background:var(--graphite); border:1px solid var(--line); color:var(--paper); border-radius:3px; padding:10px 13px; font:inherit; font-size:13.5px; outline:none; }
+.search::placeholder{ color:var(--steel); }
+.search:focus{ border-color:var(--line-bright); }
 
-    .hero-left p{
-      margin:0;
-      color:var(--muted);
-      max-width:800px;
-      line-height:1.5;
-      font-size:15px;
-    }
+.btn{ font:inherit; font-size:13px; font-weight:600; border-radius:3px; padding:10px 16px; cursor:pointer; border:none; transition:opacity .12s,background .15s; }
+.btn:disabled{ opacity:.5; cursor:not-allowed; }
+.btn-signal{ background:var(--signal); color:#fff; }
+.btn-signal:hover{ background:#e01d2a; }
+.btn-ghost{ background:none; color:var(--steel); border:1px solid var(--line); text-decoration:none; display:inline-flex; align-items:center; }
+.btn-ghost:hover{ border-color:var(--line-bright); color:var(--paper); }
 
-    .hero-right{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
+.meta{ display:flex; gap:16px; flex-wrap:wrap; color:var(--steel); font-family:var(--mono); font-size:11.5px; margin-bottom:8px; }
+.message{ color:var(--steel); font-size:12.5px; margin-bottom:14px; }
 
-    .btn{
-      appearance:none;
-      border:none;
-      outline:none;
-      cursor:pointer;
-      border-radius:14px;
-      padding:12px 16px;
-      font-weight:700;
-      font-size:14px;
-      transition:transform .12s ease, box-shadow .12s ease, opacity .12s ease, background .12s ease;
-    }
+.table-wrap{ overflow-x:auto; border:1px solid var(--line); border-radius:2px; }
+table{ width:100%; min-width:1080px; border-collapse:collapse; }
+thead th{ text-align:left; font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; color:var(--steel); padding:11px 13px; background:var(--graphite); border-bottom:1px solid var(--line); position:sticky; top:0; }
+tbody td{ padding:11px 13px; font-size:13px; border-bottom:1px solid var(--line); vertical-align:top; }
+tbody tr:hover{ background:rgba(245,243,239,.025); }
+tbody tr:last-child td{ border-bottom:none; }
 
-    .btn:focus-visible,
-    .search:focus-visible{
-      box-shadow:var(--focus);
-    }
+.pill{ display:inline-flex; align-items:center; gap:6px; font-family:var(--mono); font-size:11px; font-weight:600; letter-spacing:.03em; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+.pill::before{ content:''; width:5px; height:5px; border-radius:50%; }
+.pill.red{ color:var(--signal); border:1px solid rgba(255,34,48,.3); background:rgba(255,34,48,.08); }
+.pill.red::before{ background:var(--signal); }
+.pill.green{ color:var(--go); border:1px solid rgba(43,182,115,.3); background:rgba(43,182,115,.08); }
+.pill.green::before{ background:var(--go); }
+.pill.amber{ color:var(--spark); border:1px solid rgba(255,176,32,.3); background:rgba(255,176,32,.08); }
+.pill.amber::before{ background:var(--spark); }
 
-    .btn:hover{
-      transform:translateY(-1px);
-    }
+.empty-state{ padding:30px 14px; text-align:center; color:var(--steel); }
+.footer-note{ margin-top:14px; text-align:right; font-family:var(--mono); font-size:10.5px; color:var(--steel); letter-spacing:.05em; }
 
-    .btn:disabled{
-      opacity:.6;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .btn-red{
-      color:white;
-      background:linear-gradient(180deg, var(--red), var(--red2));
-      box-shadow:0 10px 26px rgba(255,43,61,.22);
-    }
-
-    .btn-ghost{
-      color:var(--text);
-      background:rgba(255,255,255,0.05);
-      border:1px solid var(--border);
-    }
-
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.025));
-      border:1px solid var(--border);
-      box-shadow:var(--shadow);
-      border-radius:24px;
-      overflow:hidden;
-    }
-
-    .toolbar{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:14px;
-      padding:20px 22px 16px;
-      border-bottom:1px solid rgba(255,255,255,0.05);
-      flex-wrap:wrap;
-    }
-
-    .toolbar-left h2{
-      margin:0 0 6px;
-      font-size:22px;
-      line-height:1.1;
-    }
-
-    .toolbar-left p{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .toolbar-right{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    .search{
-      width:min(340px, 100%);
-      background:rgba(255,255,255,0.05);
-      border:1px solid var(--border);
-      color:var(--text);
-      border-radius:14px;
-      padding:12px 14px;
-      font-size:14px;
-      outline:none;
-    }
-
-    .meta{
-      display:flex;
-      flex-wrap:wrap;
-      gap:16px;
-      padding:14px 22px 0;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .message{
-      padding:14px 22px 0;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .table-wrap{
-      padding:18px 22px 22px;
-      overflow-x:auto;
-    }
-
-    table{
-      width:100%;
-      min-width:1100px;
-      border-collapse:separate;
-      border-spacing:0;
-      overflow:hidden;
-      border:1px solid var(--border);
-      border-radius:18px;
-      background:rgba(255,255,255,0.02);
-    }
-
-    thead th{
-      text-align:left;
-      padding:14px 14px;
-      font-size:13px;
-      font-weight:700;
-      color:var(--muted);
-      background:rgba(255,255,255,0.04);
-      border-bottom:1px solid rgba(255,255,255,0.06);
-      position:sticky;
-      top:0;
-      z-index:1;
-    }
-
-    tbody td{
-      padding:14px 14px;
-      font-size:14px;
-      border-bottom:1px solid rgba(255,255,255,0.05);
-      vertical-align:top;
-    }
-
-    tbody tr:hover{
-      background:rgba(255,255,255,0.025);
-    }
-
-    tbody tr:last-child td{
-      border-bottom:none;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding:7px 11px;
-      border-radius:999px;
-      background:var(--pill);
-      border:1px solid rgba(255,255,255,0.08);
-      font-size:12px;
-      font-weight:700;
-      line-height:1;
-      white-space:nowrap;
-    }
-
-    .pill.red{
-      background:var(--pill2);
-      border-color:rgba(255,43,61,0.2);
-    }
-
-    .pill.green{
-      background:rgba(31,157,99,0.16);
-      border-color:rgba(31,157,99,0.25);
-    }
-
-    .pill.amber{
-      background:rgba(201,139,31,0.16);
-      border-color:rgba(201,139,31,0.25);
-    }
-
-    .small{
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .empty-state{
-      padding:28px 18px;
-      text-align:center;
-      color:var(--muted);
-    }
-
-    .footer-note{
-      margin-top:16px;
-      color:var(--muted);
-      font-size:12px;
-      text-align:right;
-    }
-
-    @media (max-width: 800px){
-      .wrap{
-        width:min(100% - 20px, 1400px);
-        padding:20px 0 34px;
-      }
-
-      .toolbar,
-      .meta,
-      .message,
-      .table-wrap{
-        padding-left:14px;
-        padding-right:14px;
-      }
-
-      .toolbar-right{
-        width:100%;
-      }
-
-      .search{
-        width:100%;
-      }
-
-      .hero-right{
-        width:100%;
-      }
-    }
-  </style>
+@media (max-width:800px){
+  .toolbar-right{ width:100%; }
+  .search{ width:100%; }
+}
+</style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="hero">
-      <div class="hero-left">
-        <h1>Trailer Run Status</h1>
-        <p>
-          Live view of trailer requests pulled from the master sheet. Refresh the data at any time and
-          use the search box to filter stores, invoice references, names, or status.
-        </p>
-      </div>
+<div class="wrap">
+  <div class="plate"><span class="plate-dot"></span><span class="plate-label">03 — Logistics</span></div>
+  <div class="hero">
+    <div>
+      <h1>Trailer Run Status</h1>
+      <p>Live view of trailer requests pulled from the master sheet. Refresh at any time and search stores, invoice references, names, or status.</p>
+    </div>
+    <a class="btn-back" href="index.html">← Back to Index</a>
+  </div>
 
-      <div class="hero-right">
-        <a class="btn btn-ghost" href="index.html">Back to Index</a>
-      </div>
-    </section>
+  <div class="hairline"></div>
 
-    <section class="card">
-      <div class="toolbar">
-        <div class="toolbar-left">
-          <h2>Current Requests</h2>
-          <p>Showing Requesting Store, Invoice Reference, Sending Store, Stock Confirmed With, Picking Slip Number, Dispatcher Name, Stock Verified, and Request Status.</p>
-        </div>
-
-        <div class="toolbar-right">
-  <input
-    id="searchInput"
-    class="search"
-    type="search"
-    placeholder="Search trailer requests..."
-    autocomplete="off"
-  />
-
-  <a
-    href="https://docs.google.com/forms/d/e/1FAIpQLScwHJO2f6h4hn5IzRk5wLJrT_I797IV0ny-TkgIIFTvyB8W6A/viewform?usp=dialog"
-    target="_blank"
-    class="btn btn-ghost"
-  >
-    New Request
-  </a>
-
-  <button id="refreshBtn" class="btn btn-red" type="button">Refresh</button>
-</div>
-      </div>
-
-      <div class="meta">
-        <span id="rowCount">0 rows</span>
-        <span id="lastUpdated">Last updated: -</span>
-      </div>
-
-      <div id="message" class="message">Loading trailer data...</div>
-
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Requesting Store</th>
-              <th>Invoice Reference</th>
-              <th>Sending Store</th>
-              <th>Stock Confirmed With</th>
-              <th>Picking Slip Number</th>
-              <th>Dispatcher Name</th>
-              <th>Stock Verified</th>
-              <th>Storage Location</th>
-              <th>Request Status</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody">
-            <tr>
-              <td colspan="8" class="empty-state">Loading...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <div class="footer-note">
-      Trailer Run Dashboard
+  <div class="toolbar">
+    <div>
+      <h2>Current Requests</h2>
+      <p class="toolbar-sub">Requesting Store · Invoice Ref · Sending Store · Stock Confirmed With · Picking Slip · Dispatcher · Stock Verified · Status</p>
+    </div>
+    <div class="toolbar-right">
+      <input id="searchInput" class="search" type="search" placeholder="Search trailer requests..." autocomplete="off">
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLScwHJO2f6h4hn5IzRk5wLJrT_I797IV0ny-TkgIIFTvyB8W6A/viewform?usp=dialog" target="_blank" class="btn btn-ghost">New Request</a>
+      <button id="refreshBtn" class="btn btn-signal" type="button">Refresh</button>
     </div>
   </div>
 
-  <script>
-    const TRAILER_JSON_URL = 'https://script.google.com/macros/s/AKfycbwfOSXwQjq6SjFW5TehljJzICNjJYyDW_E_sWUF3c6mCfgH4TqCiNygZgVJhObZNrnHig/exec';
+  <div class="meta">
+    <span id="rowCount">0 rows</span>
+    <span id="lastUpdated">Last updated: -</span>
+  </div>
+  <div id="message" class="message">Loading trailer data...</div>
 
-    const searchInput = document.getElementById('searchInput');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const rowCountEl = document.getElementById('rowCount');
-    const lastUpdatedEl = document.getElementById('lastUpdated');
-    const messageEl = document.getElementById('message');
-    const tableBody = document.getElementById('tableBody');
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Requesting Store</th><th>Invoice Reference</th><th>Sending Store</th>
+          <th>Stock Confirmed With</th><th>Picking Slip Number</th><th>Dispatcher Name</th>
+          <th>Stock Verified</th><th>Storage Location</th><th>Request Status</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"><tr><td colspan="9" class="empty-state">Loading...</td></tr></tbody>
+    </table>
+  </div>
 
-    let allRows = [];
+  <div class="footer-note">TRAILER RUN DASHBOARD</div>
+</div>
 
-    function escapeHtml(value) {
-      return String(value ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
+<script>
+  const TRAILER_JSON_URL = 'https://script.google.com/macros/s/AKfycbwfOSXwQjq6SjFW5TehljJzICNjJYyDW_E_sWUF3c6mCfgH4TqCiNygZgVJhObZNrnHig/exec';
+
+  const searchInput = document.getElementById('searchInput');
+  const refreshBtn = document.getElementById('refreshBtn');
+  const rowCountEl = document.getElementById('rowCount');
+  const lastUpdatedEl = document.getElementById('lastUpdated');
+  const messageEl = document.getElementById('message');
+  const tableBody = document.getElementById('tableBody');
+
+  let allRows = [];
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+  }
+
+  function formatDateTime(value) {
+    if (!value) return '-';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return value;
+    return date.toLocaleString();
+  }
+
+  function normalise(value) { return String(value ?? '').trim(); }
+
+  function getStatusClass(status) {
+    const s = String(status || '').toLowerCase();
+    if (s.includes('complete') || s.includes('completed') || s.includes('delivered') || s.includes('done')) return 'green';
+    if (s.includes('pending') || s.includes('waiting') || s.includes('hold') || s.includes('planned')) return 'amber';
+    return 'red';
+  }
+
+  function renderRows(rows) {
+    if (!rows.length) {
+      tableBody.innerHTML = `<tr><td colspan="9" class="empty-state">No trailer requests found.</td></tr>`;
+      return;
     }
+    tableBody.innerHTML = rows.map(row => {
+      const requestStatus = normalise(row['Request Status']) || '-';
+      const statusClass = getStatusClass(requestStatus);
+      return `
+        <tr>
+          <td>${escapeHtml(normalise(row['Requesting Store']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Invoice Reference']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Sending Store']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Stock Confirmed With']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Picking Slip Number']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Dispatcher Name']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Stock Verified']) || '-')}</td>
+          <td>${escapeHtml(normalise(row['Storage Location']) || '-')}</td>
+          <td><span class="pill ${statusClass}">${escapeHtml(requestStatus)}</span></td>
+        </tr>
+      `;
+    }).join('');
+  }
 
-    function formatDateTime(value) {
-      if (!value) return '-';
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return value;
-      return date.toLocaleString();
+  function filterRows() {
+    const term = searchInput.value.trim().toLowerCase();
+    if (!term) {
+      renderRows(allRows);
+      rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
+      return;
     }
+    const filtered = allRows.filter(row => {
+      return [
+        row['Requesting Store'], row['Invoice Reference'], row['Sending Store'],
+        row['Stock Confirmed With'], row['Picking Slip Number'], row['Dispatcher Name'],
+        row['Stock Verified'], row['Request Status'], row['Storage Location']
+      ].some(value => String(value ?? '').toLowerCase().includes(term));
+    });
+    renderRows(filtered);
+    rowCountEl.textContent = `${filtered.length} row${filtered.length === 1 ? '' : 's'} (filtered)`;
+  }
 
-    function normalise(value) {
-      return String(value ?? '').trim();
+  async function loadTrailerData() {
+    messageEl.textContent = 'Loading trailer data...';
+    refreshBtn.disabled = true;
+    try {
+      const res = await fetch(TRAILER_JSON_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      allRows = Array.isArray(data.rows) ? data.rows : [];
+      renderRows(allRows);
+      rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
+      lastUpdatedEl.textContent = `Last updated: ${formatDateTime(data.lastUpdated)}`;
+      messageEl.textContent = allRows.length ? 'Trailer data loaded successfully.' : 'No trailer requests found.';
+    } catch (error) {
+      console.error('Failed to load trailer data:', error);
+      allRows = [];
+      tableBody.innerHTML = `<tr><td colspan="9" class="empty-state">Failed to load trailer data.</td></tr>`;
+      rowCountEl.textContent = '0 rows';
+      lastUpdatedEl.textContent = 'Last updated: -';
+      messageEl.textContent = 'Failed to load trailer data.';
+    } finally {
+      refreshBtn.disabled = false;
     }
+  }
 
-    function getStatusClass(status) {
-      const s = String(status || '').toLowerCase();
-
-      if (
-        s.includes('complete') ||
-        s.includes('completed') ||
-        s.includes('delivered') ||
-        s.includes('done')
-      ) return 'green';
-
-      if (
-        s.includes('pending') ||
-        s.includes('waiting') ||
-        s.includes('hold') ||
-        s.includes('planned')
-      ) return 'amber';
-
-      return 'red';
-    }
-
-    function renderRows(rows) {
-      if (!rows.length) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="8" class="empty-state">No trailer requests found.</td>
-          </tr>
-        `;
-        return;
-      }
-
-      tableBody.innerHTML = rows.map(row => {
-        const requestStatus = normalise(row['Request Status']) || '-';
-        const statusClass = getStatusClass(requestStatus);
-
-        return `
-          <tr>
-            <td>${escapeHtml(normalise(row['Requesting Store']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Invoice Reference']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Sending Store']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Stock Confirmed With']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Picking Slip Number']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Dispatcher Name']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Stock Verified']) || '-')}</td>
-            <td>${escapeHtml(normalise(row['Storage Location']) || '-')}</td>
-            <td><span class="pill ${statusClass}">${escapeHtml(requestStatus)}</span></td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function filterRows() {
-      const term = searchInput.value.trim().toLowerCase();
-
-      if (!term) {
-        renderRows(allRows);
-        rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
-        return;
-      }
-
-      const filtered = allRows.filter(row => {
-        return [
-          row['Requesting Store'],
-          row['Invoice Reference'],
-          row['Sending Store'],
-          row['Stock Confirmed With'],
-          row['Picking Slip Number'],
-          row['Dispatcher Name'],
-          row['Stock Verified'],
-          row['Request Status'],
-          row['Storage Location']
-        ].some(value => String(value ?? '').toLowerCase().includes(term));
-      });
-
-      renderRows(filtered);
-      rowCountEl.textContent = `${filtered.length} row${filtered.length === 1 ? '' : 's'} (filtered)`;
-    }
-
-    async function loadTrailerData() {
-      messageEl.textContent = 'Loading trailer data...';
-      refreshBtn.disabled = true;
-
-      try {
-        const res = await fetch(TRAILER_JSON_URL, { cache: 'no-store' });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-        const data = await res.json();
-        allRows = Array.isArray(data.rows) ? data.rows : [];
-
-        renderRows(allRows);
-        rowCountEl.textContent = `${allRows.length} row${allRows.length === 1 ? '' : 's'}`;
-        lastUpdatedEl.textContent = `Last updated: ${formatDateTime(data.lastUpdated)}`;
-        messageEl.textContent = allRows.length
-          ? 'Trailer data loaded successfully.'
-          : 'No trailer requests found.';
-      } catch (error) {
-        console.error('Failed to load trailer data:', error);
-        allRows = [];
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="8" class="empty-state">Failed to load trailer data.</td>
-          </tr>
-        `;
-        rowCountEl.textContent = '0 rows';
-        lastUpdatedEl.textContent = 'Last updated: -';
-        messageEl.textContent = 'Failed to load trailer data.';
-      } finally {
-        refreshBtn.disabled = false;
-      }
-    }
-
-    searchInput.addEventListener('input', filterRows);
-    refreshBtn.addEventListener('click', loadTrailerData);
-
-    loadTrailerData();
-  </script>
+  searchInput.addEventListener('input', filterRows);
+  refreshBtn.addEventListener('click', loadTrailerData);
+  loadTrailerData();
+</script>
 </body>
 </html>
