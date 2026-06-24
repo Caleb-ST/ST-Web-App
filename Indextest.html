@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sydney Tools — The Index</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+
+<style>
+:root{
+  --void:#0a0a0d;
+  --graphite:#15151b;
+  --graphite2:#1b1b22;
+  --steel:#6b6f7a;
+  --paper:#f5f3ef;
+  --signal:#ff2230;
+  --signal-dim:rgba(255,34,48,.16);
+  --spark:#ffb020;
+  --line:rgba(245,243,239,.09);
+  --line-bright:rgba(255,34,48,.35);
+  --display:'Barlow Condensed',sans-serif;
+  --body:'Work Sans',sans-serif;
+  --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;min-height:100vh;}
+body{
+  background:var(--void);
+  color:var(--paper);
+  font-family:var(--body);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px 16px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* Ambient texture: faint grid + a single slow-drifting glow, like an idling
+   panel light. Static after load — no looping distraction. */
+body::before{
+  content:'';
+  position:fixed; inset:0; z-index:0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size:48px 48px;
+  mask-image:radial-gradient(700px 500px at 50% 30%, rgba(0,0,0,.9), transparent 75%);
+  opacity:.5;
+}
+body::after{
+  content:'';
+  position:fixed; top:-20%; left:50%; width:900px; height:900px;
+  background:radial-gradient(circle, var(--signal-dim), transparent 60%);
+  transform:translateX(-50%);
+  z-index:0; pointer-events:none;
+  animation:drift 22s ease-in-out infinite alternate;
+}
+@keyframes drift{ from{ transform:translateX(-54%) translateY(0); } to{ transform:translateX(-46%) translateY(30px); } }
+
+.wrap{ position:relative; z-index:1; width:100%; max-width:720px; }
+
+/* ── Power-on sequence ─────────────────────────────────────────────── */
+.boot{ opacity:0; transform:translateY(10px); animation:bootIn .7s cubic-bezier(.16,1,.3,1) forwards; }
+.boot.d1{ animation-delay:.05s; }
+.boot.d2{ animation-delay:.18s; }
+.boot.d3{ animation-delay:.32s; }
+@keyframes bootIn{ to{ opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce){
+  .boot{ animation:none; opacity:1; transform:none; }
+  body::after{ animation:none; }
+}
+
+/* ── Header / serial-plate label ─────────────────────────────────── */
+.plate{
+  display:flex; align-items:center; gap:10px;
+  justify-content:center;
+  margin-bottom:6px;
+}
+.plate-dot{
+  width:7px; height:7px; border-radius:50%;
+  background:var(--spark);
+  box-shadow:0 0 10px var(--spark), 0 0 22px rgba(255,176,32,.5);
+}
+.plate-label{
+  font-family:var(--mono); font-size:11px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--steel);
+}
+h1{
+  margin:2px 0 0; text-align:center;
+  font-family:var(--display); font-weight:700;
+  font-size:clamp(40px,7vw,58px); letter-spacing:.01em;
+  line-height:.96; text-transform:uppercase;
+}
+h1 span{ color:var(--signal); }
+.tagline{
+  text-align:center; margin:10px 0 0;
+  color:var(--steel); font-size:13.5px; letter-spacing:.01em;
+}
+
+/* ── Divider: a glowing instrument line, not a card border ─────────── */
+.hairline{
+  height:1px; margin:34px 0 26px; position:relative;
+  background:linear-gradient(90deg, transparent, var(--line-bright) 30%, var(--line-bright) 70%, transparent);
+}
+.hairline::after{
+  content:''; position:absolute; top:-1px; left:50%; width:60px; height:3px;
+  transform:translateX(-50%);
+  background:var(--signal); filter:blur(4px); opacity:.7;
+}
+
+/* ── Panel ────────────────────────────────────────────────────────── */
+.panel-head{
+  display:flex; align-items:baseline; justify-content:space-between;
+  margin-bottom:16px; gap:10px; flex-wrap:wrap;
+}
+.panel-head .label{
+  font-family:var(--mono); font-size:11px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--steel);
+}
+.signout{
+  font-family:var(--mono); font-size:11px; letter-spacing:.06em;
+  color:var(--steel); background:none; border:1px solid var(--line);
+  padding:6px 12px; border-radius:3px; cursor:pointer;
+  transition:border-color .15s,color .15s;
+}
+.signout:hover{ border-color:var(--line-bright); color:var(--paper); }
+
+.grid{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:2px; overflow:hidden; }
+@media (max-width:560px){ .grid{ grid-template-columns:1fr; } }
+
+.nav-tile{
+  display:flex; flex-direction:column; gap:7px;
+  background:var(--graphite);
+  padding:22px 20px;
+  text-decoration:none; color:var(--paper);
+  position:relative; overflow:hidden;
+  transition:background .18s ease;
+}
+.nav-tile::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px;
+  background:var(--signal); transform:scaleY(0); transform-origin:top;
+  transition:transform .22s cubic-bezier(.16,1,.3,1);
+}
+.nav-tile:hover{ background:var(--graphite2); }
+.nav-tile:hover::before{ transform:scaleY(1); }
+.nav-tile:focus-visible{ outline:2px solid var(--signal); outline-offset:-2px; }
+
+.tile-idx{ font-family:var(--mono); font-size:10.5px; color:var(--steel); letter-spacing:.1em; }
+.tile-name{ font-family:var(--display); font-weight:600; font-size:21px; text-transform:uppercase; letter-spacing:.01em; }
+.tile-desc{ font-size:12.5px; color:var(--steel); line-height:1.45; }
+.tile-lock{ font-family:var(--mono); font-size:10px; color:var(--spark); letter-spacing:.08em; margin-top:2px; }
+
+.footnote{
+  margin-top:26px; text-align:center;
+  font-family:var(--mono); font-size:10.5px; color:var(--steel); letter-spacing:.05em;
+}
+
+/* ── Login overlay ───────────────────────────────────────────────── */
+#login-screen{
+  position:fixed; inset:0; z-index:50;
+  background:var(--void);
+  display:flex; align-items:center; justify-content:center;
+  padding:20px;
+}
+.login-card{
+  width:100%; max-width:380px; text-align:center;
+  border:1px solid var(--line); border-radius:3px;
+  background:var(--graphite); padding:34px 28px;
+  position:relative;
+}
+.login-card::before{
+  content:''; position:absolute; top:0; left:50%; width:80px; height:2px;
+  background:var(--signal); transform:translateX(-50%); filter:blur(3px); opacity:.8;
+}
+.login-card h3{
+  margin:0; font-family:var(--display); font-weight:700; font-size:26px;
+  text-transform:uppercase; letter-spacing:.02em;
+}
+.login-card .muted{ color:var(--steel); font-size:12.5px; margin-top:8px; }
+
+.btn-google{
+  margin-top:22px; width:100%;
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  padding:12px 16px; border-radius:3px;
+  background:var(--paper); color:#1a1a1a; border:none;
+  font:inherit; font-weight:600; font-size:13.5px; cursor:pointer;
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.btn-google:hover{ box-shadow:0 8px 24px rgba(255,34,48,.18); transform:translateY(-1px); }
+.btn-google:active{ transform:translateY(0); }
+.btn-google svg{ width:17px; height:17px; flex-shrink:0; }
+
+.login-error{ margin-top:12px; font-size:11.5px; color:var(--signal); min-height:14px; font-family:var(--mono); }
+
+/* ── Trailer password modal ──────────────────────────────────────── */
+#trailer-modal{
+  position:fixed; inset:0; z-index:60;
+  background:rgba(10,10,13,.82);
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+#trailer-modal[aria-hidden="false"]{ display:flex; }
+.trailer-card{
+  width:100%; max-width:360px; text-align:center;
+  background:var(--graphite); border:1px solid var(--line); border-radius:3px;
+  padding:26px 24px;
+}
+.trailer-card h3{ margin:0; font-family:var(--display); font-weight:600; font-size:19px; text-transform:uppercase; }
+.trailer-card .muted{ color:var(--steel); font-size:12px; margin-top:6px; }
+.trailer-card input{
+  margin-top:16px; width:100%; padding:11px 12px;
+  background:var(--void); border:1px solid var(--line); border-radius:3px;
+  color:var(--paper); font:inherit; outline:none;
+}
+.trailer-card input:focus{ border-color:var(--line-bright); }
+.trailer-error{ margin-top:9px; font-size:11.5px; color:var(--signal); min-height:14px; font-family:var(--mono); }
+.trailer-actions{ display:flex; gap:8px; margin-top:16px; }
+.trailer-actions button{
+  flex:1; padding:10px; border-radius:3px; cursor:pointer; font:inherit; font-size:13px;
+}
+.btn-continue{ background:var(--signal); border:none; color:#fff; font-weight:600; }
+.btn-continue:hover{ background:#e01d2a; }
+.btn-cancel{ background:none; border:1px solid var(--line); color:var(--steel); }
+.btn-cancel:hover{ border-color:var(--line-bright); color:var(--paper); }
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <h3>Sydney Tools</h3>
+    <div class="muted">Sign in with your @sydneytools.com.au account</div>
+    <button class="btn-google" onclick="signInWithGoogle()">
+      <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+        <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+        <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+        <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+        <path fill="none" d="M0 0h48v48H0z"/>
+      </svg>
+      Sign in with Google
+    </button>
+    <div id="login-error" class="login-error"></div>
+  </div>
+</div>
+
+<div id="trailer-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="trailerTitle">
+  <div class="trailer-card">
+    <h3 id="trailerTitle">Trailer Access</h3>
+    <div class="muted">Enter the trailer password to continue.</div>
+    <input id="trailerPass" type="password" placeholder="Password" autocomplete="off" />
+    <div id="trailerError" class="trailer-error"></div>
+    <div class="trailer-actions">
+      <button class="btn-continue" id="trailerSubmit">Continue</button>
+      <button class="btn-cancel" id="trailerCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="plate boot d1">
+    <span class="plate-dot"></span>
+    <span class="plate-label">Internal System · SA Region</span>
+  </div>
+  <h1 class="boot d1">Sydney <span>Tools</span></h1>
+  <p class="tagline boot d1">The Index — staff navigation for South Australia stores</p>
+
+  <div class="hairline boot d2"></div>
+
+  <div class="boot d3">
+    <div class="panel-head">
+      <span class="label">Select a tool to continue</span>
+      <button class="signout" onclick="signOut()">Sign out</button>
+    </div>
+
+    <div class="grid">
+      <a class="nav-tile" href="Rep Directory.html">
+        <span class="tile-idx">01 — CONTACTS</span>
+        <span class="tile-name">Rep Directory</span>
+        <span class="tile-desc">Supplier reps grouped by company, with phone and email on hand.</span>
+      </a>
+      <a class="nav-tile" href="Warranty1.html">
+        <span class="tile-idx">02 — WARRANTY</span>
+        <span class="tile-name">Warranties</span>
+        <span class="tile-desc">Local and imported supplier warranty processes, plus the repair tracker.</span>
+      </a>
+      <a class="nav-tile" id="trailerBtn" href="Trailer.html" target="_blank">
+        <span class="tile-idx">03 — LOGISTICS</span>
+        <span class="tile-name">Trailer Run</span>
+        <span class="tile-desc">Live stock-transfer requests between stores.</span>
+        <span class="tile-lock">🔒 Password protected</span>
+      </a>
+      <a class="nav-tile" href="https://docs.google.com/forms/d/e/1FAIpQLSd0whyvqebdknq-vO_ZkX89qI4xBA9wXyb5HriOqRUN5M8ZAA/viewform" target="_blank">
+        <span class="tile-idx">04 — REQUEST</span>
+        <span class="tile-name">RST Request</span>
+        <span class="tile-desc">Submit a new RST request form.</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="footnote boot d3">SYDNEY TOOLS · SOUTH AUSTRALIA</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script>
+  // ── Supabase init ──────────────────────────────────────────────
+  const { createClient } = supabase;
+  const _supabase = createClient(
+    'https://hidkyhsedsmptfqkonad.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM'
+  );
+
+  const loginScreen = document.getElementById('login-screen');
+  const loginError  = document.getElementById('login-error');
+
+  _supabase.auth.onAuthStateChange((event, session) => {
+    if (session) {
+      const email = session.user.email || '';
+      if (!email.endsWith('@sydneytools.com.au')) {
+        loginError.textContent = 'Access restricted to @sydneytools.com.au accounts.';
+        _supabase.auth.signOut();
+        loginScreen.style.display = 'flex';
+        return;
+      }
+      loginScreen.style.display = 'none';
+    } else {
+      loginScreen.style.display = 'flex';
+    }
+  });
+
+  async function signInWithGoogle() {
+    loginError.textContent = '';
+    const { error } = await _supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        queryParams: { hd: 'sydneytools.com.au' },
+        redirectTo: 'https://st-web-app.calebwhittet.workers.dev'
+      }
+    });
+    if (error) {
+      loginError.textContent = 'Sign-in failed. Try again.';
+      console.error(error);
+    }
+  }
+
+  async function signOut() {
+    await _supabase.auth.signOut();
+  }
+
+  // ── Trailer modal ──────────────────────────────────────────────
+  const trailerPasswordHash = "564f4bcd11273b8ea6b49fbe2dc2ad1c";
+  function md5(str){ return CryptoJS.MD5(str).toString(); }
+
+  const trailerBtn    = document.getElementById("trailerBtn");
+  const trailerModal  = document.getElementById("trailer-modal");
+  const trailerPass   = document.getElementById("trailerPass");
+  const trailerError  = document.getElementById("trailerError");
+  const trailerSubmit = document.getElementById("trailerSubmit");
+  const trailerCancel = document.getElementById("trailerCancel");
+
+  let pendingTrailerHref   = null;
+  let pendingTrailerTarget = "_blank";
+
+  function openTrailerModal(href, target){
+    pendingTrailerHref   = href;
+    pendingTrailerTarget = target || "_blank";
+    trailerError.textContent = "";
+    trailerPass.value = "";
+    trailerModal.setAttribute("aria-hidden", "false");
+    setTimeout(() => trailerPass.focus(), 0);
+  }
+  function closeTrailerModal(){
+    trailerModal.setAttribute("aria-hidden", "true");
+    trailerError.textContent = "";
+    trailerPass.value = "";
+  }
+  function submitTrailerModal(){
+    const entered = trailerPass.value;
+    if (!entered){ trailerError.textContent = "Password required."; trailerPass.focus(); return; }
+    if (md5(entered) === trailerPasswordHash){
+      const href   = pendingTrailerHref;
+      const target = pendingTrailerTarget || "_blank";
+      closeTrailerModal();
+      if (href) window.open(href, target);
+    } else {
+      trailerError.textContent = "Incorrect password.";
+      trailerPass.value = "";
+      trailerPass.focus();
+    }
+  }
+
+  trailerBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    openTrailerModal(trailerBtn.href, trailerBtn.target);
+  });
+  trailerSubmit.addEventListener("click", submitTrailerModal);
+  trailerCancel.addEventListener("click", closeTrailerModal);
+  trailerPass.addEventListener("keydown", (e) => {
+    if (e.key === "Enter")  { e.preventDefault(); submitTrailerModal(); }
+    if (e.key === "Escape") { e.preventDefault(); closeTrailerModal(); }
+  });
+  trailerModal.addEventListener("click", (e) => {
+    if (e.target === trailerModal) closeTrailerModal();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && trailerModal.getAttribute("aria-hidden") === "false") closeTrailerModal();
+  });
+</script>
+</body>
+</html>
