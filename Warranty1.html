@@ -1,787 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>The Index - Warranty Info</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sydney Tools — Warranty Information</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script>
-    document.documentElement.style.visibility = "hidden";
-    (async () => {
-      const _sb = supabase.createClient(
-        "https://hidkyhsedsmptfqkonad.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
-      );
-      const { data: { session } } = await _sb.auth.getSession();
-      if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
-        window.location.href = "index.html";
-        return;
-      }
-      document.documentElement.style.visibility = "";
-    })();
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <style>
-    :root{
-      --bg0:#07070a;
-      --bg1:#0b0b10;
-      --text:#f2f2f5;
-      --muted:#a4a4b3;
-      --border:rgba(255,255,255,0.08);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
-      --red:#ff2b3d;
-      --red2:#b80c2b;
-      --pill2:rgba(255,43,61,0.18);
-      --focus: 0 0 0 3px rgba(255,43,61,0.25);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  document.documentElement.style.visibility = "hidden";
+  (async () => {
+    const _sb = supabase.createClient(
+      "https://hidkyhsedsmptfqkonad.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
+    );
+    const { data: { session } } = await _sb.auth.getSession();
+    if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
+      window.location.href = "index.html";
+      return;
     }
+    document.documentElement.style.visibility = "";
+  })();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
-    *{ box-sizing:border-box; }
+<style>
+:root{
+  --void:#0a0a0d; --graphite:#15151b; --graphite2:#1b1b22;
+  --steel:#6b6f7a; --paper:#f5f3ef;
+  --signal:#ff2230; --signal-dim:rgba(255,34,48,.16); --spark:#ffb020;
+  --line:rgba(245,243,239,.09); --line-bright:rgba(255,34,48,.35);
+  --display:'Barlow Condensed',sans-serif; --body:'Work Sans',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;min-height:100vh;}
+body{ background:var(--void); color:var(--paper); font-family:var(--body); padding:28px 18px 60px; }
+.wrap{ max-width:1180px; margin:0 auto; }
 
-    body{
-      margin:0;
-      min-height:100vh;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
-        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 26px 14px 50px;
-    }
+.plate{ display:flex; align-items:center; gap:10px; margin-bottom:4px; justify-content:center; }
+.plate-dot{ width:7px; height:7px; border-radius:50%; background:var(--spark); box-shadow:0 0 10px var(--spark); }
+.plate-label{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--steel); }
+h1{ margin:2px 0 0; text-align:center; font-family:var(--display); font-weight:700; font-size:clamp(32px,5vw,44px); text-transform:uppercase; letter-spacing:.01em; }
+.tagline{ text-align:center; color:var(--steel); font-size:13px; margin:6px 0 0; }
 
-    .wrap{
-      max-width: 1200px;
-      margin: 0 auto;
-    }
+.notice{
+  margin:18px auto 0; max-width:880px;
+  border:1px solid rgba(255,34,48,.3); border-left:3px solid var(--signal);
+  background:rgba(255,34,48,.06); border-radius:3px; padding:14px 16px;
+  font-size:13px; line-height:1.6; color:rgba(245,243,239,.88);
+}
 
-    .topbar{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap: 8px;
-      margin-bottom: 14px;
-      text-align:center;
-    }
+.repair-link-row{ display:flex; justify-content:center; margin-top:16px; }
+.repair-link{
+  font-family:var(--mono); font-size:12px; letter-spacing:.05em; text-transform:uppercase;
+  color:var(--paper); text-decoration:none; background:var(--signal);
+  padding:11px 22px; border-radius:3px; font-weight:600; transition:background .15s,transform .12s;
+}
+.repair-link:hover{ background:#e01d2a; transform:translateY(-1px); }
 
-    h1{
-      margin:0;
-      font-size: 30px;
-      letter-spacing: .35px;
-      line-height: 1.1;
-    }
+.hairline{ height:1px; margin:26px 0 20px; background:linear-gradient(90deg, transparent, var(--line-bright) 30%, var(--line-bright) 70%, transparent); }
 
-    .sub{
-      margin: 0;
-      font-size: 13px;
-      color: var(--muted);
-    }
+.toolbar{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.toolbar-left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.btn-back{ font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--steel); text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px; transition:border-color .15s,color .15s; white-space:nowrap; }
+.btn-back:hover{ border-color:var(--line-bright); color:var(--paper); }
+.search{ width:340px; max-width:92%; background:var(--graphite); border:1px solid var(--line); border-radius:3px; color:var(--paper); font:inherit; font-size:13.5px; padding:10px 13px; outline:none; }
+.search::placeholder{ color:var(--steel); }
+.search:focus{ border-color:var(--line-bright); }
+.btn-pdf{ font-family:var(--mono); font-size:11.5px; letter-spacing:.03em; color:var(--steel); text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px; white-space:nowrap; transition:border-color .15s,color .15s; }
+.btn-pdf:hover{ border-color:var(--line-bright); color:var(--paper); }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: var(--pill2);
-      border: 1px solid rgba(255,43,61,0.35);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      white-space: nowrap;
-    }
+.tables{ display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); border-radius:2px; overflow:hidden; }
+@media (max-width:920px){ .tables{ grid-template-columns:1fr; } }
+.table-card{ background:var(--void); display:flex; flex-direction:column; }
+.table-head{ display:flex; align-items:center; justify-content:space-between; padding:13px 16px; border-bottom:1px solid var(--line); background:var(--graphite); }
+.table-head h2{ margin:0; font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--steel); }
+.table-count{ font-family:var(--mono); font-size:11px; color:var(--steel); }
 
-    .warranty-notice{
-      margin-top: 12px;
-      padding: 12px 14px;
-      border-radius: 12px;
-      background: rgba(255,43,61,0.08);
-      border: 1px solid rgba(255,43,61,0.35);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.15);
-      font-size: 18px;
-      line-height: 1.5;
-      color: rgba(242,242,245,0.9);
-      max-width: 900px;
-    }
+table{ width:100%; border-collapse:collapse; }
+th,td{ padding:12px 16px; border-bottom:1px solid var(--line); vertical-align:middle; text-align:left; }
+th{ font-family:var(--mono); font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--steel); background:var(--graphite); position:sticky; top:0; }
+tr:hover td{ background:rgba(245,243,239,.025); }
+.supplier-name{ font-weight:600; font-size:13.5px; }
+.button-group{ display:flex; justify-content:flex-end; gap:7px; flex-wrap:wrap; }
+.row-btn{ font-family:var(--body); font-size:11.5px; font-weight:600; padding:7px 11px; border-radius:3px; cursor:pointer; border:1px solid var(--line); background:none; color:var(--paper); white-space:nowrap; transition:border-color .15s,background .15s; }
+.row-btn:hover{ border-color:var(--line-bright); }
+.row-btn.primary{ background:var(--signal); border-color:var(--signal); color:#fff; }
+.row-btn.primary:hover{ background:#e01d2a; }
+.empty-row{ color:var(--steel); padding:18px 16px; font-size:13px; }
 
-    .store-nav{
-      width: 100%;
-      max-width: 980px;
-      margin-top: 18px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-    }
+@media (max-width:600px){ .button-group{ justify-content:flex-start; } }
 
-    .store-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      padding: 11px 16px;
-      min-width: 145px;
-      border-radius: 12px;
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text);
-      text-decoration: none;
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border: 1px solid rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      transition: transform .08s ease, filter .15s ease, box-shadow .15s ease;
-      text-align: center;
-    }
-
-    .store-btn:hover{
-      transform: translateY(-1px);
-      filter: brightness(1.06);
-      box-shadow: 0 12px 32px rgba(255,43,61,0.28);
-    }
-
-    .store-btn:focus-visible{
-      box-shadow: var(--focus);
-      outline: none;
-    }
-
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:space-between;
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .row:last-child{
-      border-bottom:none;
-    }
-
-    .controls{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      min-width: 0;
-    }
-
-    .controls.right{
-      justify-content:flex-end;
-    }
-
-    input, button, a.btn{
-      padding: 10px 10px;
-      font: inherit;
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      outline: none;
-    }
-
-    input{
-      min-width:260px;
-      width: 420px;
-      max-width: 92%;
-    }
-
-    input::placeholder{
-      color: rgba(242,242,245,0.45);
-    }
-
-    input:focus{
-      box-shadow: var(--focus);
-      border-color: rgba(255,43,61,0.45);
-    }
-
-    .btn{
-      cursor:pointer;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      white-space:nowrap;
-      user-select:none;
-    }
-
-    .btn:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.10);
-    }
-
-    .btn-primary{
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border-color: rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-
-    .btn-primary:hover{
-      filter: brightness(1.05);
-    }
-
-    .btn-sm{
-      padding: 8px 10px;
-      border-radius: 12px;
-      font-size: 13px;
-    }
-
-    .btn-pdf{
-      border-color: rgba(255,43,61,0.28);
-      box-shadow: 0 12px 34px rgba(0,0,0,0.35);
-    }
-
-    .tableWrap{
-      padding: 12px;
-    }
-
-    .tables-container{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
-
-    .card{
-      background: rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      overflow:hidden;
-    }
-
-    .cardHead{
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .cardHead h2{
-      margin:0;
-      font-size: 13px;
-      letter-spacing: .6px;
-      text-transform: uppercase;
-      color: rgba(242,242,245,0.85);
-    }
-
-    .mutedSmall{
-      color: var(--muted);
-      font-size: 12px;
-      margin-top: 4px;
-      white-space: nowrap;
-    }
-
-    table{
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th, td{
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      vertical-align: middle;
-    }
-
-    th{
-      font-size: 12px;
-      letter-spacing: 0.6px;
-      text-transform: uppercase;
-      color: rgba(242,242,245,0.75);
-      background: rgba(255,255,255,0.04);
-      position: sticky;
-      top: 0;
-      z-index: 1;
-      text-align:left;
-    }
-
-    tr:hover td{
-      background: rgba(255,255,255,0.03);
-    }
-
-    .supplier{
-      font-weight: 700;
-    }
-
-    .button-group{
-      display:flex;
-      justify-content:flex-end;
-      align-items:center;
-      gap: 8px;
-      flex-wrap: nowrap;
-    }
-
-    #modal{
-      display:none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      z-index: 9999;
-      padding: 20px;
-      overflow:auto;
-      align-items:center;
-      justify-content:center;
-    }
-
-    #modal.open{
-      display:flex;
-    }
-
-    .modal-content{
-      width: 100%;
-      max-width: 760px;
-      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 16px;
-    }
-
-    .modalHead{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 14px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .modalHead h3{
-      margin:0;
-      font-size: 30px;
-      line-height: 1.1;
-    }
-
-    .modalBody{
-      padding: 6px 2px 10px;
-    }
-
-    .modalBody p{
-      margin: 0 0 14px;
-      line-height: 1.6;
-      font-size: 16px;
-      color: rgba(242,242,245,0.95);
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-
-    .step-link-group{
-      margin: 10px 0 16px 0;
-    }
-
-    .step-link-btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      padding:10px 14px;
-      border-radius:12px;
-      background: rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.14);
-      color: var(--text);
-      text-decoration:none;
-      font-weight:700;
-      font-size:14px;
-      line-height:1.2;
-      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
-      margin-top: 8px;
-    }
-
-    .step-link-btn:hover{
-      background: rgba(255,255,255,0.14);
-      border-color: rgba(255,255,255,0.22);
-      transform: translateY(-1px);
-    }
-
-    .step-link-btn.primary{
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border-color: rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-    }
-
-    .step-link-btn.primary:hover{
-      filter: brightness(1.06);
-    }
-
-    .inline-email-link{
-      color: #ff8a95;
-      text-decoration: none;
-      font-weight: 600;
-      border-bottom: 1px dotted rgba(255,138,149,0.45);
-    }
-
-    .inline-email-link:hover{
-      color: #ffb3ba;
-    }
-
-    @media (max-width: 920px){
-      .tables-container{
-        grid-template-columns: 1fr;
-      }
-
-      .button-group{
-        flex-wrap: wrap;
-        justify-content:flex-start;
-      }
-
-      .modalHead h3{
-        font-size: 24px;
-      }
-    }
-
-    @media (max-width: 700px){
-      .store-btn{
-        min-width: calc(50% - 10px);
-      }
-    }
-
-    @media (max-width: 600px){
-      input{
-        width: 100%;
-        min-width: 0;
-      }
-
-      .row{
-        align-items:stretch;
-      }
-
-      .controls.left,
-      .controls.right{
-        width:100%;
-      }
-
-      .store-btn{
-        min-width: 100%;
-      }
-    }
-  </style>
+/* ── Modal ─────────────────────────────────────────────────────────── */
+#modal{ display:none; position:fixed; inset:0; background:rgba(10,10,13,.82); z-index:90; padding:20px; align-items:center; justify-content:center; overflow:auto; }
+#modal.open{ display:flex; }
+.modal-content{ width:100%; max-width:740px; background:var(--graphite); border:1px solid var(--line); border-radius:3px; padding:22px; position:relative; max-height:calc(100vh - 60px); overflow:auto; }
+.modal-content::before{ content:''; position:absolute; top:0; left:30px; width:60px; height:2px; background:var(--signal); filter:blur(2px); opacity:.8; }
+.modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
+.modal-head h3{ margin:0; font-family:var(--display); font-weight:700; font-size:26px; text-transform:uppercase; }
+.modal-sub{ color:var(--steel); font-size:12px; margin-top:4px; font-family:var(--mono); letter-spacing:.04em; text-transform:uppercase; }
+.modal-close{ background:none; border:1px solid var(--line); color:var(--steel); width:30px; height:30px; border-radius:3px; cursor:pointer; flex-shrink:0; }
+.modal-close:hover{ border-color:var(--line-bright); color:var(--paper); }
+.modal-body p{ margin:0 0 14px; line-height:1.65; font-size:14.5px; color:rgba(245,243,239,.92); overflow-wrap:anywhere; }
+.step-link-group{ margin:10px 0 16px; }
+.step-link-btn{ display:inline-flex; align-items:center; gap:8px; padding:10px 16px; border-radius:3px; background:none; border:1px solid var(--line); color:var(--paper); text-decoration:none; font-weight:600; font-size:13px; transition:border-color .15s,background .15s; }
+.step-link-btn:hover{ border-color:var(--line-bright); }
+.step-link-btn.primary{ background:var(--signal); border-color:var(--signal); color:#fff; }
+.step-link-btn.primary:hover{ background:#e01d2a; }
+.inline-email-link{ color:#ff8a95; text-decoration:none; font-weight:600; border-bottom:1px dotted rgba(255,138,149,.45); }
+.inline-email-link:hover{ color:#ffb3ba; }
+.modal-foot{ display:flex; justify-content:flex-end; margin-top:6px; }
+.btn-close-modal{ background:var(--signal); border:none; color:#fff; font:inherit; font-weight:600; font-size:13px; padding:9px 18px; border-radius:3px; cursor:pointer; }
+.btn-close-modal:hover{ background:#e01d2a; }
+</style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <h1>Supplier Warranty Information</h1>
-      <p class="sub">Search suppliers and view warranty processes.</p>
-      <div class="badge">● Live from Google Sheet</div>
+<div class="wrap">
+  <div class="plate"><span class="plate-dot"></span><span class="plate-label">02 — Warranty</span></div>
+  <h1>Supplier Warranty Information</h1>
+  <p class="tagline">Search suppliers and view warranty processes.</p>
 
-      <div class="warranty-notice">
-        <p>
-          A warranty covers faults caused by manufacturing defects only. It does not cover normal wear and tear, consumable parts
-          (such as drill chucks, brushes, blades, or belts), accidental damage, misuse, or modifications. Any damage caused by
-          improper use, lack of maintenance, or external factors is excluded. If the product shows signs of physical damage,
-          tampering, or unauthorised repair, the warranty is void. Proof of purchase is required for all claims. All M & H class
-          vacuums must be submitted directly through the supplier by the customer due to hazardous material concerns.
-        </p>
-      </div>
-
-      <div class="store-nav">
-        <a class="store-btn" href="store_view.html">Repair List</a>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="row">
-        <div class="controls left">
-          <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
-          <input type="text" id="searchInput" placeholder="Search suppliers..." />
-        </div>
-
-        <div class="controls right">
-          <a class="btn btn-sm btn-pdf"
-             href="Petrol_Tool_5_Point_Check.pdf"
-             target="_blank"
-             rel="noopener noreferrer">
-            📄 Petrol Tool 5-Point Check
-          </a>
-        </div>
-      </div>
-
-      <div class="tableWrap">
-        <div class="tables-container">
-          <div class="card">
-            <div class="cardHead">
-              <h2>Local Suppliers</h2>
-              <span class="mutedSmall" id="localCount"></span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:50%;">Supplier</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-              <tbody id="localTable"></tbody>
-            </table>
-          </div>
-
-          <div class="card">
-            <div class="cardHead">
-              <h2>Imported Suppliers</h2>
-              <span class="mutedSmall" id="importCount"></span>
-            </div>
-            <table>
-              <thead>
-                <tr>
-                  <th style="width:50%;">Supplier</th>
-                  <th>Options</th>
-                </tr>
-              </thead>
-              <tbody id="importTable"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div class="notice">
+    A warranty covers faults caused by manufacturing defects only. It does not cover normal wear and tear, consumable
+    parts (such as drill chucks, brushes, blades, or belts), accidental damage, misuse, or modifications. Any damage
+    caused by improper use, lack of maintenance, or external factors is excluded. If the product shows signs of
+    physical damage, tampering, or unauthorised repair, the warranty is void. Proof of purchase is required for all
+    claims. All M &amp; H class vacuums must be submitted directly through the supplier by the customer due to
+    hazardous material concerns.
   </div>
 
-  <div id="modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true">
-      <div class="modalHead">
-        <div>
-          <h3 id="modalTitle"></h3>
-          <div class="mutedSmall" id="modalSub"></div>
-        </div>
-        <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
-      </div>
+  <div class="repair-link-row"><a class="repair-link" href="store_view.html">Repair List →</a></div>
 
-      <div class="modalBody" id="modalBody"></div>
+  <div class="hairline"></div>
 
-      <div class="row" style="border-bottom:none; justify-content:flex-end; padding: 8px 0 0;">
-        <button class="btn btn-primary" onclick="closeModal()">Close</button>
-      </div>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <a class="btn-back" href="index.html">← Back to Index</a>
+      <input type="text" class="search" id="searchInput" placeholder="Search suppliers...">
     </div>
+    <a class="btn-pdf" href="Petrol_Tool_5_Point_Check.pdf" target="_blank" rel="noopener noreferrer">📄 Petrol Tool 5-Point Check</a>
   </div>
 
-  <script>
-    const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
-    let suppliers = [];
+  <div class="tables">
+    <div class="table-card">
+      <div class="table-head"><h2>Local Suppliers</h2><span class="table-count" id="localCount"></span></div>
+      <table><thead><tr><th style="width:55%">Supplier</th><th>Options</th></tr></thead><tbody id="localTable"></tbody></table>
+    </div>
+    <div class="table-card">
+      <div class="table-head"><h2>Imported Suppliers</h2><span class="table-count" id="importCount"></span></div>
+      <table><thead><tr><th style="width:55%">Supplier</th><th>Options</th></tr></thead><tbody id="importTable"></tbody></table>
+    </div>
+  </div>
+</div>
 
-    Papa.parse(csvUrl, {
-      download: true,
-      header: true,
-      complete: function(results) {
-        const rows = (results.data || []).map(row => {
-          const clean = {};
-          for (const key in row) {
-            const normKey = (key || "").trim().replace(/\s+/g, " ");
-            clean[normKey] = (row[key] ?? "").trim();
-          }
-          return clean;
-        });
+<div id="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div><h3 id="modalTitle"></h3><div class="modal-sub" id="modalSub"></div></div>
+      <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-foot"><button class="btn-close-modal" onclick="closeModal()">Close</button></div>
+  </div>
+</div>
 
-        suppliers = rows.filter(item => {
-          const hasBrand = !!item["Brands"];
-          const hasWarrantyInfo = !!item["Warranty Information"];
-          const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
-          const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
-          return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
-        });
+<script>
+  const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
+  let suppliers = [];
 
-        renderTables();
-      }
-    });
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    function getLinkLabel(url) {
-      const lower = url.toLowerCase();
-
-      if (lower.includes("guaranteedtough.com.au")) return "Open Warranty Portal";
-      if (lower.includes("docs.google.com")) return "Open Replacement Form";
-      if (lower.includes("dropbox.com")) return "Open File";
-      if (lower.includes("sharepoint.com")) return "Open Document";
-      if (lower.includes("onedrive.live.com")) return "Open Document";
-
-      return "Open Link";
-    }
-
-    function getLinkClass(url) {
-      const lower = url.toLowerCase();
-
-      if (
-        lower.includes("guaranteedtough.com.au") ||
-        lower.includes("docs.google.com") ||
-        lower.includes("sharepoint.com") ||
-        lower.includes("onedrive.live.com")
-      ) {
-        return "step-link-btn primary";
-      }
-
-      return "step-link-btn";
-    }
-
-    function linkify(text) {
-      let safe = escapeHtml(text);
-
-      const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
-      safe = safe.replace(emailRegex, (email) => {
-        return `<a href="mailto:${email}" class="inline-email-link">${email}</a>`;
+  Papa.parse(csvUrl, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      const rows = (results.data || []).map(row => {
+        const clean = {};
+        for (const key in row) {
+          const normKey = (key || "").trim().replace(/\s+/g, " ");
+          clean[normKey] = (row[key] ?? "").trim();
+        }
+        return clean;
       });
 
-      const urlRegex = /(https?:\/\/[^\s<]+)/g;
-      safe = safe.replace(urlRegex, (match) => {
-        const clean = match.replace(/[),.]+$/g, "");
-        const tail = match.slice(clean.length);
-        const label = getLinkLabel(clean);
-        const btnClass = getLinkClass(clean);
-
-        return `<div class="step-link-group">
-          <a href="${clean}" target="_blank" rel="noopener noreferrer" class="${btnClass}">${label}</a>
-        </div>${escapeHtml(tail)}`;
-      });
-
-      return safe;
-    }
-
-    function renderTables(filter = "") {
-      const local = document.getElementById("localTable");
-      const imported = document.getElementById("importTable");
-      const localCount = document.getElementById("localCount");
-      const importCount = document.getElementById("importCount");
-
-      local.innerHTML = "";
-      imported.innerHTML = "";
-
-      let lCount = 0;
-      let iCount = 0;
-
-      suppliers.forEach((item, idx) => {
-        const brand = item["Brands"];
-        const isImported = (item["Import"] || "").toLowerCase() === "true";
-
-        if (!brand) return;
-        if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
-
+      suppliers = rows.filter(item => {
+        const hasBrand = !!item["Brands"];
+        const hasWarrantyInfo = !!item["Warranty Information"];
         const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
         const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
-        const hasWarrantyInfo = !!item["Warranty Information"];
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td class="supplier">${escapeHtml(brand)}</td>
-          <td>
-            <div class="button-group">
-              ${hasWarrantyInfo ? `<button class="btn btn-primary btn-sm" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
-              ${hasWarrantySteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
-              ${hasFufSteps ? `<button class="btn btn-sm" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
-            </div>
-          </td>
-        `;
-
-        if (isImported) {
-          imported.appendChild(row);
-          iCount++;
-        } else {
-          local.appendChild(row);
-          lCount++;
-        }
+        return hasBrand && (hasWarrantyInfo || hasWarrantySteps || hasFufSteps);
       });
 
-      localCount.textContent = `${lCount} suppliers`;
-      importCount.textContent = `${iCount} suppliers`;
-
-      if (!lCount) {
-        local.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
-      }
-
-      if (!iCount) {
-        imported.innerHTML = `<tr><td colspan="2" style="color:rgba(242,242,245,0.7); padding:12px;">No suppliers found.</td></tr>`;
-      }
+      renderTables();
     }
+  });
 
-    document.getElementById("searchInput").addEventListener("input", e => {
-      renderTables(e.target.value);
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  }
+
+  function getLinkLabel(url) {
+    const lower = url.toLowerCase();
+    if (lower.includes("guaranteedtough.com.au")) return "Open Warranty Portal";
+    if (lower.includes("docs.google.com")) return "Open Replacement Form";
+    if (lower.includes("dropbox.com")) return "Open File";
+    if (lower.includes("sharepoint.com")) return "Open Document";
+    if (lower.includes("onedrive.live.com")) return "Open Document";
+    return "Open Link";
+  }
+
+  function getLinkClass(url) {
+    const lower = url.toLowerCase();
+    if (lower.includes("guaranteedtough.com.au") || lower.includes("docs.google.com") ||
+        lower.includes("sharepoint.com") || lower.includes("onedrive.live.com")) {
+      return "step-link-btn primary";
+    }
+    return "step-link-btn";
+  }
+
+  function linkify(text) {
+    let safe = escapeHtml(text);
+    const emailRegex = /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/g;
+    safe = safe.replace(emailRegex, (email) => `<a href="mailto:${email}" class="inline-email-link">${email}</a>`);
+    const urlRegex = /(https?:\/\/[^\s<]+)/g;
+    safe = safe.replace(urlRegex, (match) => {
+      const clean = match.replace(/[),.]+$/g, "");
+      const tail = match.slice(clean.length);
+      const label = getLinkLabel(clean);
+      const btnClass = getLinkClass(clean);
+      return `<div class="step-link-group"><a href="${clean}" target="_blank" rel="noopener noreferrer" class="${btnClass}">${label}</a></div>${escapeHtml(tail)}`;
+    });
+    return safe;
+  }
+
+  function renderTables(filter = "") {
+    const local = document.getElementById("localTable");
+    const imported = document.getElementById("importTable");
+    const localCount = document.getElementById("localCount");
+    const importCount = document.getElementById("importCount");
+
+    local.innerHTML = "";
+    imported.innerHTML = "";
+    let lCount = 0, iCount = 0;
+
+    suppliers.forEach((item, idx) => {
+      const brand = item["Brands"];
+      const isImported = (item["Import"] || "").toLowerCase() === "true";
+      if (!brand) return;
+      if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
+
+      const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
+      const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+      const hasWarrantyInfo = !!item["Warranty Information"];
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td class="supplier-name">${escapeHtml(brand)}</td>
+        <td>
+          <div class="button-group">
+            ${hasWarrantyInfo ? `<button class="row-btn primary" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
+            ${hasWarrantySteps ? `<button class="row-btn" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
+            ${hasFufSteps ? `<button class="row-btn" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
+          </div>
+        </td>
+      `;
+      if (isImported) { imported.appendChild(row); iCount++; }
+      else { local.appendChild(row); lCount++; }
     });
 
-    function showModalByIndex(index, type) {
-      const item = suppliers[index];
-      if (!item) return;
+    localCount.textContent = `${lCount} suppliers`;
+    importCount.textContent = `${iCount} suppliers`;
+    if (!lCount) local.innerHTML = `<tr><td colspan="2" class="empty-row">No suppliers found.</td></tr>`;
+    if (!iCount) imported.innerHTML = `<tr><td colspan="2" class="empty-row">No suppliers found.</td></tr>`;
+  }
 
-      document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
-      const modalSub = document.getElementById("modalSub");
-      const modalBody = document.getElementById("modalBody");
-      modalBody.innerHTML = "";
+  document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
 
-      if (type === "info") {
-        modalSub.textContent = "Warranty Information";
+  function showModalByIndex(index, type) {
+    const item = suppliers[index];
+    if (!item) return;
 
-        const warrantyInfo = (item["Warranty Information"] || "N/A")
-          .split("\n")
-          .filter(line => line.trim() !== "")
-          .map(line => `<p>${linkify(line)}</p>`)
-          .join("");
+    document.getElementById("modalTitle").textContent = item["Brands"] || "Supplier";
+    const modalSub = document.getElementById("modalSub");
+    const modalBody = document.getElementById("modalBody");
+    modalBody.innerHTML = "";
 
-        modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
-      } else {
-        const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
-        modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
-
-        let any = false;
-
-        for (let i = 1; i <= 6; i++) {
-          const key = prefix + i;
-          if (item[key]) {
-            any = true;
-            modalBody.innerHTML += `
-              <p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>
-            `;
-          }
-        }
-
-        if (!any) {
-          modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
-        }
+    if (type === "info") {
+      modalSub.textContent = "Warranty Information";
+      const warrantyInfo = (item["Warranty Information"] || "N/A")
+        .split("\n").filter(line => line.trim() !== "").map(line => `<p>${linkify(line)}</p>`).join("");
+      modalBody.innerHTML = `<p><strong>Warranty:</strong></p>${warrantyInfo}`;
+    } else {
+      const prefix = type === "fuf" ? "FUF Step " : "Warranty Step ";
+      modalSub.textContent = type === "fuf" ? "First Up Failure (FUF) Process" : "Warranty Process";
+      let any = false;
+      for (let i = 1; i <= 6; i++) {
+        const key = prefix + i;
+        if (item[key]) { any = true; modalBody.innerHTML += `<p><strong>Step ${i}:</strong> ${linkify(item[key])}</p>`; }
       }
-
-      openModal();
+      if (!any) modalBody.innerHTML = `<p>No steps found for this supplier.</p>`;
     }
+    openModal();
+  }
 
-    function openModal() {
-      const m = document.getElementById("modal");
-      m.classList.add("open");
-      m.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeModal() {
-      const m = document.getElementById("modal");
-      m.classList.remove("open");
-      m.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    document.getElementById("modal").addEventListener("click", (e) => {
-      if (e.target.id === "modal") closeModal();
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) {
-        closeModal();
-      }
-    });
-  </script>
+  function openModal() {
+    const m = document.getElementById("modal");
+    m.classList.add("open");
+    m.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal() {
+    const m = document.getElementById("modal");
+    m.classList.remove("open");
+    m.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  document.getElementById("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && document.getElementById("modal").classList.contains("open")) closeModal();
+  });
+</script>
 </body>
 </html>
