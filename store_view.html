@@ -23,6 +23,24 @@ select:focus{border-color:rgba(227,6,19,.5);}
 .refresh-btn:hover{background:var(--s3);}
 .toggle-label{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--sub);cursor:pointer;white-space:nowrap;}
 .toggle-label input{accent-color:var(--red);width:15px;height:15px;cursor:pointer;}
+.nav{max-width:1000px;margin:0 auto;padding:0 20px;display:flex;gap:4px;border-bottom:1px solid var(--border);margin-top:14px;}
+.nav-tab{padding:9px 4px;font-size:13px;font-weight:600;color:var(--sub);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;}
+.nav-tab:hover{color:var(--text);}
+.nav-tab.active{color:var(--text);border-bottom-color:var(--red);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+.dash-wrap{max-width:1000px;margin:0 auto;padding:18px 20px 60px;display:flex;flex-direction:column;gap:12px;}
+.store-box{background:var(--s2);border:1px solid var(--border);border-radius:11px;padding:16px 18px;}
+.store-box-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px;}
+.store-box-name{font-size:15px;font-weight:700;}
+.store-box-total{font-family:var(--mono);font-size:13px;color:var(--sub);}
+.stage-row{display:flex;align-items:center;gap:9px;margin-bottom:7px;}
+.stage-row:last-child{margin-bottom:0;}
+.stage-lbl{font-size:11.5px;color:var(--sub);width:170px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.stage-bar-wrap{flex:1;background:var(--s3);border-radius:3px;height:7px;overflow:hidden;}
+.stage-bar{height:100%;border-radius:3px;}
+.stage-count{font-family:var(--mono);font-size:11.5px;color:var(--sub);width:24px;text-align:right;flex-shrink:0;}
+.dash-empty{font-size:12px;color:var(--sub);padding:6px 0;}
 .meta-bar{max-width:1000px;margin:0 auto;padding:10px 20px 0;font-size:11.5px;color:var(--sub);font-family:var(--mono);display:flex;justify-content:space-between;}
 .list{max-width:1000px;margin:0 auto;padding:14px 20px 60px;display:flex;flex-direction:column;gap:8px;}
 .job-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background .12s,border-color .12s;}
@@ -71,6 +89,12 @@ select:focus{border-color:rgba(227,6,19,.5);}
   <span class="hsub">Sydney Tools SA</span>
 </div>
 
+<div class="nav">
+  <div class="nav-tab active" onclick="switchTab('list',this)">Job List</div>
+  <div class="nav-tab" onclick="switchTab('dashboard',this)">Store Dashboard</div>
+</div>
+
+<div class="tab-panel active" id="panel-list">
 <div class="controls">
   <input class="search-input" id="search" placeholder="Search ref, tool, or customer..." oninput="render()">
   <select id="store-filter" onchange="render()"><option value="">All Stores</option></select>
@@ -84,7 +108,15 @@ select:focus{border-color:rgba(227,6,19,.5);}
 </div>
 
 <div class="list" id="list">
+
   <div class="loading-state">Loading jobs…</div>
+</div>
+</div>
+
+<div class="tab-panel" id="panel-dashboard">
+<div class="dash-wrap" id="dash-wrap">
+  <div class="loading-state">Loading dashboard…</div>
+</div>
 </div>
 
 <div class="overlay hidden" id="modal-overlay" onclick="if(event.target===this) closeModal()">
@@ -138,8 +170,10 @@ async function loadData(){
 
     document.getElementById('last-updated').textContent = 'Updated ' + new Date(data.generated_at).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
     render();
+    renderDashboard();
   }catch(e){
     document.getElementById('list').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠</div>Could not load job data.<br><span style="font-size:11.5px">'+escapeHtml(e.message)+'</span></div>';
+    document.getElementById('dash-wrap').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠</div>Could not load dashboard data.</div>';
   }
 }
 
@@ -246,6 +280,63 @@ function escapeHtml(s){
   const d = document.createElement('div');
   d.textContent = s == null ? '' : String(s);
   return d.innerHTML;
+}
+
+// ── Tabs ─────────────────────────────────────────────────────────────────
+function switchTab(name, el){
+  document.querySelectorAll('.nav-tab').forEach(function(t){t.classList.remove('active');});
+  document.querySelectorAll('.tab-panel').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('panel-'+name).classList.add('active');
+}
+
+// ── Store Dashboard ──────────────────────────────────────────────────────
+// "Active" mirrors the main app's dashboard: a job stops being active once
+// it's Repaired, Resolved - No Repair, Ready for Pickup, or Collected —
+// i.e. once it's done and just waiting on the customer, it's not something
+// that needs attention any more.
+const DONE_STAGES = new Set(['Repaired','Resolved - No Repair','Ready for Pickup','Collected by Customer']);
+
+function renderDashboard(){
+  const active = allJobs.filter(function(j){ return !DONE_STAGES.has(j.stage); });
+
+  const byStore = {};
+  STORES.forEach(function(s){ byStore[s] = {}; });
+  active.forEach(function(j){
+    const store = j.current_location || 'Unknown';
+    if(!byStore[store]) byStore[store] = {};
+    byStore[store][j.stage] = (byStore[store][j.stage] || 0) + 1;
+  });
+
+  const storeNames = Object.keys(byStore).sort(function(a,b){
+    const ta = Object.values(byStore[a]).reduce(function(x,y){return x+y;},0);
+    const tb = Object.values(byStore[b]).reduce(function(x,y){return x+y;},0);
+    return tb - ta;
+  });
+
+  const wrap = document.getElementById('dash-wrap');
+  wrap.innerHTML = storeNames.map(function(store){
+    const stages = byStore[store];
+    const total = Object.values(stages).reduce(function(a,b){return a+b;},0);
+    const stageEntries = Object.entries(stages).sort(function(a,b){return b[1]-a[1];});
+    const maxCount = stageEntries.length ? stageEntries[0][1] : 1;
+
+    const rows = stageEntries.length
+      ? stageEntries.map(function(entry){
+          const stage = entry[0], count = entry[1];
+          const col = STAGE_COLORS[stage] || '#666';
+          const pct = Math.round(count / maxCount * 100);
+          return '<div class="stage-row"><span class="stage-lbl">'+stage+'</span>'+
+            '<div class="stage-bar-wrap"><div class="stage-bar" style="background:'+col+';width:'+pct+'%"></div></div>'+
+            '<span class="stage-count">'+count+'</span></div>';
+        }).join('')
+      : '<div class="dash-empty">No active jobs.</div>';
+
+    return '<div class="store-box">'+
+      '<div class="store-box-hdr"><span class="store-box-name">'+escapeHtml(store)+'</span><span class="store-box-total">'+total+' active</span></div>'+
+      rows+
+      '</div>';
+  }).join('');
 }
 </script>
 </body>
