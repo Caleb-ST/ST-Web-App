@@ -1,830 +1,451 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rep Directory</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sydney Tools — Rep Directory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-  <script>
-    document.documentElement.style.visibility = "hidden";
-    (async () => {
-      const _sb = supabase.createClient(
-        "https://hidkyhsedsmptfqkonad.supabase.co",
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
-      );
-      const { data: { session } } = await _sb.auth.getSession();
-      if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
-        window.location.href = "index.html";
-        return;
-      }
-      document.documentElement.style.visibility = "";
-    })();
-  </script>
-
-  <style>
-    :root{
-      --bg0:#07070a;
-      --bg1:#0b0b10;
-      --text:#f2f2f5;
-      --muted:#a4a4b3;
-      --border:rgba(255,255,255,0.08);
-      --shadow: 0 20px 60px rgba(0,0,0,0.55);
-      --red:#ff2b3d;
-      --red2:#b80c2b;
-      --pill:rgba(255,255,255,0.08);
-      --pill2:rgba(255,43,61,0.18);
-      --focus: 0 0 0 3px rgba(255,43,61,0.25);
-      --warnBg: rgba(245, 158, 11, 0.16);
-      --warnBd: rgba(245, 158, 11, 0.35);
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  document.documentElement.style.visibility = "hidden";
+  (async () => {
+    const _sb = supabase.createClient(
+      "https://hidkyhsedsmptfqkonad.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZGt5aHNlZHNtcHRmcWtvbmFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTM1MDYsImV4cCI6MjA5NDk2OTUwNn0.OyrQ9t11oVZ5fKWkNetTyuvQW_G5cDLnxxuCdxpUkSM"
+    );
+    const { data: { session } } = await _sb.auth.getSession();
+    if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
+      window.location.href = "index.html";
+      return;
     }
+    document.documentElement.style.visibility = "";
+  })();
+</script>
 
-    *{ box-sizing:border-box; }
+<style>
+:root{
+  --void:#0a0a0d; --graphite:#15151b; --graphite2:#1b1b22;
+  --steel:#6b6f7a; --paper:#f5f3ef;
+  --signal:#ff2230; --signal-dim:rgba(255,34,48,.16); --spark:#ffb020;
+  --line:rgba(245,243,239,.09); --line-bright:rgba(255,34,48,.35);
+  --display:'Barlow Condensed',sans-serif; --body:'Work Sans',sans-serif; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;min-height:100vh;}
+body{ background:var(--void); color:var(--paper); font-family:var(--body); padding:28px 18px 60px; }
+.wrap{ max-width:1180px; margin:0 auto; }
 
-    body{
-      margin:0;
-      min-height:100vh;
-      color: var(--text);
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      background:
-        radial-gradient(1200px 600px at 20% -10%, rgba(255,43,61,0.22), transparent 60%),
-        radial-gradient(900px 500px at 90% 10%, rgba(255,43,61,0.12), transparent 55%),
-        radial-gradient(900px 700px at 40% 120%, rgba(255,255,255,0.06), transparent 60%),
-        linear-gradient(180deg, var(--bg0), var(--bg1));
-      padding: 26px 14px 50px;
-    }
+.plate{ display:flex; align-items:center; gap:10px; margin-bottom:4px; }
+.plate-dot{ width:7px; height:7px; border-radius:50%; background:var(--spark); box-shadow:0 0 10px var(--spark); }
+.plate-label{ font-family:var(--mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--steel); }
+h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp(32px,5vw,44px); text-transform:uppercase; letter-spacing:.01em; }
+.tagline{ color:var(--steel); font-size:13px; margin:6px 0 0; }
 
-    .wrap{ max-width: 1200px; margin: 0 auto; }
+.hairline{ height:1px; margin:22px 0 20px; background:linear-gradient(90deg, var(--line-bright), transparent 60%); }
 
-    .topbar{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap: 8px;
-      margin-bottom: 14px;
-      text-align:center;
-    }
+.toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+.btn-back{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--steel);
+  text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px;
+  transition:border-color .15s,color .15s;
+}
+.btn-back:hover{ border-color:var(--line-bright); color:var(--paper); }
 
-    h1{
-      margin:0;
-      font-size: 30px;
-      letter-spacing: .35px;
-      line-height: 1.1;
-    }
+.search{
+  flex:1; min-width:220px; max-width:420px;
+  background:var(--graphite); border:1px solid var(--line); border-radius:3px;
+  color:var(--paper); font:inherit; font-size:13.5px; padding:10px 13px; outline:none;
+}
+.search::placeholder{ color:var(--steel); }
+.search:focus{ border-color:var(--line-bright); }
 
-    .sub{
-      margin:0;
-      font-size: 13px;
-      color: var(--muted);
-    }
+.toggle{ display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--steel); cursor:pointer; user-select:none; }
+.toggle input{ accent-color:var(--signal); width:14px; height:14px; }
 
-    .badge{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      background: var(--pill2);
-      border: 1px solid rgba(255,43,61,0.35);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.12);
-      white-space: nowrap;
-    }
+.meta-right{ margin-left:auto; display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:11.5px; color:var(--steel); }
+.dup-pill{ display:none; align-items:center; gap:5px; color:var(--spark); border:1px solid rgba(255,176,32,.3); border-radius:20px; padding:3px 10px; }
 
-    .panel{
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-    }
+.grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:2px; overflow:hidden; }
+@media (max-width:980px){ .grid{ grid-template-columns:repeat(3,1fr); } }
+@media (max-width:720px){ .grid{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:460px){ .grid{ grid-template-columns:1fr; } }
 
-    .row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      align-items:center;
-      justify-content:center;
-      padding: 12px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      text-align:center;
-    }
+.company-tile{
+  display:flex; flex-direction:column; gap:8px; align-items:flex-start;
+  background:var(--graphite); border:none; padding:16px 16px; cursor:pointer; text-align:left;
+  font:inherit; color:var(--paper); position:relative; overflow:hidden; min-height:78px;
+  transition:background .16s ease;
+}
+.company-tile::before{
+  content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--signal);
+  transform:scaleY(0); transform-origin:top; transition:transform .2s cubic-bezier(.16,1,.3,1);
+}
+.company-tile:hover{ background:var(--graphite2); }
+.company-tile:hover::before{ transform:scaleY(1); }
+.company-name{ font-family:var(--display); font-weight:600; font-size:16px; text-transform:uppercase; letter-spacing:.01em; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.company-meta{ display:flex; gap:7px; flex-wrap:wrap; }
+.pill{ font-family:var(--mono); font-size:10.5px; letter-spacing:.03em; color:var(--steel); border:1px solid var(--line); border-radius:20px; padding:2px 9px; }
+.pill.warn{ color:var(--spark); border-color:rgba(255,176,32,.3); }
 
-    input, button, a.btn{
-      padding: 10px 10px;
-      font: inherit;
-      color: var(--text);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 12px;
-      outline: none;
-    }
+.empty-state{ padding:30px 14px; color:var(--steel); font-size:13px; }
 
-    input{
-      min-width: 260px;
-      width: 520px;
-      max-width: 92%;
-    }
+/* ── Modal ─────────────────────────────────────────────────────────── */
+#modal{ display:none; position:fixed; inset:0; background:rgba(10,10,13,.82); z-index:90; padding:20px; overflow:auto; align-items:flex-start; justify-content:center; }
+#modal.open{ display:flex; }
+.modal-content{
+  width:100%; max-width:880px; margin-top:30px;
+  background:var(--graphite); border:1px solid var(--line); border-radius:3px; padding:20px;
+  max-height:calc(100vh - 60px); display:flex; flex-direction:column; position:relative;
+}
+.modal-content::before{ content:''; position:absolute; top:0; left:30px; width:60px; height:2px; background:var(--signal); filter:blur(2px); opacity:.8; }
+.modal-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; padding-bottom:13px; border-bottom:1px solid var(--line); margin-bottom:13px; }
+.modal-head h3{ margin:0; font-family:var(--display); font-weight:600; font-size:21px; text-transform:uppercase; }
+.modal-sub{ color:var(--steel); font-size:12px; margin-top:3px; }
+.modal-close{ background:none; border:1px solid var(--line); color:var(--steel); width:30px; height:30px; border-radius:3px; cursor:pointer; flex-shrink:0; }
+.modal-close:hover{ border-color:var(--line-bright); color:var(--paper); }
 
-    input::placeholder{ color: rgba(242,242,245,0.45); }
-    input:focus{ box-shadow: var(--focus); border-color: rgba(255,43,61,0.45); }
+.rep-list{ display:flex; flex-direction:column; gap:9px; overflow:auto; padding-right:4px; flex:1 1 auto; }
+.rep-list::-webkit-scrollbar{ width:6px; }
+.rep-list::-webkit-scrollbar-thumb{ background:var(--line-bright); border-radius:3px; }
 
-    .btn{
-      cursor:pointer;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.06);
-      transition: transform .08s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-      text-decoration:none;
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      white-space:nowrap;
-      user-select:none;
-    }
-    .btn:hover{ background: rgba(255,255,255,0.10); border-color: rgba(255,255,255,0.20); }
-    .btn:active{ transform: translateY(1px); }
+.rep-card{ background:var(--void); border:1px solid var(--line); border-radius:3px; padding:12px 13px; }
+.rep-top{ display:flex; gap:9px; align-items:baseline; flex-wrap:wrap; margin-bottom:7px; }
+.rep-name{ font-weight:700; font-size:14px; }
+.rep-role{ color:var(--steel); font-size:12px; }
+.rep-row{ display:grid; grid-template-columns:78px 1fr auto; gap:9px; align-items:center; padding:6px 0; border-top:1px solid var(--line); }
+.rep-row:first-of-type{ border-top:none; }
+.rep-key{ font-family:var(--mono); color:var(--steel); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; }
+.rep-val{ white-space:nowrap; overflow:auto; font-size:13px; }
+.rep-val a{ color:#7aa6ff; text-decoration:underline; }
+.copy-btn{ background:none; border:1px solid var(--line); color:var(--steel); font:inherit; font-size:11px; padding:5px 9px; border-radius:3px; cursor:pointer; }
+.copy-btn:hover{ border-color:var(--line-bright); color:var(--paper); }
+.modal-foot{ display:flex; justify-content:flex-end; margin-top:14px; }
+.btn-close-modal{ background:var(--signal); border:none; color:#fff; font:inherit; font-weight:600; font-size:13px; padding:9px 18px; border-radius:3px; cursor:pointer; }
+.btn-close-modal:hover{ background:#e01d2a; }
 
-    .btn-primary{
-      background: linear-gradient(180deg, rgba(255,43,61,0.95), rgba(184,12,43,0.95));
-      border-color: rgba(255,43,61,0.55);
-      box-shadow: 0 10px 30px rgba(255,43,61,0.22);
-      font-weight: 700;
-      letter-spacing: .2px;
-    }
-    .btn-primary:hover{
-      background: linear-gradient(180deg, rgba(255,43,61,1), rgba(184,12,43,1));
-      border-color: rgba(255,43,61,0.75);
-      box-shadow: 0 16px 40px rgba(255,43,61,0.28);
-      transform: translateY(-1px);
-    }
-
-    .btn-sm{
-      padding: 8px 10px;
-      border-radius: 12px;
-      font-size: 13px;
-    }
-
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:6px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--pill);
-      border: 1px solid rgba(255,255,255,0.12);
-      color: rgba(242,242,245,0.85);
-      font-size: 12px;
-      white-space: nowrap;
-    }
-
-    .pill.warn{
-      background: var(--warnBg);
-      border-color: var(--warnBd);
-    }
-
-    .mutedSmall{ color: var(--muted); font-size: 12px; }
-    .right{ margin-left:auto; }
-
-    /* Company buttons grid */
-    .gridWrap{ padding: 12px; }
-    .companyGrid{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 12px;
-    }
-    @media (max-width: 980px){ .companyGrid{ grid-template-columns: repeat(3, 1fr);} }
-    @media (max-width: 720px){ .companyGrid{ grid-template-columns: repeat(2, 1fr);} }
-    @media (max-width: 460px){ .companyGrid{ grid-template-columns: 1fr;} }
-
-    .companyBtn{
-      display:flex;
-      flex-direction:column;
-      align-items:flex-start;
-      gap: 6px;
-      padding: 12px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.18);
-      cursor:pointer;
-      transition: transform .08s ease, background .15s ease, border-color .15s ease;
-      text-align:left;
-      min-height: 74px;
-    }
-    .companyBtn:hover{
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.18);
-      transform: translateY(-1px);
-    }
-    .companyName{
-      font-weight: 800;
-      letter-spacing: .2px;
-      line-height: 1.15;
-      width: 100%;
-      overflow:hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-    .companyMeta{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      align-items:center;
-    }
-
-    /* Modal (FIXED) */
-    #modal{
-      display:none;                 /* ✅ hidden by default */
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      z-index: 9999;
-      padding: 20px;
-      overflow:auto;
-
-      /* Flex layout only matters when open */
-      align-items:flex-start;
-      justify-content:center;
-    }
-    #modal.open{
-      display:flex;                 /* ✅ only visible when open */
-    }
-
-    @media (max-width: 520px){
-      #modal{ padding: 12px; }
-    }
-
-    .modal-content{
-      width: 100%;
-      max-width: 920px;
-      background: linear-gradient(180deg, rgba(18,18,28,0.98), rgba(12,12,18,0.98));
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
-      padding: 16px;
-
-      max-height: calc(100vh - 40px);
-      overflow: hidden;
-
-      display:flex;
-      flex-direction:column;
-      margin-top: 8px;
-    }
-
-    .modalHead{
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-      margin-bottom: 12px;
-      flex: 0 0 auto;
-    }
-
-    .modalHead h3{
-      margin:0;
-      font-size: 18px;
-    }
-
-    .modalTools{
-      display:flex;
-      gap:8px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      align-items:center;
-    }
-
-    .repList{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-
-      overflow:auto;
-      padding-right: 4px;
-      flex: 1 1 auto;
-    }
-
-    .repList::-webkit-scrollbar{ width: 10px; }
-    .repList::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.14); border-radius: 999px; }
-    .repList::-webkit-scrollbar-track{ background: rgba(255,255,255,0.05); border-radius: 999px; }
-
-    .repCard{
-      background: rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 12px;
-    }
-
-    .repTop{
-      display:flex;
-      gap:10px;
-      align-items:baseline;
-      flex-wrap:wrap;
-      margin-bottom: 8px;
-    }
-    .repName{ font-weight: 800; }
-    .repRole{ color: rgba(242,242,245,0.80); font-size: 13px; }
-    .repRow{
-      display:grid;
-      grid-template-columns: 120px 1fr auto;
-      gap:10px;
-      align-items:center;
-      padding: 6px 0;
-      border-top: 1px solid rgba(255,255,255,0.06);
-    }
-    .repRow:first-of-type{ border-top:none; }
-    .repKey{ color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing:.6px; }
-
-    .repVal{
-      white-space: nowrap;
-      overflow: auto;
-      text-overflow: clip;
-      scrollbar-width: thin;
-    }
-    .repVal::-webkit-scrollbar{ height: 8px; }
-    .repVal::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.18); border-radius: 999px; }
-
-    .repVal a{
-      color:#60a5fa;
-      text-decoration: underline;
-    }
-
-    .iconBtn{
-      padding: 8px 10px;
-      border-radius: 12px;
-      font-size: 13px;
-      cursor:pointer;
-    }
-
-    .toast{
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(15,15,22,0.92);
-      border: 1px solid rgba(255,255,255,0.10);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.55);
-      color: var(--text);
-      display:none;
-      max-width: 520px;
-      z-index: 10000;
-    }
-    .toast .t{ font-weight: 700; margin-bottom: 3px; }
-    .toast .m{ color: var(--muted); font-size: 13px; white-space: pre-wrap; }
-  </style>
+.toast{ position:fixed; right:20px; bottom:20px; padding:12px 16px; border-radius:3px; background:var(--graphite); border:1px solid var(--line); box-shadow:0 20px 50px rgba(0,0,0,.5); display:none; max-width:380px; z-index:100; }
+.toast .t{ font-weight:700; font-size:13px; margin-bottom:2px; }
+.toast .m{ color:var(--steel); font-size:12px; white-space:pre-wrap; }
+</style>
 </head>
-
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <h1>Rep Directory</h1>
-      <p class="sub">Click a company to view all reps in a clean modal (emails stay on one line).</p>
-      <div class="badge">● Live from Google Sheet</div>
-    </div>
+<div class="wrap">
+  <div class="plate"><span class="plate-dot"></span><span class="plate-label">01 — Contacts</span></div>
+  <h1>Rep Directory</h1>
+  <p class="tagline">Click a company to view all reps in a clean panel — emails stay on one line.</p>
+  <div class="hairline"></div>
 
-    <div class="panel">
-      <div class="row">
-        <a class="btn btn-primary btn-sm" href="index.html">← Back to Home</a>
-
-        <input type="text" id="searchInput" placeholder="Search company or rep details..." />
-
-        <label class="pill" style="cursor:pointer;">
-          <input type="checkbox" id="hideDupes" style="accent-color: var(--red); width:auto; min-width:auto; margin:0;">
-          Hide duplicates
-        </label>
-
-        <span class="right mutedSmall" id="countText"></span>
-        <span class="pill warn" id="dupPill" style="display:none;">⚠ <span id="dupCount">0</span> duplicates</span>
-      </div>
-
-      <div class="gridWrap" id="gridWrap">
-        <div class="mutedSmall" style="padding:12px;">Loading…</div>
-      </div>
+  <div class="toolbar">
+    <a class="btn-back" href="index.html">← Back to Index</a>
+    <input type="text" class="search" id="searchInput" placeholder="Search company or rep details...">
+    <label class="toggle"><input type="checkbox" id="hideDupes"> Hide duplicates</label>
+    <div class="meta-right">
+      <span id="countText"></span>
+      <span class="dup-pill" id="dupPill">⚠ <span id="dupCount">0</span> duplicates</span>
     </div>
   </div>
 
-  <!-- Modal -->
-  <div id="modal" aria-hidden="true">
-    <div class="modal-content" role="dialog" aria-modal="true">
-      <div class="modalHead">
-        <div>
-          <h3 id="modalTitle"></h3>
-          <div class="mutedSmall" id="modalSub"></div>
-        </div>
-        <div class="modalTools">
-          <button class="btn btn-sm" onclick="closeModal()" title="Close">✕</button>
-        </div>
-      </div>
+  <div id="gridWrap"><div class="empty-state">Loading…</div></div>
+</div>
 
-      <div class="repList" id="modalBody"></div>
-
-      <div class="row" style="border-bottom:none; justify-content:flex-end; flex:0 0 auto;">
-        <button class="btn btn-primary" onclick="closeModal()">Close</button>
+<div id="modal" aria-hidden="true">
+  <div class="modal-content" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div>
+        <h3 id="modalTitle"></h3>
+        <div class="modal-sub" id="modalSub"></div>
       </div>
+      <button class="modal-close" onclick="closeModal()" title="Close">✕</button>
     </div>
+    <div class="rep-list" id="modalBody"></div>
+    <div class="modal-foot"><button class="btn-close-modal" onclick="closeModal()">Close</button></div>
   </div>
+</div>
 
-  <div class="toast" id="toast">
-    <div class="t" id="toastTitle">Notice</div>
-    <div class="m" id="toastMsg"></div>
-  </div>
+<div class="toast" id="toast">
+  <div class="t" id="toastTitle">Notice</div>
+  <div class="m" id="toastMsg"></div>
+</div>
 
-  <script>
-    const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
+<script>
+  const SHEET_URL = "https://docs.google.com/spreadsheets/d/15kykL5WcaZ4KrFmDI853rQjOwvt-YFEI5tu5U1V2LQ0/export?format=csv";
 
-    let allReps = [];
-    let companies = []; // { name, reps[] }
+  let allReps = [];
+  let companies = [];
 
-    const el = (id) => document.getElementById(id);
+  const el = (id) => document.getElementById(id);
 
-    function showToast(title, msg){
-      el("toastTitle").textContent = title;
-      el("toastMsg").textContent = msg;
-      el("toast").style.display = "block";
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(() => el("toast").style.display = "none", 5200);
+  function showToast(title, msg){
+    el("toastTitle").textContent = title;
+    el("toastMsg").textContent = msg;
+    el("toast").style.display = "block";
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => el("toast").style.display = "none", 5200);
+  }
+
+  function escapeHtml(str) {
+    return String(str ?? "")
+      .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;").replaceAll("'", "&#039;");
+  }
+
+  function copyText(text){
+    const t = String(text || "");
+    if (!t) return;
+    if (navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(t).then(() => showToast("Copied", t), () => fallbackCopy(t));
+      return;
     }
-
-    function escapeHtml(str) {
-      return String(str ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
-    }
-
-    // Copy helper (Clipboard API + fallback)
-    function copyText(text){
-      const t = String(text || "");
-      if (!t) return;
-
-      if (navigator.clipboard && window.isSecureContext){
-        navigator.clipboard.writeText(t).then(
-          () => showToast("Copied", t),
-          () => fallbackCopy(t)
-        );
-        return;
-      }
-
-      fallbackCopy(t);
-
-      function fallbackCopy(value){
-        try{
-          const ta = document.createElement("textarea");
-          ta.value = value;
-          ta.setAttribute("readonly", "");
-          ta.style.position = "fixed";
-          ta.style.top = "-1000px";
-          ta.style.left = "-1000px";
-          ta.style.opacity = "0";
-          document.body.appendChild(ta);
-
-          ta.select();
-          ta.setSelectionRange(0, ta.value.length);
-
-          const ok = document.execCommand("copy");
-          document.body.removeChild(ta);
-
-          if (ok) showToast("Copied", value);
-          else showToast("Copy blocked", "Browser blocked copy. Serve over HTTPS or use localhost.");
-        } catch (e){
-          showToast("Copy blocked", "Browser blocked copy. Serve over HTTPS or use localhost.");
-        }
+    fallbackCopy(t);
+    function fallbackCopy(value){
+      try{
+        const ta = document.createElement("textarea");
+        ta.value = value; ta.setAttribute("readonly", "");
+        ta.style.position = "fixed"; ta.style.top = "-1000px"; ta.style.left = "-1000px"; ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select(); ta.setSelectionRange(0, ta.value.length);
+        const ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+        if (ok) showToast("Copied", value);
+        else showToast("Copy blocked", "Browser blocked copy. Serve over HTTPS or use localhost.");
+      } catch (e){
+        showToast("Copy blocked", "Browser blocked copy. Serve over HTTPS or use localhost.");
       }
     }
+  }
 
-    // CSV parser that handles quoted commas
-    function parseCSV(csv) {
-      const rows = [];
-      let row = [];
-      let cell = "";
-      let inQuotes = false;
+  function parseCSV(csv) {
+    const rows = [];
+    let row = [], cell = "", inQuotes = false;
+    for (let i = 0; i < csv.length; i++) {
+      const ch = csv[i], next = csv[i + 1];
+      if (ch === '"' && inQuotes && next === '"') { cell += '"'; i++; }
+      else if (ch === '"') { inQuotes = !inQuotes; }
+      else if (ch === "," && !inQuotes) { row.push(cell); cell = ""; }
+      else if ((ch === "\n" || ch === "\r") && !inQuotes) {
+        if (cell.length || row.length) { row.push(cell); rows.push(row); row = []; cell = ""; }
+        if (ch === "\r" && next === "\n") i++;
+      } else { cell += ch; }
+    }
+    if (cell.length || row.length) { row.push(cell); rows.push(row); }
+    const headers = (rows.shift() || []).map(h => (h ?? "").trim());
+    const data = rows.filter(r => r.some(v => (v ?? "").trim() !== "")).map(r => {
+      const obj = {};
+      headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
+      return obj;
+    });
+    return { headers, data };
+  }
 
-      for (let i = 0; i < csv.length; i++) {
-        const ch = csv[i];
-        const next = csv[i + 1];
+  function normHeader(h){ return (h || "").trim().toLowerCase().replace(/\s+/g, " "); }
+  function findHeader(headers, tests){
+    for (const test of tests){
+      const found = headers.find(h => test(normHeader(h)));
+      if (found) return found;
+    }
+    return null;
+  }
 
-        if (ch === '"' && inQuotes && next === '"') {
-          cell += '"'; i++;
-        } else if (ch === '"') {
-          inQuotes = !inQuotes;
-        } else if (ch === "," && !inQuotes) {
-          row.push(cell); cell = "";
-        } else if ((ch === "\n" || ch === "\r") && !inQuotes) {
-          if (cell.length || row.length) {
-            row.push(cell);
-            rows.push(row);
-            row = [];
-            cell = "";
-          }
-          if (ch === "\r" && next === "\n") i++;
-        } else {
-          cell += ch;
-        }
-      }
-      if (cell.length || row.length) { row.push(cell); rows.push(row); }
+  function detectMapping(headers){
+    const companyKey = findHeader(headers, [
+      h => h === "company", h => h.includes("company"), h => h.includes("supplier"),
+      h => h.includes("brand") && !h.includes("rep"),
+    ]);
+    const roleKey = findHeader(headers, [
+      h => h === "role", h => h.includes("role"), h => h.includes("position"), h => h.includes("title"),
+    ]);
+    const nameKey = findHeader(headers, [
+      h => h === "name", h => h.includes("rep name"), h => h.includes("contact name"),
+      h => h.includes("name"), h => h.includes("rep") && h.includes("contact"),
+    ]);
+    const phoneKey = findHeader(headers, [
+      h => h === "phone", h => h.includes("phone"), h => h.includes("mobile"),
+      h => h.includes("contact number"), h => h.includes("tel"),
+    ]);
+    const emailKey = findHeader(headers, [
+      h => h === "email", h => h.includes("email"), h => h.includes("e-mail"),
+    ]);
+    return { companyKey, roleKey, nameKey, phoneKey, emailKey };
+  }
 
-      const headers = (rows.shift() || []).map(h => (h ?? "").trim());
-      const data = rows
-        .filter(r => r.some(v => (v ?? "").trim() !== ""))
-        .map(r => {
-          const obj = {};
-          headers.forEach((h, idx) => obj[h] = (r[idx] ?? "").trim());
-          return obj;
-        });
+  function normalizeName(name){ return (name || "").trim().toLowerCase().replace(/\s+/g, " "); }
+  function normalizeCompany(c){ return (c || "").trim().replace(/\s+/g, " "); }
 
-      return { headers, data };
+  function withDuplicateFlags(reps){
+    const counts = {};
+    reps.forEach(r => {
+      const key = normalizeName(r.name);
+      if (!key) return;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return reps.map(r => ({ ...r, isDuplicate: counts[normalizeName(r.name)] > 1 }));
+  }
+
+  function buildRepObjects(parsed, mapping){
+    const { companyKey, roleKey, nameKey, phoneKey, emailKey } = mapping;
+    if (!nameKey){
+      showToast("Column mapping issue", "Could not find a Name column in the sheet.\n\nFix: rename a column to 'Name' (or include 'name' in the header).");
+    }
+    return parsed.map(row => {
+      const company = companyKey ? (row[companyKey] || "").trim() : "";
+      const role    = roleKey    ? (row[roleKey]    || "").trim() : "";
+      const name    = nameKey    ? (row[nameKey]    || "").trim() : "";
+      const phone   = phoneKey   ? (row[phoneKey]   || "").trim() : "";
+      const email   = emailKey   ? (row[emailKey]   || "").trim() : "";
+      return { company, role, name, phone, email };
+    }).filter(r => r.name || r.company || r.role || r.phone || r.email);
+  }
+
+  function groupByCompany(reps){
+    const map = new Map();
+    reps.forEach(r => {
+      const c = normalizeCompany(r.company) || "Unknown";
+      if (!map.has(c)) map.set(c, []);
+      map.get(c).push(r);
+    });
+    const arr = Array.from(map.entries()).map(([name, reps]) => ({
+      name, reps: reps.slice().sort((a,b) => (a.name || "").localeCompare(b.name || "")),
+      count: reps.length, dupCount: reps.filter(x => x.isDuplicate).length
+    }));
+    arr.sort((a,b) => a.name.localeCompare(b.name));
+    return arr;
+  }
+
+  function renderCompanyButtons(list){
+    const wrap = el("gridWrap");
+    const totalCompanies = list.length;
+    const totalReps = list.reduce((sum, c) => sum + c.count, 0);
+    el("countText").textContent = `${totalCompanies} companies · ${totalReps} reps`;
+
+    if (!list.length){
+      wrap.innerHTML = `<div class="empty-state">No companies found.</div>`;
+      return;
     }
 
-    function normHeader(h){
-      return (h || "").trim().toLowerCase().replace(/\s+/g, " ");
-    }
-
-    function findHeader(headers, tests){
-      for (const test of tests){
-        const found = headers.find(h => test(normHeader(h)));
-        if (found) return found;
-      }
-      return null;
-    }
-
-    function detectMapping(headers){
-      const companyKey = findHeader(headers, [
-        h => h === "company",
-        h => h.includes("company"),
-        h => h.includes("supplier"),
-        h => h.includes("brand") && !h.includes("rep"),
-      ]);
-
-      const roleKey = findHeader(headers, [
-        h => h === "role",
-        h => h.includes("role"),
-        h => h.includes("position"),
-        h => h.includes("title"),
-      ]);
-
-      const nameKey = findHeader(headers, [
-        h => h === "name",
-        h => h.includes("rep name"),
-        h => h.includes("contact name"),
-        h => h.includes("name"),
-        h => h.includes("rep") && h.includes("contact"),
-      ]);
-
-      const phoneKey = findHeader(headers, [
-        h => h === "phone",
-        h => h.includes("phone"),
-        h => h.includes("mobile"),
-        h => h.includes("contact number"),
-        h => h.includes("tel"),
-      ]);
-
-      const emailKey = findHeader(headers, [
-        h => h === "email",
-        h => h.includes("email"),
-        h => h.includes("e-mail"),
-      ]);
-
-      return { companyKey, roleKey, nameKey, phoneKey, emailKey };
-    }
-
-    function normalizeName(name){
-      return (name || "").trim().toLowerCase().replace(/\s+/g, " ");
-    }
-    function normalizeCompany(c){
-      return (c || "").trim().replace(/\s+/g, " ");
-    }
-
-    function withDuplicateFlags(reps){
-      const counts = {};
-      reps.forEach(r => {
-        const key = normalizeName(r.name);
-        if (!key) return;
-        counts[key] = (counts[key] || 0) + 1;
-      });
-      return reps.map(r => ({
-        ...r,
-        isDuplicate: counts[normalizeName(r.name)] > 1
-      }));
-    }
-
-    function buildRepObjects(parsed, mapping){
-      const { companyKey, roleKey, nameKey, phoneKey, emailKey } = mapping;
-
-      if (!nameKey){
-        showToast(
-          "Column mapping issue",
-          "Could not find a Name column in the sheet.\n\n" +
-          "Fix: rename a column to 'Name' (or include 'name' in the header)."
-        );
-      }
-
-      return parsed.map(row => {
-        const company = companyKey ? (row[companyKey] || "").trim() : "";
-        const role    = roleKey    ? (row[roleKey]    || "").trim() : "";
-        const name    = nameKey    ? (row[nameKey]    || "").trim() : "";
-        const phone   = phoneKey   ? (row[phoneKey]   || "").trim() : "";
-        const email   = emailKey   ? (row[emailKey]   || "").trim() : "";
-
-        return { company, role, name, phone, email };
-      }).filter(r => r.name || r.company || r.role || r.phone || r.email);
-    }
-
-    function groupByCompany(reps){
-      const map = new Map();
-      reps.forEach(r => {
-        const c = normalizeCompany(r.company) || "Unknown";
-        if (!map.has(c)) map.set(c, []);
-        map.get(c).push(r);
-      });
-
-      const arr = Array.from(map.entries()).map(([name, reps]) => ({
-        name,
-        reps: reps.slice().sort((a,b) => (a.name || "").localeCompare(b.name || "")),
-        count: reps.length,
-        dupCount: reps.filter(x => x.isDuplicate).length
-      }));
-
-      arr.sort((a,b) => a.name.localeCompare(b.name));
-      return arr;
-    }
-
-    function renderCompanyButtons(list){
-      const wrap = el("gridWrap");
-      const totalCompanies = list.length;
-      const totalReps = list.reduce((sum, c) => sum + c.count, 0);
-
-      el("countText").textContent = `${totalCompanies} companies · ${totalReps} reps`;
-
-      if (!list.length){
-        wrap.innerHTML = `<div class="mutedSmall" style="padding:12px;">No companies found.</div>`;
-        return;
-      }
-
-      const grid = document.createElement("div");
-      grid.className = "companyGrid";
-
-      list.forEach((c) => {
-        const btn = document.createElement("button");
-        btn.className = "companyBtn";
-        btn.type = "button";
-        btn.innerHTML = `
-          <div class="companyName" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</div>
-          <div class="companyMeta">
-            <span class="pill">${c.count} reps</span>
-            ${c.dupCount ? `<span class="pill warn" title="Duplicate names detected">${c.dupCount} dupes</span>` : ""}
-          </div>
-        `;
-        btn.addEventListener("click", () => openCompanyModal(c));
-        grid.appendChild(btn);
-      });
-
-      wrap.innerHTML = "";
-      wrap.appendChild(grid);
-    }
-
-    function repRow(key, val, opts = {}){
-      const safeVal = escapeHtml(val || "");
-      const isEmail = opts.type === "email";
-      const isPhone = opts.type === "phone";
-
-      let display = safeVal;
-      if (isEmail && val){
-        const mail = escapeHtml(val);
-        display = `<a href="mailto:${mail}">${mail}</a>`;
-      } else if (isPhone && val){
-        const tel = escapeHtml(val.replace(/\s+/g, ""));
-        display = `<a href="tel:${tel}">${safeVal}</a>`;
-      }
-
-      return `
-        <div class="repRow">
-          <div class="repKey">${escapeHtml(key)}</div>
-          <div class="repVal" title="${safeVal}">${display || `<span class="mutedSmall">—</span>`}</div>
-          <button class="btn btn-sm iconBtn" data-copy="${escapeHtml(val || "")}" title="Copy">Copy</button>
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    list.forEach((c) => {
+      const btn = document.createElement("button");
+      btn.className = "company-tile";
+      btn.type = "button";
+      btn.innerHTML = `
+        <div class="company-name" title="${escapeHtml(c.name)}">${escapeHtml(c.name)}</div>
+        <div class="company-meta">
+          <span class="pill">${c.count} reps</span>
+          ${c.dupCount ? `<span class="pill warn">${c.dupCount} dupes</span>` : ""}
         </div>
       `;
-    }
-
-    function openCompanyModal(company){
-      el("modalTitle").textContent = company.name;
-      el("modalSub").textContent =
-        `${company.count} rep${company.count === 1 ? "" : "s"}${company.dupCount ? ` · ${company.dupCount} duplicate name${company.dupCount === 1 ? "" : "s"} detected` : ""}`;
-
-      const body = el("modalBody");
-      body.innerHTML = "";
-
-      company.reps.forEach(r => {
-        const card = document.createElement("div");
-        card.className = "repCard";
-        card.innerHTML = `
-          <div class="repTop">
-            <div class="repName">${escapeHtml(r.name || "Unnamed Rep")}</div>
-            ${r.role ? `<div class="repRole">${escapeHtml(r.role)}</div>` : ""}
-            ${r.isDuplicate ? `<span class="pill warn" title="Duplicate name">Duplicate</span>` : ""}
-          </div>
-          ${repRow("Phone", r.phone, { type: "phone" })}
-          ${repRow("Email", r.email, { type: "email" })}
-        `;
-        body.appendChild(card);
-      });
-
-      body.querySelectorAll("[data-copy]").forEach(btn => {
-        btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")));
-      });
-
-      openModal();
-    }
-
-    function openModal(){
-      const m = el("modal");
-      m.classList.add("open");
-      m.setAttribute("aria-hidden", "false");
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeModal(){
-      const m = el("modal");
-      m.classList.remove("open");
-      m.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = "";
-    }
-
-    window.closeModal = closeModal;
-
-    el("modal").addEventListener("click", (e) => {
-      if (e.target.id === "modal") closeModal();
+      btn.addEventListener("click", () => openCompanyModal(c));
+      grid.appendChild(btn);
     });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && el("modal").classList.contains("open")) closeModal();
+    wrap.innerHTML = "";
+    wrap.appendChild(grid);
+  }
+
+  function repRow(key, val, opts = {}){
+    const safeVal = escapeHtml(val || "");
+    const isEmail = opts.type === "email";
+    const isPhone = opts.type === "phone";
+    let display = safeVal;
+    if (isEmail && val){ const mail = escapeHtml(val); display = `<a href="mailto:${mail}">${mail}</a>`; }
+    else if (isPhone && val){ const tel = escapeHtml(val.replace(/\s+/g, "")); display = `<a href="tel:${tel}">${safeVal}</a>`; }
+    return `
+      <div class="rep-row">
+        <div class="rep-key">${escapeHtml(key)}</div>
+        <div class="rep-val" title="${safeVal}">${display || `<span style="color:var(--steel)">—</span>`}</div>
+        <button class="copy-btn" data-copy="${escapeHtml(val || "")}" title="Copy">Copy</button>
+      </div>
+    `;
+  }
+
+  function openCompanyModal(company){
+    el("modalTitle").textContent = company.name;
+    el("modalSub").textContent = `${company.count} rep${company.count === 1 ? "" : "s"}${company.dupCount ? ` · ${company.dupCount} duplicate name${company.dupCount === 1 ? "" : "s"} detected` : ""}`;
+
+    const body = el("modalBody");
+    body.innerHTML = "";
+    company.reps.forEach(r => {
+      const card = document.createElement("div");
+      card.className = "rep-card";
+      card.innerHTML = `
+        <div class="rep-top">
+          <div class="rep-name">${escapeHtml(r.name || "Unnamed Rep")}</div>
+          ${r.role ? `<div class="rep-role">${escapeHtml(r.role)}</div>` : ""}
+          ${r.isDuplicate ? `<span class="pill warn">Duplicate</span>` : ""}
+        </div>
+        ${repRow("Phone", r.phone, { type: "phone" })}
+        ${repRow("Email", r.email, { type: "email" })}
+      `;
+      body.appendChild(card);
     });
+    body.querySelectorAll("[data-copy]").forEach(btn => {
+      btn.addEventListener("click", () => copyText(btn.getAttribute("data-copy")));
+    });
+    openModal();
+  }
 
-    function applyFilters(){
-      const q = el("searchInput").value.trim().toLowerCase();
-      const hideDupes = el("hideDupes").checked;
+  function openModal(){
+    const m = el("modal");
+    m.classList.add("open");
+    m.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(){
+    const m = el("modal");
+    m.classList.remove("open");
+    m.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+  window.closeModal = closeModal;
 
-      let filtered = companies.map(c => ({...c, reps: c.reps.slice()}));
+  el("modal").addEventListener("click", (e) => { if (e.target.id === "modal") closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && el("modal").classList.contains("open")) closeModal(); });
 
-      if (hideDupes){
-        filtered = filtered.map(c => ({
-          ...c,
-          reps: c.reps.filter(r => !r.isDuplicate)
-        })).filter(c => c.reps.length);
-      }
+  function applyFilters(){
+    const q = el("searchInput").value.trim().toLowerCase();
+    const hideDupes = el("hideDupes").checked;
+    let filtered = companies.map(c => ({...c, reps: c.reps.slice()}));
 
-      filtered = filtered.map(c => ({
-        ...c,
-        count: c.reps.length,
-        dupCount: c.reps.filter(r => r.isDuplicate).length
-      }));
+    if (hideDupes){
+      filtered = filtered.map(c => ({ ...c, reps: c.reps.filter(r => !r.isDuplicate) })).filter(c => c.reps.length);
+    }
+    filtered = filtered.map(c => ({ ...c, count: c.reps.length, dupCount: c.reps.filter(r => r.isDuplicate).length }));
 
-      if (q){
-        filtered = filtered.filter(c => {
-          if (c.name.toLowerCase().includes(q)) return true;
-          return c.reps.some(r => [r.name, r.role, r.phone, r.email].join(" ").toLowerCase().includes(q));
-        });
-      }
-
-      const dupTotal = allReps.filter(r => r.isDuplicate).length;
-      if (dupTotal > 0){
-        el("dupPill").style.display = "inline-flex";
-        el("dupCount").textContent = dupTotal;
-      } else {
-        el("dupPill").style.display = "none";
-      }
-
-      renderCompanyButtons(filtered);
+    if (q){
+      filtered = filtered.filter(c => {
+        if (c.name.toLowerCase().includes(q)) return true;
+        return c.reps.some(r => [r.name, r.role, r.phone, r.email].join(" ").toLowerCase().includes(q));
+      });
     }
 
-    fetch(SHEET_URL)
-      .then(res => res.text())
-      .then(csv => {
-        const parsed = parseCSV(csv);
-        const mapping = detectMapping(parsed.headers);
+    const dupTotal = allReps.filter(r => r.isDuplicate).length;
+    if (dupTotal > 0){ el("dupPill").style.display = "inline-flex"; el("dupCount").textContent = dupTotal; }
+    else { el("dupPill").style.display = "none"; }
 
-        if (!mapping.nameKey){
-          showToast("Headers found", "Your sheet headers are:\n" + parsed.headers.join(", "));
-        }
+    renderCompanyButtons(filtered);
+  }
 
-        const reps = buildRepObjects(parsed.data, mapping);
-        allReps = withDuplicateFlags(reps);
-
-        companies = groupByCompany(allReps);
-
-        applyFilters();
-
-        el("searchInput").addEventListener("input", applyFilters);
-        el("hideDupes").addEventListener("change", applyFilters);
-      })
-      .catch(err => {
-        console.error(err);
-        el("gridWrap").innerHTML =
-          `<div class="mutedSmall" style="padding:12px;">Error loading reps: ${escapeHtml(err.message || err)}</div>`;
-      });
-  </script>
+  fetch(SHEET_URL)
+    .then(res => res.text())
+    .then(csv => {
+      const parsed = parseCSV(csv);
+      const mapping = detectMapping(parsed.headers);
+      if (!mapping.nameKey){
+        showToast("Headers found", "Your sheet headers are:\n" + parsed.headers.join(", "));
+      }
+      const reps = buildRepObjects(parsed.data, mapping);
+      allReps = withDuplicateFlags(reps);
+      companies = groupByCompany(allReps);
+      applyFilters();
+      el("searchInput").addEventListener("input", applyFilters);
+      el("hideDupes").addEventListener("change", applyFilters);
+    })
+    .catch(err => {
+      console.error(err);
+      el("gridWrap").innerHTML = `<div class="empty-state">Error loading reps: ${escapeHtml(err.message || err)}</div>`;
+    });
+</script>
 </body>
 </html>
