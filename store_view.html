@@ -4,14 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Repair Status — Sydney Tools SA</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--red:#e30613;--red-d:#a80410;--bg:#070707;--s1:#0e0e0e;--s2:#151515;--s3:#1c1c1c;--s4:#232323;--border:rgba(255,255,255,.07);--text:#f0f0f0;--sub:#666;--green:#22c55e;--amber:#f59e0b;--blue:#3b82f6;--purple:#a855f7;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;}
+:root{--red:#ff2230;--red-d:#e01d2a;--bg:#0a0a0d;--s1:#15151b;--s2:#15151b;--s3:#1b1b22;--s4:#232329;--border:rgba(245,243,239,.09);--text:#f5f3ef;--sub:#6b6f7a;--green:#2bb673;--amber:#ffb020;--blue:#3b82f6;--purple:#a855f7;--font:'Work Sans',sans-serif;--mono:'JetBrains Mono',monospace;}
 *{box-sizing:border-box;margin:0;padding:0;}
 html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);}
 .header{background:var(--red);padding:18px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
 .header::after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;background:rgba(255,255,255,.05);border-radius:50%;}
-.hlogo{font-size:17px;font-weight:700;color:white;display:flex;align-items:center;gap:9px;z-index:1;}
+.hlogo{font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;text-transform:uppercase;letter-spacing:.01em;color:white;display:flex;align-items:center;gap:9px;z-index:1;}
 .hlogo-icon{width:28px;height:28px;background:rgba(255,255,255,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
 .hsub{font-size:12.5px;color:rgba(255,255,255,.55);z-index:1;}
 .controls{max-width:1000px;margin:0 auto;padding:16px 20px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
@@ -136,7 +136,7 @@ select:focus{border-color:rgba(227,6,19,.5);}
 const FEED_URL = 'https://script.google.com/macros/s/AKfycbyaLmcKiNppxj24NeionCWSd5aavLM13xBiAeWfzd3MY1b0G2TUL7czsAqaLSAjeAwyFQ/exec';
 
 const STAGE_COLORS = {
-  'To be Looked At':'#e30613','Inspected':'#1abc9c','Salesman Following Up':'#f59e0b',
+  'To be Looked At':'#ff2230','Inspected':'#1abc9c','Salesman Following Up':'#ffb020',
   'Sent to External Repairer/Supplier':'#3b82f6','Waiting on Supplier':'#5dade2',
   'Waiting on Warranty':'#e67e22','Waiting on Parts':'#f59e0b','Repaired':'#22c55e',
   'Resolved - No Repair':'#a855f7','Ready for Pickup':'#16a085','Collected by Customer':'#666'
