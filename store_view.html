@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repair Status — Sydney Tools SA</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--red:#e30613;--red-d:#a80410;--bg:#070707;--s1:#0e0e0e;--s2:#151515;--s3:#1c1c1c;--s4:#232323;--border:rgba(255,255,255,.07);--text:#f0f0f0;--sub:#666;--green:#22c55e;--amber:#f59e0b;--blue:#3b82f6;--purple:#a855f7;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:var(--font);}
+.header{background:var(--red);padding:18px 20px;display:flex;align-items:center;gap:12px;position:relative;overflow:hidden;}
+.header::after{content:'';position:absolute;right:-60px;top:-60px;width:220px;height:220px;background:rgba(255,255,255,.05);border-radius:50%;}
+.hlogo{font-size:17px;font-weight:700;color:white;display:flex;align-items:center;gap:9px;z-index:1;}
+.hlogo-icon{width:28px;height:28px;background:rgba(255,255,255,.15);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.hsub{font-size:12.5px;color:rgba(255,255,255,.55);z-index:1;}
+.controls{max-width:1000px;margin:0 auto;padding:16px 20px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.search-input{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:0 14px 0 36px;height:38px;outline:none;flex:1;min-width:180px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center;}
+.search-input:focus{border-color:rgba(227,6,19,.5);}
+select{background:var(--s1);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13.5px;padding:0 30px 0 12px;height:38px;outline:none;cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%23555' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;}
+select:focus{border-color:rgba(227,6,19,.5);}
+.refresh-btn{background:var(--s2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--font);font-size:13px;font-weight:600;height:38px;padding:0 14px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.refresh-btn:hover{background:var(--s3);}
+.meta-bar{max-width:1000px;margin:0 auto;padding:10px 20px 0;font-size:11.5px;color:var(--sub);font-family:var(--mono);display:flex;justify-content:space-between;}
+.list{max-width:1000px;margin:0 auto;padding:14px 20px 60px;display:flex;flex-direction:column;gap:8px;}
+.job-card{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:background .12s,border-color .12s;}
+.job-card:hover{background:var(--s3);border-color:rgba(255,255,255,.14);}
+.job-ref{font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);width:90px;flex-shrink:0;}
+.job-tool{flex:1;min-width:0;}
+.job-tool-name{font-size:13.5px;font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.job-customer{font-size:11.5px;color:var(--sub);margin-top:2px;}
+.job-loc{font-size:12px;color:var(--sub);width:130px;flex-shrink:0;display:none;}
+.job-stage{flex-shrink:0;}
+.chip{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:600;font-family:var(--font);white-space:nowrap;}
+.job-age{font-family:var(--mono);font-size:12px;width:50px;text-align:right;flex-shrink:0;}
+.age-fresh{color:var(--green);}
+.age-mid{color:var(--amber);}
+.age-old{color:#ef4444;font-weight:700;}
+.missing-badge{background:rgba(239,68,68,.18);color:#f87171;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:700;margin-left:6px;}
+.empty-state{text-align:center;padding:60px 20px;color:var(--sub);}
+.empty-state-icon{font-size:32px;margin-bottom:10px;opacity:.4;}
+.loading-state{text-align:center;padding:60px 20px;color:var(--sub);font-family:var(--mono);font-size:13px;}
+@media (min-width: 700px){ .job-loc{display:block;} }
+
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);padding:20px;}
+.overlay.hidden{display:none;}
+.modal{background:var(--s2);border:1px solid var(--border);border-radius:14px;width:100%;max-width:560px;max-height:88vh;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 40px 100px rgba(0,0,0,.7);}
+.modal-hdr{background:var(--red);padding:16px 20px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.modal-ref{font-size:16px;font-weight:700;color:white;}
+.modal-body{flex:1;overflow-y:auto;padding:18px 20px;display:flex;flex-direction:column;gap:14px;}
+.detail-section{background:var(--s3);border:1px solid var(--border);border-radius:9px;padding:13px 15px;}
+.detail-title{font-size:10.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--sub);margin-bottom:9px;}
+.info-grid{display:grid;grid-template-columns:auto 1fr;gap:5px 14px;font-size:13px;}
+.info-grid dt{color:var(--sub);}
+.info-grid dd{color:var(--text);}
+.note-entry{background:var(--s2);border-radius:7px;padding:9px 11px;margin-bottom:6px;}
+.note-meta{font-family:var(--mono);font-size:10.5px;color:var(--sub);margin-bottom:3px;}
+.note-text{color:#d0d0d0;font-size:12.5px;line-height:1.55;}
+.modal-close{margin-left:auto;background:rgba(0,0,0,.25);border:none;color:white;width:28px;height:28px;border-radius:7px;cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.modal-close:hover{background:rgba(0,0,0,.4);}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--s4);border-radius:3px;}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="hlogo"><div class="hlogo-icon">⚙</div>REPAIR STATUS</div>
+  <span class="hsub">Sydney Tools SA</span>
+</div>
+
+<div class="controls">
+  <input class="search-input" id="search" placeholder="Search ref, tool, or customer..." oninput="render()">
+  <select id="store-filter" onchange="render()"><option value="">All Stores</option></select>
+  <select id="stage-filter" onchange="render()"><option value="">All Stages</option><option value="__open__">Open jobs only</option></select>
+  <button class="refresh-btn" onclick="loadData()">🔄 Refresh</button>
+</div>
+<div class="meta-bar">
+  <span id="result-count"></span>
+  <span id="last-updated"></span>
+</div>
+
+<div class="list" id="list">
+  <div class="loading-state">Loading jobs…</div>
+</div>
+
+<div class="overlay hidden" id="modal-overlay" onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-hdr">
+      <span class="modal-ref" id="m-ref">—</span>
+      <span id="m-missing" class="missing-badge" style="display:none;background:rgba(0,0,0,.3);color:#fff">⚠ MISSING</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ── Configuration ────────────────────────────────────────────────────────
+// Paste the Apps Script Web App URL here after deploying apps_script_feed.gs
+const FEED_URL = 'PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE';
+
+const STAGE_COLORS = {
+  'To be Looked At':'#e30613','Inspected':'#1abc9c','Salesman Following Up':'#f59e0b',
+  'Sent to External Repairer/Supplier':'#3b82f6','Waiting on Supplier':'#5dade2',
+  'Waiting on Warranty':'#e67e22','Waiting on Parts':'#f59e0b','Repaired':'#22c55e',
+  'Resolved - No Repair':'#a855f7','Ready for Pickup':'#16a085','Collected by Customer':'#666'
+};
+const CLOSED_STAGES = new Set(['Collected by Customer']);
+const STORES = ['Regency Park','Windsor Gardens','Parafield','Munno Para','Lonsdale','Seaford Meadows'];
+
+let allJobs = [];
+
+document.addEventListener('DOMContentLoaded', function(){
+  const storeSel = document.getElementById('store-filter');
+  STORES.forEach(function(s){ storeSel.appendChild(new Option(s, s)); });
+  loadData();
+});
+
+async function loadData(){
+  document.getElementById('list').innerHTML = '<div class="loading-state">Loading jobs…</div>';
+  try{
+    const res = await fetch(FEED_URL);
+    const data = await res.json();
+    if(data.error) throw new Error(data.error);
+    allJobs = data.jobs || [];
+
+    // Populate stage filter from actual data, in journey order
+    const stageSel = document.getElementById('stage-filter');
+    const seenStages = Array.from(new Set(allJobs.map(function(j){return j.stage;})));
+    const existingValues = Array.from(stageSel.options).map(function(o){return o.value;});
+    seenStages.forEach(function(s){
+      if(existingValues.indexOf(s) === -1){ stageSel.appendChild(new Option(s, s)); }
+    });
+
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date(data.generated_at).toLocaleTimeString('en-AU',{hour:'2-digit',minute:'2-digit'});
+    render();
+  }catch(e){
+    document.getElementById('list').innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠</div>Could not load job data.<br><span style="font-size:11.5px">'+escapeHtml(e.message)+'</span></div>';
+  }
+}
+
+function ageClass(days){
+  if(days >= 21) return 'age-old';
+  if(days >= 10) return 'age-mid';
+  return 'age-fresh';
+}
+
+function render(){
+  const q = document.getElementById('search').value.toLowerCase().trim();
+  const store = document.getElementById('store-filter').value;
+  const stage = document.getElementById('stage-filter').value;
+
+  const filtered = allJobs.filter(function(j){
+    if(store && j.current_location !== store) return false;
+    if(stage === '__open__' && CLOSED_STAGES.has(j.stage)) return false;
+    else if(stage && stage !== '__open__' && j.stage !== stage) return false;
+    if(q){
+      const hay = (j.ref+' '+j.tool+' '+j.customer+' '+j.brand).toLowerCase();
+      if(hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  }).sort(function(a,b){ return b.age_days - a.age_days; });
+
+  document.getElementById('result-count').textContent = filtered.length + (filtered.length===1?' job':' jobs');
+
+  const list = document.getElementById('list');
+  if(!filtered.length){
+    list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div>No jobs match your filters.</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(function(j){
+    const col = STAGE_COLORS[j.stage] || '#666';
+    return '<div class="job-card" onclick="openModal(\''+j.ref+'\')">'+
+      '<div class="job-ref">'+j.ref+'</div>'+
+      '<div class="job-tool"><div class="job-tool-name">'+escapeHtml(j.tool||'—')+'</div>'+
+      '<div class="job-customer">'+escapeHtml(j.customer||'')+'</div></div>'+
+      '<div class="job-loc">'+escapeHtml(j.current_location||'')+'</div>'+
+      '<div class="job-stage"><span class="chip" style="background:'+col+'22;color:'+col+'">'+j.stage+'</span>'+
+      (j.missing ? '<span class="missing-badge">⚠ MISSING</span>' : '')+'</div>'+
+      '<div class="job-age '+ageClass(j.age_days)+'">'+j.age_days+'d</div>'+
+      '</div>';
+  }).join('');
+}
+
+function openModal(ref){
+  const j = allJobs.find(function(x){ return x.ref === ref; });
+  if(!j) return;
+  document.getElementById('m-ref').textContent = j.ref;
+  document.getElementById('m-missing').style.display = j.missing ? 'inline-block' : 'none';
+
+  const col = STAGE_COLORS[j.stage] || '#666';
+  let html = '';
+  html += '<div class="detail-section"><div class="detail-title">Job Details</div><dl class="info-grid">'+
+    '<dt>Tool</dt><dd>'+escapeHtml(j.tool||'—')+'</dd>'+
+    '<dt>Customer</dt><dd>'+escapeHtml(j.customer||'—')+'</dd>'+
+    '<dt>Brand</dt><dd>'+escapeHtml(j.brand||'—')+'</dd>'+
+    '<dt>Stage</dt><dd><span class="chip" style="background:'+col+'22;color:'+col+'">'+j.stage+'</span></dd>'+
+    '<dt>Booked At</dt><dd>'+escapeHtml(j.booked_location||'—')+'</dd>'+
+    '<dt>Current Location</dt><dd>'+escapeHtml(j.current_location||'—')+'</dd>'+
+    '<dt>Date Booked</dt><dd>'+escapeHtml(j.date_booked||'—')+'  ('+j.age_days+' days ago)</dd>'+
+    '<dt>Assigned To</dt><dd>'+escapeHtml(j.assigned_to||'Unclaimed')+'</dd>'+
+    '</dl></div>';
+
+  if(j.part_name){
+    html += '<div class="detail-section"><div class="detail-title">Parts</div><dl class="info-grid">'+
+      '<dt>Part</dt><dd>'+escapeHtml(j.part_name)+'</dd>'+
+      '<dt>Ordered</dt><dd>'+escapeHtml(j.part_ordered||'—')+'</dd>'+
+      '<dt>Arrived</dt><dd>'+(j.part_arrived ? 'Yes' : 'No')+'</dd>'+
+      '</dl></div>';
+  }
+
+  if(j.last_contact){
+    html += '<div class="detail-section"><div class="detail-title">Customer Contact</div><dl class="info-grid">'+
+      '<dt>Last Contact</dt><dd>'+escapeHtml(j.last_contact)+'</dd>'+
+      '<dt>Note</dt><dd>'+escapeHtml(j.contact_note||'—')+'</dd>'+
+      '</dl></div>';
+  }
+
+  const notes = j.notes || [];
+  html += '<div class="detail-section"><div class="detail-title">Internal Notes</div>';
+  if(notes.length){
+    html += notes.slice().reverse().map(function(n){
+      return '<div class="note-entry"><div class="note-meta">'+escapeHtml(n.ts||'')+' — '+escapeHtml(n.author||'')+'</div><div class="note-text">'+escapeHtml(n.text||'')+'</div></div>';
+    }).join('');
+  } else {
+    html += '<span style="font-size:12px;color:var(--sub)">No notes yet.</span>';
+  }
+  html += '</div>';
+
+  document.getElementById('modal-body').innerHTML = html;
+  document.getElementById('modal-overlay').classList.remove('hidden');
+}
+
+function closeModal(){
+  document.getElementById('modal-overlay').classList.add('hidden');
+}
+
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s == null ? '' : String(s);
+  return d.innerHTML;
+}
+</script>
+</body>
+</html>
