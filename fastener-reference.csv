@@ -1,3 +1,65 @@
-brand,product_code,family,length
-Air BPD,BC125,C1 Brad,25mm
-Paslode,B20810,C1 Brad,25mm
+brand,product_code,family,length,gauge_or_diameter,collation_or_angle,finish,pack_qty
+Air BPD,BC119,C1 Brad,19mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC125,C1 Brad,25mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC130,C1 Brad,30mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC135,C1 Brad,35mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC140,C1 Brad,40mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC145,C1 Brad,45mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC150,C1 Brad,50mm,18ga,C1 Straight,Galv Wire,5000
+Air BPD,BC19,C Series Brad,19mm,16ga,Straight,Galv Wire,5000
+Air BPD,BC25,C Series Brad,25mm,16ga,Straight,Galv Wire,5000
+Air BPD,BC32,C Series Brad,32mm,16ga,Straight,Galv Wire,5000
+Air BPD,BC38,C Series Brad,38mm,16ga,Straight,Galv Wire,5000
+Air BPD,BC45,C Series Brad,45mm,16ga,Straight,Galv Wire,5000
+Air BPD,BC50,C Series Brad,50mm,16ga,Straight,Galv Wire,5000
+Air BPD,BC64,C Series Brad,64mm,16ga,Straight,Galv Wire,5000
+Air BPD,BDA15,DA Brad,32mm,15ga,34deg DA,Bright,3000
+Air BPD,BDA15G,DA Brad,32mm,15ga,34deg DA,Galv,3000
+Air BPD,BDA17,DA Brad,38mm,15ga,34deg DA,Bright,3000
+Air BPD,BDA17G,DA Brad,38mm,15ga,34deg DA,Galv,3000
+Air BPD,BDA19,DA Brad,45mm,15ga,34deg DA,Bright,3000
+Air BPD,BDA19G,DA Brad,45mm,15ga,34deg DA,Galv,3000
+Air BPD,BDA21,DA Brad,50mm,15ga,34deg DA,Bright,3000
+Air BPD,BDA21G,DA Brad,50mm,15ga,34deg DA,Galv,3000
+Air BPD,BDA25,DA Brad,64mm,15ga,34deg DA,Bright,3000
+Air BPD,BDA25G,DA Brad,64mm,15ga,34deg DA,Galv,3000
+Air BPD,S2850B,Framing,50mm,2.8mm,34deg Paper,Smooth Bright,3000
+Air BPD,S2850HDG,Framing,50mm,2.8mm,34deg Paper,Smooth HDG,3000
+Air BPD,S30675B,Framing,75mm,3.06mm,34deg Paper,Smooth Bright,3000
+Air BPD,S30675HDG,Framing,75mm,3.06mm,34deg Paper,Smooth HDG,3000
+Air BPD,S30675RB,Framing,75mm,3.06mm,34deg Paper,Ring Bright,3000
+Air BPD,S30675SB,Framing,75mm,3.06mm,34deg Paper,Screw Bright,3000
+Air BPD,S31590B,Framing,90mm,3.15mm,34deg Paper,Smooth Bright,3000
+Air BPD,S31590EG,Framing,90mm,3.15mm,34deg Paper,Smooth Electro Galv,3000
+Air BPD,S31590HDG,Framing,90mm,3.15mm,34deg Paper,Smooth HDG,3000
+Air BPD,HP15,Headless Pin,15mm,23ga,Straight,Galvanised,
+Air BPD,HP20,Headless Pin,20mm,23ga,Straight,Galvanised,
+Air BPD,HP25,Headless Pin,25mm,23ga,Straight,Galvanised,
+Air BPD,HP30,Headless Pin,30mm,23ga,Straight,Galvanised,
+Paslode,B20732,Angled Finish Brad,32mm,16ga,20deg Angled,Zinc Plated,2000
+Paslode,B20738,Angled Finish Brad,38mm,16ga,20deg Angled,Zinc Plated,2000
+Paslode,B20780,Angled Finish Brad,38mm,16ga,20deg Angled,Stainless Steel,2000
+Paslode,B20745,Angled Finish Brad,45mm,16ga,20deg Angled,Zinc Plated,2000
+Paslode,B20750,Angled Finish Brad,50mm,16ga,20deg Angled,Zinc Plated,2000
+Paslode,B20785,Angled Finish Brad,50mm,16ga,20deg Angled,Stainless Steel,2000
+Paslode,B20765,Angled Finish Brad,63mm,16ga,20deg Angled,Zinc Plated,2000
+Paslode,B20810,C1 Brad,25mm,18ga,C1 Straight,Zinc Plated,2000
+Paslode,B20815,C1 Brad,32mm,18ga,C1 Straight,Zinc Plated,2000
+Paslode,B20820,C1 Brad,38mm,18ga,C1 Straight,Zinc Plated,2000
+Paslode,B20825,C1 Brad,50mm,18ga,C1 Straight,Zinc Plated,2000
+Paslode,B20225,C Series Brad,25mm,16ga,Straight,Zinc Plated,3000
+Paslode,B20232,C Series Brad,32mm,16ga,Straight,Zinc Plated,3000
+Paslode,B20238,C Series Brad,38mm,16ga,Straight,Zinc Plated,3000
+Paslode,B20245,C Series Brad,45mm,16ga,Straight,Zinc Plated,3000
+Paslode,B20250,C Series Brad,50mm,16ga,Straight,Zinc Plated,3000
+Paslode,B20188,DA Brad,32mm,15ga,34deg DA,E-Galv,3000
+Paslode,B20191,DA Brad,38mm,15ga,34deg DA,E-Galv,3000
+Paslode,B20194,DA Brad,45mm,15ga,34deg DA,E-Galv,3000
+Paslode,B20197,DA Brad,50mm,15ga,34deg DA,E-Galv,3000
+Paslode,B20200,DA Brad,65mm,15ga,34deg DA,E-Galv,3000
+Paslode,B20544V,Framing,50mm,2.87mm,D Head,Smooth Bright,3000
+Paslode,B20565V,Framing,50mm,2.87mm,D Head,Smooth HDG,3000
+Paslode,B20547V,Framing,75mm,3.06mm,D Head,Smooth Bright,3000
+Paslode,B20569V,Framing,75mm,3.06mm,D Head,Smooth HDG,3000
+Paslode,B20550V,Framing,90mm,3.15mm,D Head,Smooth Bright,3000
+Paslode,B20571V,Framing,90mm,3.15mm,D Head,Smooth HDG,3000
