@@ -1,306 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Sydney Tools — Nail Gun Guide</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Work+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
-<script>
-  document.documentElement.style.visibility = "hidden";
-  (async () => {
-    const _sb = supabase.createClient(
-      "https://lwdosqlldficpbdwiuvt.supabase.co",
-      "sb_publishable_f4o3UzA5FKX6tvCPpE0EyQ_aCe7B3kN"
-    );
-    const { data: { session } } = await _sb.auth.getSession();
-    if (!session || !session.user.email.endsWith("@sydneytools.com.au")) {
-      window.location.href = "index.html";
-      return;
-    }
-    document.documentElement.style.visibility = "";
-  })();
-</script>
 <style>
-:root{
-  --void:#0a0a0d;--graphite:#15151b;--graphite2:#1b1b22;--steel:#7c808a;
-  --paper:#f5f3ef;--signal:#ff2230;--spark:#ffb020;--line:rgba(245,243,239,.10);
-  --line-bright:rgba(255,34,48,.38);--go:#2bb673;
-  --display:'Barlow Condensed',sans-serif;--body:'Work Sans',sans-serif;--mono:'JetBrains Mono',monospace;
-}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:var(--void);color:var(--paper);font-family:var(--body);padding:26px 16px 50px}
-body::before{content:'';position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(700px 520px at 50% 20%,#000,transparent 78%);opacity:.35}
-.wrap{position:relative;max-width:1180px;margin:0 auto}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:22px}
-.back{font-family:var(--mono);font-size:11px;color:var(--steel);text-decoration:none;border:1px solid var(--line);padding:8px 12px;border-radius:3px}
-.back:hover{color:var(--paper);border-color:var(--line-bright)}
-.eyebrow{font:11px var(--mono);letter-spacing:.14em;color:var(--spark);text-transform:uppercase}
-h1{font:700 clamp(38px,7vw,62px)/.95 var(--display);text-transform:uppercase;margin:5px 0 10px}
-h1 span{color:var(--signal)}
-.sub{color:var(--steel);font-size:13px;max-width:720px;line-height:1.55;margin-bottom:28px}
-.controls{display:grid;grid-template-columns:minmax(240px,1fr) 190px 240px 210px;gap:10px;margin-bottom:14px}
-.control{background:var(--graphite);border:1px solid var(--line);border-radius:3px;padding:12px 13px;color:var(--paper);font:13px var(--body);outline:none;width:100%}
-.control:focus{border-color:var(--line-bright)}
-.stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
-.stat{font:10.5px var(--mono);letter-spacing:.06em;color:var(--steel);border:1px solid var(--line);padding:7px 9px;border-radius:3px}
-.stat strong{color:var(--paper)}
-.gun-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
-.gun-card{border:1px solid var(--line);background:var(--graphite);padding:15px;cursor:pointer;text-align:left;color:var(--paper);border-radius:3px}
-.gun-card:hover,.gun-card.active{background:var(--graphite2);border-color:var(--line-bright)}
-.gun-brand{font:10px var(--mono);letter-spacing:.1em;color:var(--signal);text-transform:uppercase}
-.gun-name{font:600 20px var(--display);text-transform:uppercase;margin-top:5px}
-.gun-meta{font-size:11.5px;color:var(--steel);margin-top:4px}
-.section-head{display:flex;justify-content:space-between;gap:12px;align-items:end;margin:28px 0 10px}
-.section-head h2{font:600 24px var(--display);text-transform:uppercase;margin:0}
-.section-head span{font:10.5px var(--mono);color:var(--steel)}
-.table-wrap{border:1px solid var(--line);border-radius:3px;overflow:auto;background:var(--graphite)}
-table{width:100%;border-collapse:collapse;min-width:820px}
-th{font:10.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--steel);text-align:left;padding:12px;border-bottom:1px solid var(--line);background:#111116}
-td{padding:12px;border-bottom:1px solid var(--line);font-size:12.5px}
-tr:last-child td{border-bottom:0}
-.code{font-family:var(--mono);font-weight:600;color:var(--paper)}
-.badge{display:inline-block;padding:4px 7px;border-radius:2px;background:rgba(255,34,48,.12);color:#ff6a73;font:10.5px var(--mono)}
-.empty{padding:34px;text-align:center;color:var(--steel);border:1px solid var(--line);background:var(--graphite)}
-.note{margin-top:18px;color:var(--steel);font-size:11px;line-height:1.55}
-@media(max-width:950px){.controls{grid-template-columns:1fr 1fr}.controls .search{grid-column:1/-1}.gun-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){body{padding:18px 12px 40px}.controls,.gun-grid{grid-template-columns:1fr}.controls .search{grid-column:auto}.topbar{align-items:flex-start}.gun-card{padding:13px}}
+:root{--void:#0a0a0d;--graphite:#15151b;--graphite2:#1b1b22;--steel:#7c808a;--paper:#f5f3ef;--signal:#ff2230;--spark:#ffb020;--line:rgba(245,243,239,.10);--line-bright:rgba(255,34,48,.38);--display:'Barlow Condensed',sans-serif;--body:'Work Sans',sans-serif;--mono:'JetBrains Mono',monospace}
+*{box-sizing:border-box}html{visibility:hidden}body{margin:0;min-height:100vh;background:var(--void);color:var(--paper);font-family:var(--body);padding:26px 16px 50px}.wrap{max-width:1180px;margin:auto}.topbar{display:flex;justify-content:space-between;gap:16px;align-items:flex-start}.eyebrow{font:11px var(--mono);letter-spacing:.14em;color:var(--spark);text-transform:uppercase}h1{font:700 clamp(38px,7vw,62px)/.95 var(--display);text-transform:uppercase;margin:5px 0 10px}h1 span{color:var(--signal)}.sub,.note{color:var(--steel);font-size:12px;line-height:1.55}.back{font:11px var(--mono);color:var(--steel);text-decoration:none;border:1px solid var(--line);padding:8px 12px;border-radius:3px}.controls{display:grid;grid-template-columns:minmax(240px,1fr) 190px 240px 210px;gap:10px;margin:24px 0 14px}.control{background:var(--graphite);border:1px solid var(--line);border-radius:3px;padding:12px 13px;color:var(--paper);font:13px var(--body);width:100%}.stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}.stat{font:10.5px var(--mono);color:var(--steel);border:1px solid var(--line);padding:7px 9px;border-radius:3px}.stat strong{color:var(--paper)}.gun-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}.gun-card{border:1px solid var(--line);background:var(--graphite);padding:15px;cursor:pointer;text-align:left;color:var(--paper);border-radius:3px}.gun-card:hover,.gun-card.active{background:var(--graphite2);border-color:var(--line-bright)}.gun-brand{font:10px var(--mono);letter-spacing:.1em;color:var(--signal);text-transform:uppercase}.gun-name{font:600 20px var(--display);text-transform:uppercase;margin-top:5px}.gun-meta{font-size:11.5px;color:var(--steel);margin-top:4px}.section-head{display:flex;justify-content:space-between;align-items:end;margin:28px 0 10px}.section-head h2{font:600 24px var(--display);text-transform:uppercase;margin:0}.table-wrap{border:1px solid var(--line);border-radius:3px;overflow:auto;background:var(--graphite)}table{width:100%;border-collapse:collapse;min-width:980px}th{font:10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--steel);text-align:left;padding:12px;border-bottom:1px solid var(--line);background:#111116}td{padding:11px 12px;border-bottom:1px solid var(--line);font-size:12px}.code{font-family:var(--mono);font-weight:600}.badge{display:inline-block;padding:4px 7px;background:rgba(255,34,48,.12);color:#ff6a73;font:10px var(--mono)}.empty{padding:30px;color:var(--steel);text-align:center;border:1px solid var(--line)}@media(max-width:950px){.controls{grid-template-columns:1fr 1fr}.controls .search{grid-column:1/-1}.gun-grid{grid-template-columns:1fr 1fr}}@media(max-width:560px){.controls,.gun-grid{grid-template-columns:1fr}.controls .search{grid-column:auto}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <div class="topbar">
-    <div>
-      <div class="eyebrow">Internal Reference · SA Region</div>
-      <h1>Nail Gun <span>Guide</span></h1>
-    </div>
-    <a class="back" href="index.html">← INDEX</a>
-  </div>
-  <div class="sub">Quick compatibility reference for nail guns and fasteners. Start typing a gun model, nail code, gauge, length or finish, or select a gun below.</div>
-
-  <div class="controls">
-    <input id="search" class="control search" type="search" placeholder="Search gun, code, gauge, angle, length, finish…" autocomplete="off">
-    <select id="brandFilter" class="control"><option value="">All brands</option></select>
-    <select id="gunFilter" class="control"><option value="">All guns</option></select>
-    <select id="typeFilter" class="control">
-      <option value="">Cordless + pneumatic</option>
-      <option value="Cordless">Cordless</option>
-      <option value="Pneumatic">Pneumatic</option>
-      <option value="Gas">Gas / direct fixing</option>
-    </select>
-  </div>
-
-  <div class="stats">
-    <div class="stat"><strong id="gunCount">0</strong> GUNS</div>
-    <div class="stat"><strong id="fastenerCount">0</strong> FASTENER OPTIONS</div>
-    <div class="stat">BRANDS: <strong id="brandCount">0</strong></div>
-  </div>
-
-  <div id="gunGrid" class="gun-grid"></div>
-
-  <div class="section-head">
-    <h2 id="resultTitle">Compatible Fasteners</h2>
-    <span id="resultCount"></span>
-  </div>
-  <div id="results"></div>
-
-  <div class="note">Compatibility data combines the original Paslode guide with current manufacturer specifications for Makita, Milwaukee, HiKOKI, Bosch, DeWalt and Ramset. Where a manufacturer does not publish an Australian consumable SKU, the guide shows the required fastener specification rather than inventing a product code. Always confirm application-specific finish/corrosion requirements.</div>
+<div class="topbar"><div><div class="eyebrow">Internal Reference · SA Region</div><h1>Nail Gun <span>Guide</span></h1></div><a class="back" href="index.html">← INDEX</a></div>
+<div class="sub">Search by nailer model, fastener brand, product code, gauge, length or finish. Air BPD and Paslode codes are prioritised for quick sales-program lookup.</div>
+<div class="controls">
+<input id="search" class="control search" type="search" placeholder="Search model, product code, gauge, length…">
+<select id="brandFilter" class="control"><option value="">All tool brands</option></select>
+<select id="gunFilter" class="control"><option value="">All nailers</option></select>
+<select id="typeFilter" class="control"><option value="">All tool types</option><option>Cordless</option><option>Pneumatic</option><option>Gas</option></select>
 </div>
-
+<div class="stats"><div class="stat"><strong id="gunCount">0</strong> TOOLS</div><div class="stat"><strong id="fastenerCount">0</strong> MATCHES</div><div class="stat"><strong id="brandCount">0</strong> TOOL BRANDS</div></div>
+<div id="gunGrid" class="gun-grid"></div>
+<div class="section-head"><h2 id="resultTitle">Compatible Fasteners</h2><span id="resultCount"></span></div>
+<div id="results"></div>
+<div class="note" style="margin-top:18px">Fastener references prioritise Air BPD and Paslode stock codes. Compatibility is matched by gauge/diameter, collation angle, head style and supported length range. Direct-fix concrete systems remain proprietary.</div>
+</div>
 <script>
-const guns = [
-  // PASLODE — consolidated from the original guide pages already in this repo.
-  {id:"pas-framemaster",brand:"Paslode",name:"Framemaster",type:"Cordless",system:"D Head / framing",fasteners:[
-    ["B20544V / compatible","50–90mm","2.87–3.15mm","D Head","Smooth / Ring","Bright / HDG","Varies","Fuel packs available"]
-  ]},
-  {id:"pas-ppn",brand:"Paslode",name:"PPN",type:"Cordless",system:"Positive placement",fasteners:[
-    ["B60035 / B60040","35–40mm","3.15–3.75mm","Round Head","Smooth","Mech Galv","1600","Fuel pack"]
-  ]},
-  {id:"pas-angled",brand:"Paslode",name:"Angled Trimmaster",type:"Cordless",system:"16ga angled finish",fasteners:[
-    ["B20732–B20765 / compatible","32–63mm","16ga","Lost Head","Angled","Electro Galv / Stainless","2000","Fuel pack"]
-  ]},
-  {id:"pas-straight",brand:"Paslode",name:"Straight Bradder",type:"Cordless",system:"C1 Series / 18ga",fasteners:[
-    ["B20810–B20825 / compatible","25–50mm","18ga / C1","Lost Head","Straight","Electro Galv","2000","Fuel pack"]
-  ]},
-  {id:"pas-coil",brand:"Paslode",name:"Coilmaster",type:"Cordless",system:"Coil nail",fasteners:[
-    ["B40020–B40027 / compatible","27–50mm","2.5–2.7mm","Coil","Smooth / Ring / Screw","Galv / Stainless","1600–2400","Fuel pack"]
-  ]},
-  {id:"pas-t250",brand:"Paslode",name:"T250-16S",type:"Pneumatic",system:"C Series / 16ga straight",fasteners:[
-    ["B20219–B20265 / compatible","19–65mm","16ga / C Series","Lost Head","Straight","Electro Galv / Stainless","2000–3000","—"]
-  ]},
-  {id:"pas-nd70",brand:"Paslode",name:"ND 70.1 Bradder",type:"Pneumatic",system:"ND Series / 14ga",fasteners:[
-    ["B20043–B20052A / compatible","38–70mm","14ga / ND","Lost Head","Straight","Electro Galv / Stainless","2000","—"]
-  ]},
-  {id:"pas-c130",brand:"Paslode",name:"Liteline C1 30",type:"Pneumatic",system:"C1 Series / 18ga",fasteners:[
-    ["C1 Series brads","15–30mm","18ga / C1","Lost Head","Straight","Electro Galv","Varies","—"]
-  ]},
-  {id:"pas-c150",brand:"Paslode",name:"Liteline C1 50",type:"Pneumatic",system:"C1 Series / 18ga",fasteners:[
-    ["C1 Series brads","25–50mm","18ga / C1","Lost Head","Straight","Electro Galv","Varies","—"]
-  ]},
-
-  // MAKITA
-  {id:"mak-dbn501",brand:"Makita",name:"DBN501",type:"Cordless",system:"18ga C1 straight brad",fasteners:[
-    ["Compatible 18ga C1 brads","15–50mm","18ga","Brad / Lost Head","Straight / 0°","Any suitable finish","—","—"]
-  ]},
-  {id:"mak-dbn601",brand:"Makita",name:"DBN601",type:"Cordless",system:"16ga straight finish",fasteners:[
-    ["Compatible 16ga finish nails","19–64mm","16ga","Finish Nail","Straight / 0°","Any suitable finish","—","—"]
-  ]},
-  {id:"mak-dbn900",brand:"Makita",name:"DBN900",type:"Cordless",system:"30°–34° clipped-head framing",fasteners:[
-    ["Compatible clipped-head framing nails","50–90mm","2.9–3.3mm","Clipped Head","30°–34° strip","Any suitable finish","—","—"]
-  ]},
-  {id:"mak-an613",brand:"Makita",name:"AN613",type:"Pneumatic",system:"15° coil nailer",fasteners:[
-    ["Compatible wire/plastic coil nails","32–65mm","2.3–2.5mm","Coil","15° wire / plastic","Any suitable finish","200–300 magazine","—"]
-  ]},
-
-  // MILWAUKEE
-  {id:"mil-m18ffn",brand:"Milwaukee",name:"M18FFN",type:"Cordless",system:"30°–34° framing",fasteners:[
-    ["Compatible framing nails","50–90mm","2.8–3.3mm","Framing","30°–34° strip","Any suitable finish","—","No gas"]
-  ]},
-  {id:"mil-m18fn18",brand:"Milwaukee",name:"M18FN18GS",type:"Cordless",system:"18ga straight brad",fasteners:[
-    ["Compatible 18ga brads","16–54mm","18ga / 1.2mm","Brad","Straight","Any suitable finish","—","No gas"]
-  ]},
-  {id:"mil-m18fn16",brand:"Milwaukee",name:"M18FN16GA",type:"Cordless",system:"16ga angled finish",fasteners:[
-    ["Compatible 16ga finish nails","32–63mm","16ga / 1.6mm","Finish Nail","20° angled","Any suitable finish","—","No gas"]
-  ]},
-  {id:"mil-m18fn15",brand:"Milwaukee",name:"M18FN15GA",type:"Cordless",system:"15ga DA angled finish",fasteners:[
-    ["Compatible 15ga DA finish nails","32–63mm","15ga / 1.8mm","DA Finish","34° angled","Any suitable finish","—","No gas"]
-  ]},
-
-  // HIKOKI
-  {id:"hik-nr1890",brand:"HiKOKI",name:"NR1890DBCL",type:"Cordless",system:"D-head framing",fasteners:[
-    ["HFB50 / HFG50","50mm","2.9mm","D Head","Smooth","Bright / Galvanised","3000","No gas"],
-    ["HFB75 / HFG75","75mm","3.05mm","D Head","Smooth","Bright / Galvanised","3000","No gas"],
-    ["HFB90 / HFG90","90mm","3.3mm","D Head","Smooth","Bright / Galvanised","3000","No gas"]
-  ]},
-  {id:"hik-nt1850",brand:"HiKOKI",name:"NT1850DBSL",type:"Cordless",system:"C1 Series / 18ga straight brad",fasteners:[
-    ["H18EG16–H18EG50","16–50mm","18ga / C1","Brad","Straight","Electro Galv","5000","No gas"]
-  ]},
-  {id:"hik-nt1865s",brand:"HiKOKI",name:"NT1865DBSL",type:"Cordless",system:"16ga straight finish",fasteners:[
-    ["H16EG25–H16EG64","25–65mm","16ga / C Series","Finish Nail","Straight","Electro Galv","5000","No gas"]
-  ]},
-  {id:"hik-nt1865a",brand:"HiKOKI",name:"NT1865DBAL",type:"Cordless",system:"15ga DA angled finish",fasteners:[
-    ["H15B32–H15B64 / H15EG32–64","32–65mm","15ga / DA","DA Finish","34° angled","Bright / Electro Galv","3000","No gas"]
-  ]},
-
-  // BOSCH PROFESSIONAL
-  {id:"bos-gnh50",brand:"Bosch",name:"GNH 18V-50 M",type:"Cordless",system:"18ga straight brad",fasteners:[
-    ["Compatible 18ga brads","16–50mm","18ga / 1.2mm","Brad","0° straight","Any suitable finish","—","No gas"]
-  ]},
-  {id:"bos-gnh64-16",brand:"Bosch",name:"GNH 18V-64-2 M",type:"Cordless",system:"16ga angled finish",fasteners:[
-    ["Compatible 16ga finish nails","32–64mm","16ga / 1.6mm","Finish Nail","20° angled","Any suitable finish","—","No gas"]
-  ]},
-  {id:"bos-gnh64-15",brand:"Bosch",name:"GNH 18V-64 MD",type:"Cordless",system:"15ga DA angled finish",fasteners:[
-    ["Compatible 15ga DA finish nails","32–64mm","15ga / 1.8mm","DA Finish","34° angled","Any suitable finish","—","No gas"]
-  ]},
-  {id:"bos-gnh35",brand:"Bosch",name:"GNH 18V-35",type:"Cordless",system:"23ga pin nailer",fasteners:[
-    ["Bosch PN23 G / compatible pins","15–35mm","23ga / 0.6mm","Headless Pin","0° straight","Galv / suitable","—","No gas"]
-  ]},
-  {id:"bos-gnb38",brand:"Bosch",name:"GNB 18V-38",type:"Cordless",system:"Concrete / steel pin nailer",fasteners:[
-    ["Bosch concrete/steel pins","13–38mm","2.7–3.0mm","Direct-fix Pin","0°","Galvanised carbon steel","—","No gas"]
-  ]},
-
-  // DEWALT
-  {id:"dew-dcn930",brand:"DeWalt",name:"DCN930",type:"Cordless",system:"33° framing",fasteners:[
-    ["Compatible paper-tape / wire-weld framing nails","50–90mm","2.8–3.3mm","Framing","33° angled","Any suitable finish","—","No gas"]
-  ]},
-  {id:"dew-dcn660",brand:"DeWalt",name:"DCN660",type:"Cordless",system:"16ga angled finish",fasteners:[
-    ["Compatible 16ga angled finish nails","32–63mm","16ga","Finish Nail","20° angled","Any suitable finish","—","No gas"]
-  ]},
-  {id:"dew-dcn650",brand:"DeWalt",name:"DCN650",type:"Cordless",system:"15ga DA angled finish",fasteners:[
-    ["Compatible 15ga DA finish nails","32–63mm","15ga / 1.8mm","DA Finish","34° angled","Any suitable finish","—","No gas"]
-  ]},
-  {id:"dew-dcn680",brand:"DeWalt",name:"DCN680",type:"Cordless",system:"18ga straight brad",fasteners:[
-    ["Compatible 18ga C1 brads","15–54mm","18ga / 1.25mm","Brad","0° straight","Any suitable finish","—","No gas"]
-  ]},
-
-  // RAMSET — direct-fixing pin tools rather than timber nailers.
-  {id:"ram-tf800",brand:"Ramset",name:"TrakFast 800 Plus",type:"Gas",system:"Concrete / steel direct-fix pins",fasteners:[
-    ["P8HC615 / P8HC617 / P8HC622","15–22mm","2.7–3.0mm","Premium Pin","10-pin strip","Hard concrete / steel","500","P800 fuel"],
-    ["P8C620 / P8C625 / P8C630 / P8C635","20–35mm","2.6mm","Standard Pin","10-pin strip","Concrete / masonry / steel","500","P800 fuel"]
-  ]},
-  {id:"ram-tf65",brand:"Ramset",name:"TrakFast 65",type:"Gas",system:"Concrete / steel direct-fix pins",fasteners:[
-    ["Compatible Ramset gas-tool pins","15–65mm","Direct-fix pin","Pin","Strip","Concrete / steel / masonry","—","Ramset fuel"]
-  ]},
-  {id:"ram-tfcplus",brand:"Ramset",name:"TrakFast C-Plus",type:"Gas",system:"Track / partition direct-fix pins",fasteners:[
-    ["P8HC / P8C compatible range","15–27mm","Direct-fix pin","Pin","Strip","Concrete / steel / masonry","—","Ramset fuel"]
-  ]},
-  {id:"ram-cmcplus",brand:"Ramset",name:"CableMaster C-Plus",type:"Gas",system:"MEP / track direct-fix pins",fasteners:[
-    ["P8HC / P8C compatible range","15–27mm","Direct-fix pin","Pin","Strip","Concrete / steel / masonry","—","Ramset fuel"]
-  ]}
-]
-
-const search=document.getElementById("search");
-const brandFilter=document.getElementById("brandFilter");
-const gunFilter=document.getElementById("gunFilter");
-const typeFilter=document.getElementById("typeFilter");
-const grid=document.getElementById("gunGrid");
-const results=document.getElementById("results");
-const resultTitle=document.getElementById("resultTitle");
-const resultCount=document.getElementById("resultCount");
-
-[...new Set(guns.map(g=>g.brand))].sort().forEach(brand=>{
-  const o=document.createElement("option");o.value=brand;o.textContent=brand;brandFilter.appendChild(o);
-});
-guns.forEach(g=>{
-  const o=document.createElement("option");o.value=g.id;o.textContent=`${g.brand} — ${g.name}`;gunFilter.appendChild(o);
-});
-
-function safe(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
-function hay(g,row){return [g.brand,g.name,g.type,g.system,...row].join(" ").toLowerCase();}
-
-function render(){
-  const q=search.value.trim().toLowerCase();
-  const brand=brandFilter.value;
-  const selected=gunFilter.value;
-  const type=typeFilter.value;
-  const visibleGuns=guns.filter(g=>(!brand||g.brand===brand)&&(!selected||g.id===selected)&&(!type||g.type===type));
-  const cards=guns.filter(g=>(!brand||g.brand===brand)&&(!type||g.type===type) && (!q || hay(g,[]).includes(q) || g.fasteners.some(r=>hay(g,r).includes(q))));
-
-  grid.innerHTML=cards.map(g=>`
-    <button class="gun-card ${selected===g.id?'active':''}" data-id="${g.id}">
-      <div class="gun-brand">${safe(g.brand)} · ${safe(g.type)}</div>
-      <div class="gun-name">${safe(g.name)}</div>
-      <div class="gun-meta">${safe(g.system)} · ${g.fasteners.length} options</div>
-    </button>`).join("");
-
-  grid.querySelectorAll(".gun-card").forEach(btn=>btn.addEventListener("click",()=>{
-    gunFilter.value=gunFilter.value===btn.dataset.id?"":btn.dataset.id;
-    render();
-    document.querySelector(".section-head").scrollIntoView({behavior:"smooth",block:"start"});
-  }));
-
-  const rows=[];
-  visibleGuns.forEach(g=>g.fasteners.forEach(r=>{
-    if(!q || hay(g,r).includes(q)) rows.push({g,r});
-  }));
-
-  document.getElementById("gunCount").textContent=visibleGuns.length;
-  document.getElementById("fastenerCount").textContent=rows.length;
-  document.getElementById("brandCount").textContent=new Set(visibleGuns.map(g=>g.brand)).size;
-  resultCount.textContent=`${rows.length} MATCH${rows.length===1?"":"ES"}`;
-  resultTitle.textContent=selected ? guns.find(g=>g.id===selected).name+" Fasteners" : "Compatible Fasteners";
-
-  if(!rows.length){
-    results.innerHTML='<div class="empty">No compatible fasteners match those filters.</div>';
-    return;
-  }
-
-  results.innerHTML=`<div class="table-wrap"><table>
-    <thead><tr><th>Gun</th><th>Product Code</th><th>Length</th><th>Gauge / Diameter</th><th>Head</th><th>Shank</th><th>Finish</th><th>Pack Qty</th><th>Fuel</th></tr></thead>
-    <tbody>${rows.map(({g,r})=>`<tr>
-      <td><span class="badge">${safe(g.name)}</span></td>
-      <td class="code">${safe(r[0])}</td><td>${safe(r[1])}</td><td>${safe(r[2])}</td>
-      <td>${safe(r[3])}</td><td>${safe(r[4])}</td><td>${safe(r[5])}</td>
-      <td>${safe(r[6])}</td><td>${safe(r[7])}</td>
-    </tr>`).join("")}</tbody>
-  </table></div>`;
+async function auth(){
+ const text=await fetch("index.html",{cache:"no-store"}).then(r=>r.text());
+ const url=(text.match(/https:\/\/[a-z0-9]+\.supabase\.co/)||[])[0];
+ const key=(text.match(/sb_publishable_[A-Za-z0-9_-]+/)||[])[0];
+ if(!url||!key) throw new Error("Auth config missing");
+ const sb=supabase.createClient(url,key);
+ const {data:{session}}=await sb.auth.getSession();
+ if(!session||!String(session.user.email||"").endsWith("@sydneytools.com.au")){location.href="index.html";return false}
+ document.documentElement.style.visibility="";return true;
 }
-search.addEventListener("input",render);
-brandFilter.addEventListener("change",()=>{ gunFilter.value=""; render(); });
-gunFilter.addEventListener("change",render);
-typeFilter.addEventListener("change",render);
-render();
+const guns=[
+["Paslode","Framemaster","Cordless","framing"],
+["Paslode","PPN","Cordless","positive placement"],
+["Paslode","Angled Trimmaster","Cordless","16ga angled"],
+["Paslode","Straight Bradder","Cordless","18ga c1"],
+["Paslode","Coilmaster","Cordless","coil"],
+["Paslode","T250-16S","Pneumatic","16ga straight"],
+["Paslode","ND 70.1 Bradder","Pneumatic","14ga nd"],
+["Paslode","Liteline C1 30","Pneumatic","18ga c1"],
+["Paslode","Liteline C1 50","Pneumatic","18ga c1"],
+["Makita","DBN501","Cordless","18ga c1"],
+["Makita","DBN601","Cordless","16ga straight"],
+["Makita","DBN900","Cordless","framing"],
+["Makita","AN613","Pneumatic","coil"],
+["Milwaukee","M18FFN","Cordless","framing"],
+["Milwaukee","M18FN18GS","Cordless","18ga c1"],
+["Milwaukee","M18FN16GA","Cordless","16ga angled"],
+["Milwaukee","M18FN15GA","Cordless","15ga da"],
+["HiKOKI","NR1890DBCL","Cordless","framing"],
+["HiKOKI","NT1850DBSL","Cordless","18ga c1"],
+["HiKOKI","NT1865DBSL","Cordless","16ga straight"],
+["HiKOKI","NT1865DBAL","Cordless","15ga da"],
+["Bosch","GNH 18V-50 M","Cordless","18ga c1"],
+["Bosch","GNH 18V-64-2 M","Cordless","16ga angled"],
+["Bosch","GNH 18V-64 MD","Cordless","15ga da"],
+["Bosch","GNH 18V-35","Cordless","23ga pin"],
+["Bosch","GNB 18V-38","Cordless","direct fix"],
+["DeWalt","DCN930","Cordless","framing"],
+["DeWalt","DCN660","Cordless","16ga angled"],
+["DeWalt","DCN650","Cordless","15ga da"],
+["DeWalt","DCN680","Cordless","18ga c1"],
+["Ramset","TrakFast 800 Plus","Gas","direct fix"],
+["Ramset","TrakFast 65","Gas","direct fix"],
+["Ramset","TrakFast C-Plus","Gas","direct fix"],
+["Ramset","CableMaster C-Plus","Gas","direct fix"]
+].map((x,i)=>({id:"g"+i,brand:x[0],name:x[1],type:x[2],family:x[3]}));
+let ref=[];
+async function loadRef(){
+ const txt=await fetch("fastener-reference.csv",{cache:"no-store"}).then(r=>r.text());
+ const lines=txt.trim().split(/\r?\n/),headers=lines.shift().split(",");
+ ref=lines.map(line=>{const v=line.split(",");return Object.fromEntries(headers.map((h,i)=>[h,v[i]||""]))});
+}
+function refsFor(g){
+ if(g.family==="18ga c1")return ref.filter(x=>x.family==="C1 Brad");
+ if(g.family==="16ga straight")return ref.filter(x=>x.family==="C Series Brad");
+ if(g.family==="16ga angled")return ref.filter(x=>x.family==="Angled Finish Brad");
+ if(g.family==="15ga da")return ref.filter(x=>x.family==="DA Brad");
+ if(g.family==="framing")return ref.filter(x=>x.family==="Framing");
+ if(g.family==="23ga pin")return ref.filter(x=>x.family==="Headless Pin");
+ return [];
+}
+const search=document.getElementById("search"),brandFilter=document.getElementById("brandFilter"),gunFilter=document.getElementById("gunFilter"),typeFilter=document.getElementById("typeFilter"),grid=document.getElementById("gunGrid"),results=document.getElementById("results");
+[...new Set(guns.map(g=>g.brand))].sort().forEach(b=>brandFilter.add(new Option(b,b)));guns.forEach(g=>gunFilter.add(new Option(g.brand+" — "+g.name,g.id)));
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function render(){
+ const q=search.value.toLowerCase().trim(),brand=brandFilter.value,sel=gunFilter.value,type=typeFilter.value;
+ const visible=guns.filter(g=>(!brand||g.brand===brand)&&(!sel||g.id===sel)&&(!type||g.type===type));
+ grid.innerHTML=guns.filter(g=>(!brand||g.brand===brand)&&(!type||g.type===type)&&(!q||(g.brand+" "+g.name+" "+g.family).toLowerCase().includes(q))).map(g=>'<button class="gun-card '+(sel===g.id?'active':'')+'" data-id="'+g.id+'"><div class="gun-brand">'+esc(g.brand)+' · '+esc(g.type)+'</div><div class="gun-name">'+esc(g.name)+'</div><div class="gun-meta">'+esc(g.family)+'</div></button>').join("");
+ grid.querySelectorAll(".gun-card").forEach(b=>b.onclick=()=>{gunFilter.value=gunFilter.value===b.dataset.id?"":b.dataset.id;render()});
+ const rows=[];visible.forEach(g=>refsFor(g).forEach(r=>{const h=(g.brand+" "+g.name+" "+Object.values(r).join(" ")).toLowerCase();if(!q||h.includes(q))rows.push({g,r})}));
+ gunCount.textContent=visible.length;fastenerCount.textContent=rows.length;brandCount.textContent=new Set(visible.map(g=>g.brand)).size;resultCount.textContent=rows.length+" MATCHES";resultTitle.textContent=sel?(guns.find(g=>g.id===sel)?.name||"")+" Fasteners":"Compatible Fasteners";
+ if(!rows.length){results.innerHTML='<div class="empty">No matching fastener references.</div>';return}
+ results.innerHTML='<div class="table-wrap"><table><thead><tr><th>Tool</th><th>Fastener Brand</th><th>Product Code</th><th>Family</th><th>Length</th><th>Gauge / Dia.</th><th>Collation / Angle</th><th>Finish</th><th>Pack</th></tr></thead><tbody>'+rows.map(({g,r})=>'<tr><td><span class="badge">'+esc(g.name)+'</span></td><td>'+esc(r.brand)+'</td><td class="code">'+esc(r.product_code)+'</td><td>'+esc(r.family)+'</td><td>'+esc(r.length)+'</td><td>'+esc(r.gauge_or_diameter)+'</td><td>'+esc(r.collation_or_angle)+'</td><td>'+esc(r.finish)+'</td><td>'+esc(r.pack_qty)+'</td></tr>').join("")+'</tbody></table></div>'
+}
+search.oninput=render;brandFilter.onchange=()=>{gunFilter.value="";render()};gunFilter.onchange=render;typeFilter.onchange=render;
+Promise.all([auth(),loadRef()]).then(([ok])=>{if(ok)render()});
 </script>
-</body>
-</html>
+</body></html>
