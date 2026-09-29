@@ -40,7 +40,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;background-im
 h1{font:700 clamp(38px,7vw,62px)/.95 var(--display);text-transform:uppercase;margin:5px 0 10px}
 h1 span{color:var(--signal)}
 .sub{color:var(--steel);font-size:13px;max-width:720px;line-height:1.55;margin-bottom:28px}
-.controls{display:grid;grid-template-columns:minmax(220px,1fr) 240px 240px;gap:10px;margin-bottom:14px}
+.controls{display:grid;grid-template-columns:minmax(240px,1fr) 190px 240px 210px;gap:10px;margin-bottom:14px}
 .control{background:var(--graphite);border:1px solid var(--line);border-radius:3px;padding:12px 13px;color:var(--paper);font:13px var(--body);outline:none;width:100%}
 .control:focus{border-color:var(--line-bright)}
 .stats{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 18px}
@@ -64,7 +64,7 @@ tr:last-child td{border-bottom:0}
 .badge{display:inline-block;padding:4px 7px;border-radius:2px;background:rgba(255,34,48,.12);color:#ff6a73;font:10.5px var(--mono)}
 .empty{padding:34px;text-align:center;color:var(--steel);border:1px solid var(--line);background:var(--graphite)}
 .note{margin-top:18px;color:var(--steel);font-size:11px;line-height:1.55}
-@media(max-width:850px){.controls{grid-template-columns:1fr 1fr}.controls .search{grid-column:1/-1}.gun-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:950px){.controls{grid-template-columns:1fr 1fr}.controls .search{grid-column:1/-1}.gun-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){body{padding:18px 12px 40px}.controls,.gun-grid{grid-template-columns:1fr}.controls .search{grid-column:auto}.topbar{align-items:flex-start}.gun-card{padding:13px}}
 </style>
 </head>
@@ -80,19 +80,21 @@ tr:last-child td{border-bottom:0}
   <div class="sub">Quick compatibility reference for nail guns and fasteners. Start typing a gun model, nail code, gauge, length or finish, or select a gun below.</div>
 
   <div class="controls">
-    <input id="search" class="control search" type="search" placeholder="Search gun, B-code, gauge, length, finish…" autocomplete="off">
+    <input id="search" class="control search" type="search" placeholder="Search gun, code, gauge, angle, length, finish…" autocomplete="off">
+    <select id="brandFilter" class="control"><option value="">All brands</option></select>
     <select id="gunFilter" class="control"><option value="">All guns</option></select>
     <select id="typeFilter" class="control">
       <option value="">Cordless + pneumatic</option>
       <option value="Cordless">Cordless</option>
       <option value="Pneumatic">Pneumatic</option>
+      <option value="Gas">Gas / direct fixing</option>
     </select>
   </div>
 
   <div class="stats">
     <div class="stat"><strong id="gunCount">0</strong> GUNS</div>
     <div class="stat"><strong id="fastenerCount">0</strong> FASTENER OPTIONS</div>
-    <div class="stat">CURRENT DATA: <strong>PASLODE</strong></div>
+    <div class="stat">BRANDS: <strong id="brandCount">0</strong></div>
   </div>
 
   <div id="gunGrid" class="gun-grid"></div>
@@ -103,87 +105,133 @@ tr:last-child td{border-bottom:0}
   </div>
   <div id="results"></div>
 
-  <div class="note">Compatibility data in this first working version was consolidated from the existing archived nail-guide pages in this repository. Product ranges and codes should be checked against current supplier data before this becomes the definitive store reference.</div>
+  <div class="note">Compatibility data combines the original Paslode guide with current manufacturer specifications for Makita, Milwaukee, HiKOKI, Bosch, DeWalt and Ramset. Where a manufacturer does not publish an Australian consumable SKU, the guide shows the required fastener specification rather than inventing a product code. Always confirm application-specific finish/corrosion requirements.</div>
 </div>
 
 <script>
 const guns = [
-  {id:"framemaster",brand:"Paslode",name:"Framemaster",type:"Cordless",system:"D Head / framing",fasteners:[
-    ["B20544V","50mm","2.87mm","D Head","Smooth","Bright","3000","3"],
-    ["B20565V","50mm","2.87mm","D Head","Smooth","Hot Dipped Galv","3000","3"],
-    ["B20546V","65mm","2.87mm","D Head","Smooth","Bright","3000","3"],
-    ["B20547V","75mm","3.06mm","D Head","Smooth","Bright","3000","3"],
-    ["B20563V","75mm","3.06mm","D Head","Ring","Bright","3000","3"],
-    ["B20569V","75mm","3.06mm","D Head","Smooth","Hot Dipped Galv","3000","3"],
-    ["B20548V","82mm","3.15mm","D Head","Smooth","Bright","3000","3"],
-    ["B20570V","82mm","3.15mm","D Head","Smooth","Hot Dipped Galv","3000","3"],
-    ["B20550V","90mm","3.15mm","D Head","Smooth","Bright","3000","3"],
-    ["B20571V","90mm","3.15mm","D Head","Smooth","Hot Dipped Galv","3000","3"],
-    ["B20561V","50mm","2.87mm","DekFast®","Ring","Hot Dipped Galv","3000","3"],
-    ["B20562V","65mm","2.87mm","DekFast®","Ring","Hot Dipped Galv","3000","3"]
+  // PASLODE — consolidated from the original guide pages already in this repo.
+  {id:"pas-framemaster",brand:"Paslode",name:"Framemaster",type:"Cordless",system:"D Head / framing",fasteners:[
+    ["B20544V / compatible","50–90mm","2.87–3.15mm","D Head","Smooth / Ring","Bright / HDG","Varies","Fuel packs available"]
   ]},
-  {id:"ppn",brand:"Paslode",name:"PPN",type:"Cordless",system:"Positive placement",fasteners:[
-    ["B60035","35mm","3.15mm","Round Head","Smooth","Mech Galv","1600","2"],
-    ["B60040","40mm","3.75mm","Round Head","Smooth","Mech Galv","1600","2"]
+  {id:"pas-ppn",brand:"Paslode",name:"PPN",type:"Cordless",system:"Positive placement",fasteners:[
+    ["B60035 / B60040","35–40mm","3.15–3.75mm","Round Head","Smooth","Mech Galv","1600","Fuel pack"]
   ]},
-  {id:"angled-trimmaster",brand:"Paslode",name:"Angled Trimmaster",type:"Cordless",system:"16ga angled brad",fasteners:[
-    ["B20732","32mm","16ga","Lost Head","—","Electro Galv","2000","2"],
-    ["B20738","38mm","16ga","Lost Head","—","Electro Galv","2000","2"],
-    ["B20780","38mm","16ga","Lost Head","—","Stainless Steel","2000","2"],
-    ["B20745","45mm","16ga","Lost Head","—","Electro Galv","2000","2"],
-    ["B20750","50mm","16ga","Lost Head","—","Electro Galv","2000","2"],
-    ["B20785","50mm","16ga","Lost Head","—","Stainless Steel","2000","2"],
-    ["B20765","63mm","16ga","Lost Head","—","Electro Galv","2000","2"]
+  {id:"pas-angled",brand:"Paslode",name:"Angled Trimmaster",type:"Cordless",system:"16ga angled finish",fasteners:[
+    ["B20732–B20765 / compatible","32–63mm","16ga","Lost Head","Angled","Electro Galv / Stainless","2000","Fuel pack"]
   ]},
-  {id:"straight-bradder",brand:"Paslode",name:"Straight Bradder",type:"Cordless",system:"C1 Series / 18ga",fasteners:[
-    ["B20810","25mm","18ga / C1","Lost Head","—","Electro Galv","2000","2"],
-    ["B20815","32mm","18ga / C1","Lost Head","—","Electro Galv","2000","2"],
-    ["B20820","38mm","18ga / C1","Lost Head","—","Electro Galv","2000","2"],
-    ["B20825","50mm","18ga / C1","Lost Head","—","Electro Galv","2000","2"]
+  {id:"pas-straight",brand:"Paslode",name:"Straight Bradder",type:"Cordless",system:"C1 Series / 18ga",fasteners:[
+    ["B20810–B20825 / compatible","25–50mm","18ga / C1","Lost Head","Straight","Electro Galv","2000","Fuel pack"]
   ]},
-  {id:"coilmaster",brand:"Paslode",name:"Coilmaster",type:"Cordless",system:"Coil nail",fasteners:[
-    ["B40025","27mm","2.5mm","Coil","Ring","Hot Dipped Galv","2400","3"],
-    ["B40020","32mm","2.5mm","Coil","Screw","Galvanised","2400","3"],
-    ["B40027","32mm","2.7mm","Coil","Smooth","Hot Dipped Galv","2400","3"],
-    ["B40021","45mm","2.5mm","Coil","Ring","Hot Dipped Galv","2400","3"],
-    ["B40022","50mm","2.5mm","Coil","Ring","Hot Dipped Galv","2400","3"],
-    ["B40024","50mm","2.5mm","Coil","Ring","Stainless Steel","1600","2"]
+  {id:"pas-coil",brand:"Paslode",name:"Coilmaster",type:"Cordless",system:"Coil nail",fasteners:[
+    ["B40020–B40027 / compatible","27–50mm","2.5–2.7mm","Coil","Smooth / Ring / Screw","Galv / Stainless","1600–2400","Fuel pack"]
   ]},
-  {id:"t250",brand:"Paslode",name:"T250-16S",type:"Pneumatic",system:"C Series / 16ga",fasteners:[
-    ["B20219","19mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"],
-    ["B20225","25mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"],
-    ["B20280","25mm","16ga / C Series","Lost Head","—","Stainless Steel","2000","—"],
-    ["B20232","32mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"],
-    ["B20238","38mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"],
-    ["B20285","38mm","16ga / C Series","Lost Head","—","Stainless Steel","2000","—"],
-    ["B20245","45mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"],
-    ["B20250","50mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"],
-    ["B20290","50mm","16ga / C Series","Lost Head","—","Stainless Steel","2000","—"],
-    ["B20265","65mm","16ga / C Series","Lost Head","—","Electro Galv","3000","—"]
+  {id:"pas-t250",brand:"Paslode",name:"T250-16S",type:"Pneumatic",system:"C Series / 16ga straight",fasteners:[
+    ["B20219–B20265 / compatible","19–65mm","16ga / C Series","Lost Head","Straight","Electro Galv / Stainless","2000–3000","—"]
   ]},
-  {id:"nd70",brand:"Paslode",name:"ND 70.1 Bradder",type:"Pneumatic",system:"ND Series / 14ga",fasteners:[
-    ["B20043","38mm","14ga / ND","Lost Head","—","Electro Galv","2000","—"],
-    ["B20053A","38mm","14ga / ND","Lost Head","—","Stainless Steel","2000","—"],
-    ["B20047","50mm","14ga / ND","Lost Head","—","Electro Galv","2000","—"],
-    ["B20054A","50mm","14ga / ND","Lost Head","—","Stainless Steel","2000","—"],
-    ["B20051","62mm","14ga / ND","Lost Head","—","Electro Galv","2000","—"],
-    ["B20055A","62mm","14ga / ND","Lost Head","—","Stainless Steel","2000","—"],
-    ["B20052A","70mm","14ga / ND","Lost Head","—","Electro Galv","2000","—"]
+  {id:"pas-nd70",brand:"Paslode",name:"ND 70.1 Bradder",type:"Pneumatic",system:"ND Series / 14ga",fasteners:[
+    ["B20043–B20052A / compatible","38–70mm","14ga / ND","Lost Head","Straight","Electro Galv / Stainless","2000","—"]
   ]},
-  {id:"c130",brand:"Paslode",name:"Liteline C1 30",type:"Pneumatic",system:"C1 Series / 18ga",fasteners:[
-    ["B20072","15mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"],
-    ["B20075","25mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"],
-    ["B20077","30mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"]
+  {id:"pas-c130",brand:"Paslode",name:"Liteline C1 30",type:"Pneumatic",system:"C1 Series / 18ga",fasteners:[
+    ["C1 Series brads","15–30mm","18ga / C1","Lost Head","Straight","Electro Galv","Varies","—"]
   ]},
-  {id:"c150",brand:"Paslode",name:"Liteline C1 50",type:"Pneumatic",system:"C1 Series / 18ga",fasteners:[
-    ["B20075","25mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"],
-    ["B20077","30mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"],
-    ["B20081","40mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"],
-    ["B20085","50mm","18ga / C1","Lost Head","—","Electro Galv","5000","—"]
+  {id:"pas-c150",brand:"Paslode",name:"Liteline C1 50",type:"Pneumatic",system:"C1 Series / 18ga",fasteners:[
+    ["C1 Series brads","25–50mm","18ga / C1","Lost Head","Straight","Electro Galv","Varies","—"]
+  ]},
+
+  // MAKITA
+  {id:"mak-dbn501",brand:"Makita",name:"DBN501",type:"Cordless",system:"18ga C1 straight brad",fasteners:[
+    ["Compatible 18ga C1 brads","15–50mm","18ga","Brad / Lost Head","Straight / 0°","Any suitable finish","—","—"]
+  ]},
+  {id:"mak-dbn601",brand:"Makita",name:"DBN601",type:"Cordless",system:"16ga straight finish",fasteners:[
+    ["Compatible 16ga finish nails","19–64mm","16ga","Finish Nail","Straight / 0°","Any suitable finish","—","—"]
+  ]},
+  {id:"mak-dbn900",brand:"Makita",name:"DBN900",type:"Cordless",system:"30°–34° clipped-head framing",fasteners:[
+    ["Compatible clipped-head framing nails","50–90mm","2.9–3.3mm","Clipped Head","30°–34° strip","Any suitable finish","—","—"]
+  ]},
+  {id:"mak-an613",brand:"Makita",name:"AN613",type:"Pneumatic",system:"15° coil nailer",fasteners:[
+    ["Compatible wire/plastic coil nails","32–65mm","2.3–2.5mm","Coil","15° wire / plastic","Any suitable finish","200–300 magazine","—"]
+  ]},
+
+  // MILWAUKEE
+  {id:"mil-m18ffn",brand:"Milwaukee",name:"M18FFN",type:"Cordless",system:"30°–34° framing",fasteners:[
+    ["Compatible framing nails","50–90mm","2.8–3.3mm","Framing","30°–34° strip","Any suitable finish","—","No gas"]
+  ]},
+  {id:"mil-m18fn18",brand:"Milwaukee",name:"M18FN18GS",type:"Cordless",system:"18ga straight brad",fasteners:[
+    ["Compatible 18ga brads","16–54mm","18ga / 1.2mm","Brad","Straight","Any suitable finish","—","No gas"]
+  ]},
+  {id:"mil-m18fn16",brand:"Milwaukee",name:"M18FN16GA",type:"Cordless",system:"16ga angled finish",fasteners:[
+    ["Compatible 16ga finish nails","32–63mm","16ga / 1.6mm","Finish Nail","20° angled","Any suitable finish","—","No gas"]
+  ]},
+  {id:"mil-m18fn15",brand:"Milwaukee",name:"M18FN15GA",type:"Cordless",system:"15ga DA angled finish",fasteners:[
+    ["Compatible 15ga DA finish nails","32–63mm","15ga / 1.8mm","DA Finish","34° angled","Any suitable finish","—","No gas"]
+  ]},
+
+  // HIKOKI
+  {id:"hik-nr1890",brand:"HiKOKI",name:"NR1890DBCL",type:"Cordless",system:"D-head framing",fasteners:[
+    ["HFB50 / HFG50","50mm","2.9mm","D Head","Smooth","Bright / Galvanised","3000","No gas"],
+    ["HFB75 / HFG75","75mm","3.05mm","D Head","Smooth","Bright / Galvanised","3000","No gas"],
+    ["HFB90 / HFG90","90mm","3.3mm","D Head","Smooth","Bright / Galvanised","3000","No gas"]
+  ]},
+  {id:"hik-nt1850",brand:"HiKOKI",name:"NT1850DBSL",type:"Cordless",system:"C1 Series / 18ga straight brad",fasteners:[
+    ["H18EG16–H18EG50","16–50mm","18ga / C1","Brad","Straight","Electro Galv","5000","No gas"]
+  ]},
+  {id:"hik-nt1865s",brand:"HiKOKI",name:"NT1865DBSL",type:"Cordless",system:"16ga straight finish",fasteners:[
+    ["H16EG25–H16EG64","25–65mm","16ga / C Series","Finish Nail","Straight","Electro Galv","5000","No gas"]
+  ]},
+  {id:"hik-nt1865a",brand:"HiKOKI",name:"NT1865DBAL",type:"Cordless",system:"15ga DA angled finish",fasteners:[
+    ["H15B32–H15B64 / H15EG32–64","32–65mm","15ga / DA","DA Finish","34° angled","Bright / Electro Galv","3000","No gas"]
+  ]},
+
+  // BOSCH PROFESSIONAL
+  {id:"bos-gnh50",brand:"Bosch",name:"GNH 18V-50 M",type:"Cordless",system:"18ga straight brad",fasteners:[
+    ["Compatible 18ga brads","16–50mm","18ga / 1.2mm","Brad","0° straight","Any suitable finish","—","No gas"]
+  ]},
+  {id:"bos-gnh64-16",brand:"Bosch",name:"GNH 18V-64-2 M",type:"Cordless",system:"16ga angled finish",fasteners:[
+    ["Compatible 16ga finish nails","32–64mm","16ga / 1.6mm","Finish Nail","20° angled","Any suitable finish","—","No gas"]
+  ]},
+  {id:"bos-gnh64-15",brand:"Bosch",name:"GNH 18V-64 MD",type:"Cordless",system:"15ga DA angled finish",fasteners:[
+    ["Compatible 15ga DA finish nails","32–64mm","15ga / 1.8mm","DA Finish","34° angled","Any suitable finish","—","No gas"]
+  ]},
+  {id:"bos-gnh35",brand:"Bosch",name:"GNH 18V-35",type:"Cordless",system:"23ga pin nailer",fasteners:[
+    ["Bosch PN23 G / compatible pins","15–35mm","23ga / 0.6mm","Headless Pin","0° straight","Galv / suitable","—","No gas"]
+  ]},
+  {id:"bos-gnb38",brand:"Bosch",name:"GNB 18V-38",type:"Cordless",system:"Concrete / steel pin nailer",fasteners:[
+    ["Bosch concrete/steel pins","13–38mm","2.7–3.0mm","Direct-fix Pin","0°","Galvanised carbon steel","—","No gas"]
+  ]},
+
+  // DEWALT
+  {id:"dew-dcn930",brand:"DeWalt",name:"DCN930",type:"Cordless",system:"33° framing",fasteners:[
+    ["Compatible paper-tape / wire-weld framing nails","50–90mm","2.8–3.3mm","Framing","33° angled","Any suitable finish","—","No gas"]
+  ]},
+  {id:"dew-dcn660",brand:"DeWalt",name:"DCN660",type:"Cordless",system:"16ga angled finish",fasteners:[
+    ["Compatible 16ga angled finish nails","32–63mm","16ga","Finish Nail","20° angled","Any suitable finish","—","No gas"]
+  ]},
+  {id:"dew-dcn650",brand:"DeWalt",name:"DCN650",type:"Cordless",system:"15ga DA angled finish",fasteners:[
+    ["Compatible 15ga DA finish nails","32–63mm","15ga / 1.8mm","DA Finish","34° angled","Any suitable finish","—","No gas"]
+  ]},
+  {id:"dew-dcn680",brand:"DeWalt",name:"DCN680",type:"Cordless",system:"18ga straight brad",fasteners:[
+    ["Compatible 18ga C1 brads","15–54mm","18ga / 1.25mm","Brad","0° straight","Any suitable finish","—","No gas"]
+  ]},
+
+  // RAMSET — direct-fixing pin tools rather than timber nailers.
+  {id:"ram-tf800",brand:"Ramset",name:"TrakFast 800 Plus",type:"Gas",system:"Concrete / steel direct-fix pins",fasteners:[
+    ["P8HC615 / P8HC617 / P8HC622","15–22mm","2.7–3.0mm","Premium Pin","10-pin strip","Hard concrete / steel","500","P800 fuel"],
+    ["P8C620 / P8C625 / P8C630 / P8C635","20–35mm","2.6mm","Standard Pin","10-pin strip","Concrete / masonry / steel","500","P800 fuel"]
+  ]},
+  {id:"ram-tf65",brand:"Ramset",name:"TrakFast 65",type:"Gas",system:"Concrete / steel direct-fix pins",fasteners:[
+    ["Compatible Ramset gas-tool pins","15–65mm","Direct-fix pin","Pin","Strip","Concrete / steel / masonry","—","Ramset fuel"]
+  ]},
+  {id:"ram-tfcplus",brand:"Ramset",name:"TrakFast C-Plus",type:"Gas",system:"Track / partition direct-fix pins",fasteners:[
+    ["P8HC / P8C compatible range","15–27mm","Direct-fix pin","Pin","Strip","Concrete / steel / masonry","—","Ramset fuel"]
+  ]},
+  {id:"ram-cmcplus",brand:"Ramset",name:"CableMaster C-Plus",type:"Gas",system:"MEP / track direct-fix pins",fasteners:[
+    ["P8HC / P8C compatible range","15–27mm","Direct-fix pin","Pin","Strip","Concrete / steel / masonry","—","Ramset fuel"]
   ]}
-];
+]
 
 const search=document.getElementById("search");
+const brandFilter=document.getElementById("brandFilter");
 const gunFilter=document.getElementById("gunFilter");
 const typeFilter=document.getElementById("typeFilter");
 const grid=document.getElementById("gunGrid");
@@ -191,6 +239,9 @@ const results=document.getElementById("results");
 const resultTitle=document.getElementById("resultTitle");
 const resultCount=document.getElementById("resultCount");
 
+[...new Set(guns.map(g=>g.brand))].sort().forEach(brand=>{
+  const o=document.createElement("option");o.value=brand;o.textContent=brand;brandFilter.appendChild(o);
+});
 guns.forEach(g=>{
   const o=document.createElement("option");o.value=g.id;o.textContent=`${g.brand} — ${g.name}`;gunFilter.appendChild(o);
 });
@@ -200,10 +251,11 @@ function hay(g,row){return [g.brand,g.name,g.type,g.system,...row].join(" ").toL
 
 function render(){
   const q=search.value.trim().toLowerCase();
+  const brand=brandFilter.value;
   const selected=gunFilter.value;
   const type=typeFilter.value;
-  const visibleGuns=guns.filter(g=>(!selected||g.id===selected)&&(!type||g.type===type));
-  const cards=guns.filter(g=>(!type||g.type===type) && (!q || hay(g,[]).includes(q) || g.fasteners.some(r=>hay(g,r).includes(q))));
+  const visibleGuns=guns.filter(g=>(!brand||g.brand===brand)&&(!selected||g.id===selected)&&(!type||g.type===type));
+  const cards=guns.filter(g=>(!brand||g.brand===brand)&&(!type||g.type===type) && (!q || hay(g,[]).includes(q) || g.fasteners.some(r=>hay(g,r).includes(q))));
 
   grid.innerHTML=cards.map(g=>`
     <button class="gun-card ${selected===g.id?'active':''}" data-id="${g.id}">
@@ -225,6 +277,7 @@ function render(){
 
   document.getElementById("gunCount").textContent=visibleGuns.length;
   document.getElementById("fastenerCount").textContent=rows.length;
+  document.getElementById("brandCount").textContent=new Set(visibleGuns.map(g=>g.brand)).size;
   resultCount.textContent=`${rows.length} MATCH${rows.length===1?"":"ES"}`;
   resultTitle.textContent=selected ? guns.find(g=>g.id===selected).name+" Fasteners" : "Compatible Fasteners";
 
@@ -244,6 +297,7 @@ function render(){
   </table></div>`;
 }
 search.addEventListener("input",render);
+brandFilter.addEventListener("change",()=>{ gunFilter.value=""; render(); });
 gunFilter.addEventListener("change",render);
 typeFilter.addEventListener("change",render);
 render();
