@@ -10,8 +10,8 @@
 <section id="wizard" class="panel wizard" aria-labelledby="question"><div id="step-label" class="eyebrow"></div><progress id="progress" max="10" value="0" aria-label="Conversation progress"></progress><h2 id="question" tabindex="-1"></h2><p id="hint" class="muted"></p><div id="options" class="choices" role="group" aria-labelledby="question"></div><p id="selection" role="status"></p><div class="row"><button id="back" type="button">← Back</button><button id="next" class="primary" type="button" disabled>Next question →</button></div></section>
 <div id="results" hidden><section class="panel"><div class="eyebrow">Start with what we know</div><h2 id="result-title" tabindex="-1">Here’s the conversation so far</h2><div id="recap" class="recap"></div><div id="advice"></div><button id="edit" type="button">Review answers</button></section>
 <section class="panel"><div class="eyebrow">Ask what they already have</div><h2>Complete their setup</h2><p class="muted">Go down the list together. Only suggest an item when it helps with their job.</p><div id="checklist"></div></section>
-<section id="compat-wrap" class="panel"><div class="eyebrow">MIG consumables / Check the fitted torch</div><h2>Will this tip or shroud fit?</h2><p>First find the welder. Then confirm the torch actually on it.</p><p class="small muted">Selected manufacturer-documented models and torches across four brands. This is a reference library, not a complete store stock list. Unlisted models need a supplier check. Sources checked 29 September 2026.</p>
-<details><summary>What am I looking at?</summary><p><strong>Contact tip:</strong> the small metal part the wire passes through.<br><strong>Gas nozzle / shroud:</strong> the outer sleeve directing shielding gas.<br><strong>Tip holder / diffuser:</strong> the part behind the tip; it also needs to match.<br><strong>Torch:</strong> the gun and lead. Its front end determines the consumables.</p></details>
+<section id="compat-wrap" class="panel"><div class="eyebrow">MIG &amp; TIG consumables / Check the fitted torch</div><h2>Will these torch parts fit?</h2><p>First find the welder. Then confirm the torch actually on it.</p><p class="small muted">Expanded library: ENVY first, then more UNIMIG, CIGWELD, Kemppi and Lincoln references. Choose TIG in the conversation to see TIG parts. This is a reference library, not a complete store stock list. Unlisted models need a supplier check. Sources checked 29 September 2026.</p>
+<details><summary>What am I looking at?</summary><p><strong>Contact tip:</strong> the small metal part the wire passes through.<br><strong>Gas nozzle / shroud:</strong> the outer sleeve directing shielding gas.<br><strong>Tip holder / diffuser:</strong> the part behind the tip; it also needs to match.<br><strong>TIG cup:</strong> the ceramic or glass outlet directing shielding gas around the tungsten.<br><strong>Torch:</strong> the gun and lead. Its front end determines the consumables.</p></details>
 <div class="filters"><label>1. Brand<select id="brand"></select></label><label>2. Recorded model or torch<select id="model"></select></label></div>
 <label id="torch-check" class="torch-check" hidden><input id="confirmed" type="checkbox"><span id="torch-label"></span></label>
 <div id="part-filters" class="filters" hidden><label>3. Wire material<select id="wire"><option value="steel">Steel — check exact wire type</option><option value="aluminium">Aluminium</option><option value="other">Other / unknown</option></select></label><label>4. Wire diameter<select id="diameter"><option value="">Check the spool label…</option><option>0.6</option><option>0.8</option><option>0.9</option><option>1.0</option><option>1.2</option><option>1.6</option></select></label><label>5. Shielding method<select id="shield"><option value="gas">External shielding gas</option><option value="gasless">Self-shielded / gasless</option></select></label></div><div id="compat-result" aria-live="polite"></div></section>
@@ -54,6 +54,56 @@ const QUESTIONS={
  process:{title:'Which welding process are we helping with?',hint:'It is fine to choose “Help me choose”. No need to explain every setting.',options:['MIG with shielding gas','Self-shielded flux-cored / gasless','TIG','Stick / MMA','Help me choose']},
  existing:{title:'Can they identify their existing equipment?',hint:'Ask for the welder model plate and the torch name. A replaced torch may use different parts.',options:['Welder and torch models available','Welder only — torch still to confirm','Photo / old part available','No details yet']}
 };
+
+// Manufacturer references checked 29 September 2026. Machine bundles and fitted torches can change.
+Object.assign(SOURCES,{
+ m26:['UNIMIG M26 starter kit · listed part numbers','https://unimig.com.au/product/binzel-style-digital-26-mig-torch-consumables-starter-kit/'],
+ m350:['UNIMIG EVOLVE 400 reference · M350 / M580W parts','https://unimig.com.au/wp-content/uploads/2025/01/EVOLVE-MULTI-400-PULSE-Info-Sheet.pdf'],
+ t2:['UNIMIG ENVY TIG manual · T2 / T3W parts, section 16.2','https://unimig.com.au/wp-content/uploads/2024/09/ENVY-TIG-230-ACDC-Manual-APR24-v3-NOCROPS.pdf'],
+ m24:['UNIMIG RAZOR 200 manual · M24 parts','https://unimig.com.au/wp-content/uploads/2024/02/RAZOR-Multi-200-PFC-Manual-AUG23-WEB.pdf'],
+ u135:['UNIMIG VIPER 135 manual · torch parts','https://unimig.com.au/wp-content/uploads/2023/03/0800-VIPER-MULTI-135-Manual-MAR24-WEB.pdf'],
+ cig2024:['CIGWELD front-end catalogue · machine matches and parts','https://www.cigweld.com.au/wp-content/uploads/CIGWELD-MIG-Front-End-Consumables-Catalogue-A3-04032024-1-1.pdf'],
+ kevo:['Kemppi MinarcMig Evo 170 / 200 manual · ordering numbers, R06','https://resources.userdoc.kemppi.com/manuals/minarcmig-evo-om-en.pdf'],
+ lin250:['Lincoln POWERCRAFT 250M operator manual · supplied equipment','https://powercraft-lincolnelectric.com.au/wp-content/uploads/2023/05/IM7908-14-Powercraft-250M-Operator-Manual.pdf']
+});
+const families={
+ M26:{torch:'M26 Digital MIG',steel:{'0.8':'PCT0005-08','0.9':'PCT0005-09'},aluminium:{'1.0':'PCTAL0005-10','1.2':'PCTAL0005-12'},nozzle:'PGN38CON — conical',partsSource:'m26',note:'These sizes are documented in the M26 starter kit UMSK26. Other sizes need a separate check. Confirm wire range, liner and rollers for the machine.'},
+ M24:{torch:'M24 Digital MIG',steel:{'0.6':'PCT0009-06','0.8':'PCT0009-08','0.9':'PCT0009-09','1.0':'PCT0009-10','1.2':'PCT0009-12','1.6':'PCT0009-16'},aluminium:{'0.9':'PCTAL0009-09','1.0':'PCTAL0009-10','1.2':'PCTAL0009-12'},nozzle:'PGN24CON — conical',partsSource:'m24',note:'Torch parts are shared by the documented M24 front end. Available tip sizes do not establish which wire sizes this machine can run.'},
+ M350:{torch:'M350 Digital MIG',steel:{'0.8':'U11171','0.9':'U11045','1.0':'U11046','1.2':'U11047','1.6':'U11048'},aluminium:{'1.0':'U11050','1.2':'U11051','1.6':'U11052'},nozzle:'U11055 — conical',partsSource:'m350',note:'M350 uses its own nozzle and holder. Do not substitute the M580W nozzle. Confirm the machine’s supported wire range.'},
+ T2:{type:'TIG',torch:'T2 air-cooled TIG',parts:[['Standard body · 1.0 mm','UMCT2CB10'],['Standard body · 1.6 mm','UMCT2CB16'],['Standard body · 2.4 mm','UMCT2CB24'],['Standard body · 3.2 mm','UMCT2CB32'],['Ceramic cup · size 8 / 12.5 mm','UMCT2C08'],['Head gasket','UMCT2HG']],partsSource:'t2',note:'Standard ceramic-cup references only; this is not a complete torch kit or a tungsten-size recommendation. Match the remaining parts to the exploded diagram. Quartz cups use a different arrangement.'}
+};
+families.M580W={...families.M350,torch:'M580W water-cooled MIG',nozzle:'U11057 — conical',note:'Water-cooled package: confirm a working compatible cooler. M580W has a different nozzle and holder from M350 despite sharing the listed tip series.'};
+families.T3W={...families.T2,torch:'T3W water-cooled TIG',note:families.T2.note+' Confirm the water-cooled torch and cooler are fitted.'};
+function machine(id,label,slug,family){SOURCES[id]=['UNIMIG '+label+' · supplied torch','https://unimig.com.au/product/'+slug+'/'];const f=families[family];return {id,brand:'UNIMIG',models:[label],...f,sources:[id,f.partsSource]};}
+const added=[
+ machine('envy195','ENVY MULTI 195 · U11204','envy-multi-195-welder','M26'),
+ machine('envy230','ENVY MULTI 230 AC/DC · U11203','envy-multi-230-ac-dc-welder','M26'),
+ machine('envy220','ENVY OMNI 220 AC/DC · U11596','envy-omni-220-ac-dc-welder','M26'),
+ machine('envy250','ENVY MULTI 250 AC/DC · U11238','envy-multi-250-ac-dc-welder','M350'),
+ machine('envytig','ENVY TIG 230 AC/DC · U11024 · T2','envy-tig-230-ac-dc-welder','T2'),
+ machine('envytigwater','ENVY TIG 230 water-cooled package · U11151 · T3W','envy-tig-230-ac-dc-water-cooled-package','T3W'),
+ machine('envytigwaterair','ENVY TIG 230 water-cooled package · U11151 · included T2','envy-tig-230-ac-dc-water-cooled-package','T2'),
+ machine('envy230tig','ENVY MULTI 230 AC/DC · U11203 · T2','envy-multi-230-ac-dc-welder','T2'),
+ machine('envy220tig','ENVY OMNI 220 AC/DC · U11596 · T2','envy-omni-220-ac-dc-welder','T2'),
+ machine('envy250tig','ENVY MULTI 250 AC/DC · U11238 · T2','envy-multi-250-ac-dc-welder','T2'),
+ {id:'u135',brand:'UNIMIG',models:['VIPER MULTI 135 · U11005K'],torch:'Original VIPER 135 MIG front end · manual section 14',steel:{'0.6':'PCT0008-06','0.8':'PCT0008-08','0.9':'PCT0008-09'},nozzle:'PGN15CON — conical',gasless:'PGN15GLN',note:'Check the original torch. Matching tips do not establish matching holders across other torch families.',sources:['u135']},
+ machine('u185new','VIPER MULTI 185 · U11260 · current M26 version','viper-multi-185-welder','M26'),
+ machine('razor200','RAZOR MULTI 200 PFC · U11012','razor-multi-200-pfc-welder','M24'),
+ machine('razor220','RAZOR MULTI 220 · U11008K','razor-multi-220-welder','M24'),
+ machine('razor250','RAZOR MULTI 250 · U11009K','razor-multi-250-welder','M24'),
+ machine('razorcompact','RAZOR COMPACT 250 · U11010K','razor-compact-250-welder','M24'),
+ machine('evolve300','EVOLVE MULTI 300 PULSE · U11130 · M350 package','evolve-multi-300-pulse-m350-package','M350'),
+ machine('evolve400','EVOLVE MULTI 400 PULSE · U11231 · M350 package','evolve-multi-400-pulse-m350-package','M350'),
+ machine('evolve400trolley','EVOLVE MULTI 400 PULSE · U11224 · M350 trolley','evolve-multi-400-pulse-m350-trolley-package','M350'),
+ machine('evolve400water','EVOLVE MULTI 400 PULSE · U11119 · M580W package','evolve-multi-400-pulse-m580w-water-cooled-trolley-package','M580W'),
+ machine('evolve500water','EVOLVE MULTI 500 PULSE · U11142 · M580W package','evolve-multi-500-pulse-m580w-water-cooled-trolley-package','M580W')
+];
+added.find(r=>r.id==='u185new').note+=' Do not use this record for the older KUMJRVM185 version.';
+for(const [id,model,torch] of [['easy130','EasyWeld 130','BZL-compatible 13/14'],['handy130','HandyWeld 130','BZL-compatible 13/14'],['easy160','EasyWeld 160','BZL-compatible 15/16'],['handy160','HandyWeld 160','BZL-compatible 15/16']])added.push({id,brand:'CIGWELD',models:[model],torch,steel:{'0.6':'BZT6606','0.8':'BZT6608','0.9':'BZT6609'},nozzle:'BZN1512 — 12 mm conical',note:'Confirm the original BZL-compatible front end. Holders differ between torch variants; this is a tip/nozzle reference only.',sources:['cig2024']});
+for(const [id,model] of [['trans175','Transmig 175i+'],['trans185','Transmig 185 Ultra'],['trans220','Transmig 220i'],['trans255','Transmig 255i'],['weld250','WeldSkill 250']])added.push({id,brand:'CIGWELD',models:[model],torch:'Tweco-compatible No. 2 front end',steel:{'0.6':'TWT1406','0.8':'TWT1408','0.9':'TWT1409','1.0':'TWT1410','1.2':'TWT1412'},nozzle:'TWN22A13 — adjustable 13 mm',note:'This adjustable nozzle requires the TWD52 diffuser and TWI32A insulator arrangement. Check the fitted front end before supplying; a fixed-nozzle arrangement differs.',sources:['cig2024']});
+for(const [id,model] of [['kevo170','MinarcMig Evo 170 / AU · 61008170 / 61008170AU'],['kevo200','MinarcMig Evo 200 / AU · 61008200 / 61008200AU']])added.push({id,brand:'Kemppi',models:[model],torch:'GC 223 G MM 3M · GC223GMM3 (R06 manual)',steel:{'0.6':'CT06C1SD003','0.8':'CT08C1SD003','0.9':'CT09C1SD003','1.0':'CT10C1SD003'},nozzle:'9580101',note:'This manual revision specifies the GC gun. Older or replacement MMG22 guns need their own parts check.',sources:['kevo']});
+added.push({id:'lin250',brand:'Lincoln Electric',models:['POWERCRAFT 250M · manual IM7908-14 · identify gun first'],pending:true,torch:'Supplied 3 m MIG gun — exact front end not verified',note:'The operator manual lists a 3 m MIG gun but does not establish the tip/nozzle ordering numbers here. Ask for the gun label and front-end photo, then confirm with Lincoln. Do not carry over the POWERCRAFT 200M parts.',sources:['lin250']});
+COMPAT.unshift(...added);
 
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -132,28 +182,41 @@ function renderResults(){
  $('recap').innerHTML=steps().filter(k=>answers[k]).map(k=>'<div><span class="muted">'+esc(QUESTIONS[k].title)+'</span><strong>'+esc(answers[k])+'</strong></div>').join('');
  const advice=processAdvice();$('advice').innerHTML=advice.length?'<h3>Next conversation</h3><ul>'+advice.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>':'';
  $('checklist').innerHTML=checklist().map(x=>'<article class="check"><label for="check-'+x.id+'">'+esc(x.title)+'</label><p>'+esc(x.ask)+'</p><select id="check-'+x.id+'" data-check="'+x.id+'">'+[['','Ask customer…'],['need','Needed — discuss options'],['own','Already has suitable equipment'],['no','Not needed for this job']].map(([v,t])=>'<option value="'+v+'" '+(checks[x.id]===v?'selected':'')+'>'+t+'</option>').join('')+'</select></article>').join('');
- $('compat-wrap').hidden=answers.process==='TIG'||answers.process==='Stick / MMA'||answers.purpose==='Protection or workshop accessories';
+ $('compat-wrap').hidden=answers.process==='Stick / MMA'||answers.purpose==='Protection or workshop accessories';
  renderLookup();updateList();
 }
-function currentRecord(){return COMPAT.find(r=>r.id===lookup.record&&r.brand===lookup.brand);}
-function lookupResult(){const r=currentRecord();if(!r||!lookup.confirmed)return null;const tip=r[lookup.wire]?.[lookup.size];const nozzle=lookup.shield==='gasless'?r.gasless:r.nozzle;return {r,tip:tip||null,nozzle:nozzle||null};}
+function processMatches(r){return answers.process==='TIG'?r.type==='TIG':r.type!=='TIG';}
+function currentRecord(){return COMPAT.find(r=>r.id===lookup.record&&r.brand===lookup.brand&&processMatches(r));}
+function lookupResult(){const r=currentRecord();if(!r||r.pending||!lookup.confirmed)return null;if(r.type==='TIG')return {r,parts:r.parts};const tip=r[lookup.wire]?.[lookup.size];const nozzle=lookup.shield==='gasless'?r.gasless:r.nozzle;return {r,tip:tip||null,nozzle:nozzle||null};}
 function renderLookup(){
  $('brand').innerHTML='<option value="">Choose a brand…</option>'+['UNIMIG','CIGWELD','Kemppi','Lincoln Electric','Other / not listed'].map(b=>'<option '+(lookup.brand===b?'selected':'')+'>'+esc(b)+'</option>').join('');
- const records=COMPAT.filter(r=>r.brand===lookup.brand);
+ const records=COMPAT.filter(r=>r.brand===lookup.brand&&processMatches(r));
  $('model').innerHTML='<option value="">Choose a recorded model / torch…</option>'+records.map(r=>'<option value="'+r.id+'" '+(lookup.record===r.id?'selected':'')+'>'+esc(r.models.join(' / '))+'</option>').join('')+'<option value="unknown" '+(lookup.record==='unknown'?'selected':'')+'>My model is not listed / I am not sure</option>';
  $('model').disabled=!lookup.brand;
- const r=currentRecord();$('torch-check').hidden=!r;$('torch-label').textContent=r?'I have confirmed this exact torch/front end: '+r.torch:'';$('confirmed').checked=lookup.confirmed;
+ const r=currentRecord();$('torch-check').hidden=!r||r.pending;$('torch-label').textContent=r?'I have confirmed this exact torch/front end: '+r.torch:'';$('confirmed').checked=lookup.confirmed;
  $('wire').value=lookup.wire;$('diameter').value=lookup.size;$('shield').value=lookup.shield;
- $('part-filters').hidden=!r||!lookup.confirmed;
+ $('part-filters').hidden=!r||r.pending||r.type==='TIG'||!lookup.confirmed;
  const match=lookupResult();
  if(!lookup.brand){$('compat-result').innerHTML='<p class="muted">Choose a brand to start. We will ask you to confirm the torch before showing part numbers.</p>';return;}
  if(!r){$('compat-result').innerHTML='<p class="notice">No confirmed match selected. Get the machine model/code, torch model, wire label and a photo of the old part. Use the supplier’s parts diagram to confirm it before quoting.</p>';return;}
+ if(r.pending){$('compat-result').innerHTML='<p class="notice"><strong>Part numbers still need confirmation.</strong> '+esc(r.note)+'</p>'+sourceLinks(r.sources);return;}
  if(!match){$('compat-result').innerHTML='<p class="notice">The manual lists <strong>'+esc(r.torch)+'</strong>. Check the actual torch, including any replacement neck or front end.</p>'+sourceLinks(r.sources);return;}
+ if(r.type==='TIG'){$('compat-result').innerHTML='<div class="table-scroll"><table><caption>TIG standard front-end references — choose the required size</caption><thead><tr><th scope="col">Part / size</th><th scope="col">Reference</th></tr></thead><tbody>'+r.parts.map(([label,part])=>'<tr><th scope="row">'+esc(label)+'</th><td>'+esc(part)+'</td></tr>').join('')+'</tbody></table></div><p class="notice">'+esc(r.note)+'</p>'+sourceLinks(r.sources);return;}
  const missing='Not verified for this selection — check the manufacturer';
  $('compat-result').innerHTML='<div class="table-scroll"><table><caption>Manufacturer reference for the confirmed torch</caption><thead><tr><th scope="col">Part</th><th scope="col">Reference</th></tr></thead><tbody><tr><th scope="row">Contact tip'+(lookup.size?' · '+esc(lookup.size)+' mm':'')+'</th><td>'+esc(match.tip||(!lookup.size?'Choose wire diameter':missing))+'</td></tr><tr><th scope="row">'+(lookup.shield==='gasless'?'Gasless nozzle':'Gas nozzle / shroud')+'</th><td>'+esc(match.nozzle||missing)+'</td></tr></tbody></table></div><p class="notice">'+esc(r.note)+'</p><p class="small muted">Reference match for the stated torch only. Confirm wire type, machine wire range, front-end arrangement, pack quantity and supplier availability before supplying. No cross-brand equivalence is implied.</p>'+sourceLinks(r.sources);
 }
 function updateList(){const needed=checklist().filter(x=>checks[x.id]==='need');$('shopping-list').innerHTML=needed.length?'<ul>'+needed.map(x=>'<li>'+esc(x.title)+'</li>').join('')+'</ul>':'<p class="muted">Mark items as needed to build a list.</p>';$('copy-status').textContent='';}
-function summary(){const lines=['Welding sales conversation',...steps().filter(k=>answers[k]).map(k=>QUESTIONS[k].title+' '+answers[k]),'', 'Items to discuss:',...checklist().filter(x=>checks[x.id]==='need').map(x=>'- '+x.title)];const m=lookupResult();if(m&&!$('compat-wrap').hidden)lines.push('','Torch checked: '+m.r.torch,'Wire: '+lookup.wire+' / '+(lookup.size||'size not selected')+' mm','Tip reference: '+(m.tip||'NOT VERIFIED'),'Nozzle reference: '+(m.nozzle||'NOT VERIFIED'),'Confirm availability, pack size and machine suitability before supplying.',...m.r.sources.map(id=>SOURCES[id][1]));return lines.join('\n');}
+function summary(){
+ const lines=['Welding sales conversation',...steps().filter(k=>answers[k]).map(k=>QUESTIONS[k].title+' '+answers[k]),'', 'Items to discuss:',...checklist().filter(x=>checks[x.id]==='need').map(x=>'- '+x.title)];
+ const m=lookupResult();
+ if(m&&!$('compat-wrap').hidden){
+  lines.push('','Model: '+m.r.models.join(' / '),'Torch checked: '+m.r.torch);
+  if(m.parts)lines.push('TIG reference options (not a selected shopping list):',...m.parts.map(([label,part])=>label+': '+part));
+  else lines.push('Wire: '+lookup.wire+' / '+(lookup.size||'size not selected')+' mm','Tip reference: '+(m.tip||'NOT VERIFIED'),'Nozzle reference: '+(m.nozzle||'NOT VERIFIED'));
+  lines.push(m.r.note,'Confirm availability, pack size and machine suitability before supplying.',...m.r.sources.map(id=>SOURCES[id][1]));
+ }
+ return lines.join('\n');
+}
 function reset(){answers={};checks={};step=0;lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};$('manual-copy').hidden=true;renderQuestion(true);}
 document.addEventListener('click',e=>{const answer=e.target.closest('[data-answer]');if(answer)selectAnswer(Number(answer.dataset.answer));});
 document.addEventListener('change',e=>{if(e.target.dataset.check){checks[e.target.dataset.check]=e.target.value;updateList();}});
