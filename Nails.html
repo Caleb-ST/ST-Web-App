@@ -84,7 +84,37 @@ const guns=[
 ["Ramset","TrakFast 800 Plus","Gas","ramset direct 40"],
 ["Ramset","TrakFast 65","Gas","ramset direct 65"],
 ["Ramset","TrakFast C-Plus","Gas","ramset direct 27"],
-["Ramset","CableMaster C-Plus","Gas","ramset direct 27"]
+["Ramset","CableMaster C-Plus","Gas","ramset direct 27"],
+["Makita","DBN610","Cordless","16ga angled"],
+["Makita","DFN350","Cordless","18ga c1"],
+["Makita","DBN500","Cordless","18ga c1"],
+["Makita","DBN600","Cordless","16ga straight"],
+["Makita","DPT353","Cordless","23ga pin"],
+["Makita","DST112","Cordless","r13 staple"],
+["Makita","DST221","Cordless","t50 staple"],
+["Makita","DST630","Cordless","90 staple"],
+["Milwaukee","M12FCN18GS","Cordless","18ga c1"],
+["Milwaukee","M18FNCS18GS","Cordless","90 staple"],
+["Milwaukee","M12BST","Cordless","t50 staple 14"],
+["Milwaukee","M18FFUS","Cordless","fencing staple"],
+["Milwaukee","M12BCST","Cordless","milwaukee cable"],
+["Milwaukee","M18FDN","Cordless","duplex"],
+["HiKOKI","NR1890DCA","Cordless","framing"],
+["HiKOKI","NT1850DA","Cordless","18ga c1"],
+["HiKOKI","NT1865DSA","Cordless","16ga straight"],
+["HiKOKI","NT1865DA","Cordless","16ga angled"],
+["HiKOKI","NT1865DAA","Cordless","15ga da"],
+["HiKOKI","NP18DSAL","Cordless","23ga pin"],
+["HiKOKI","N1804DA","Cordless","90 staple"],
+["HiKOKI","N1812DA","Cordless","80 staple 13"],
+["Bosch","GTH 18V-14","Cordless","bosch type57"],
+["Bosch","GTH 18V-38 M","Cordless","bosch nc18"],
+["DeWalt","DCN662","Cordless","16ga straight"],
+["DeWalt","DCN701","Cordless","dewalt cable"],
+["DeWalt","DPN1664PP","Pneumatic","16ga straight"],
+["DeWalt","DPN1850PP","Pneumatic","18ga c1"],
+["DeWalt","DPN1564APP","Pneumatic","15ga da"],
+["DeWalt","DPS8016","Pneumatic","80 staple 16"]
 ].map((x,i)=>({id:"g"+i,brand:x[0],name:x[1],type:x[2],family:x[3]}));
 let ref=[];
 async function loadRef(){
@@ -108,6 +138,18 @@ function refsFor(g){
  if(g.family==="ramset direct 27")return ref.filter(x=>x.family==="Ramset Direct Fix"&&mm(x.length)<=27);
  if(g.family==="ramset direct 40")return ref.filter(x=>x.family==="Ramset Direct Fix"&&mm(x.length)<=40);
  if(g.family==="ramset direct 65")return ref.filter(x=>x.family==="Ramset Direct Fix"&&mm(x.length)<=65);
+ if(g.family==="90 staple")return ref.filter(x=>x.family==="90 Series Staple"||x.family==="Bosch NC18 Staple");
+ if(g.family==="80 staple 13")return ref.filter(x=>x.family==="80 Series Staple"&&mm(x.length)<=13);
+ if(g.family==="80 staple 16")return ref.filter(x=>x.family==="80 Series Staple"&&mm(x.length)<=16);
+ if(g.family==="r13 staple")return ref.filter(x=>x.family==="R13 Staple");
+ if(g.family==="t50 staple")return ref.filter(x=>x.family==="T50 Staple");
+ if(g.family==="t50 staple 14")return ref.filter(x=>x.family==="T50 Staple"&&mm(x.length)<=14);
+ if(g.family==="fencing staple")return ref.filter(x=>x.family==="Fencing Staple");
+ if(g.family==="milwaukee cable")return ref.filter(x=>x.family==="Cable Staple"&&x.brand==="Milwaukee");
+ if(g.family==="dewalt cable")return ref.filter(x=>x.family==="Cable Staple"&&x.brand==="DeWalt");
+ if(g.family==="duplex")return ref.filter(x=>x.family==="Duplex Nail");
+ if(g.family==="bosch type57")return ref.filter(x=>x.family==="Bosch Type 57 Staple");
+ if(g.family==="bosch nc18")return ref.filter(x=>x.family==="Bosch NC18 Staple"||x.family==="90 Series Staple");
  return [];
 }
 const search=document.getElementById("search"),
