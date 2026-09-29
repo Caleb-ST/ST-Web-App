@@ -63,3 +63,74 @@ Paslode,B20547V,Framing,75mm,3.06mm,D Head,Smooth Bright,3000
 Paslode,B20569V,Framing,75mm,3.06mm,D Head,Smooth HDG,3000
 Paslode,B20550V,Framing,90mm,3.15mm,D Head,Smooth Bright,3000
 Paslode,B20571V,Framing,90mm,3.15mm,D Head,Smooth HDG,3000
+Air BPD,AFN32,Angled Finish Brad,32mm,16ga,20deg Angled,Electro Galv,2000
+Air BPD,AFN38,Angled Finish Brad,38mm,16ga,20deg Angled,Electro Galv,2000
+Air BPD,AFN38SS,Angled Finish Brad,38mm,16ga,20deg Angled,Stainless Steel,2000
+Air BPD,AFN45,Angled Finish Brad,45mm,16ga,20deg Angled,Electro Galv,2000
+Air BPD,AFN50,Angled Finish Brad,50mm,16ga,20deg Angled,Electro Galv,2000
+Air BPD,AFN50SS,Angled Finish Brad,50mm,16ga,20deg Angled,Stainless Steel,2000
+Air BPD,AFN63,Angled Finish Brad,63mm,16ga,20deg Angled,Electro Galv,2000
+Air BPD,ND32,ND Brad,32mm,14ga,ND Straight,Electro Galv,3000
+Air BPD,ND38,ND Brad,38mm,14ga,ND Straight,Electro Galv,3000
+Air BPD,ND45,ND Brad,45mm,14ga,ND Straight,Electro Galv,3000
+Air BPD,ND50,ND Brad,50mm,14ga,ND Straight,Electro Galv,3000
+Air BPD,ND50SS,ND Brad,50mm,14ga,ND Straight,Stainless Steel,3000
+Air BPD,ND60,ND Brad,62mm,14ga,ND Straight,Electro Galv,3000
+Paslode,B20043,ND Brad,38mm,14ga,ND Straight,Electro Galv,2000
+Paslode,B20053A,ND Brad,38mm,14ga,ND Straight,Stainless Steel,2000
+Paslode,B20047,ND Brad,50mm,14ga,ND Straight,Electro Galv,2000
+Paslode,B20054A,ND Brad,50mm,14ga,ND Straight,Stainless Steel,2000
+Paslode,B20051,ND Brad,62mm,14ga,ND Straight,Electro Galv,2000
+Paslode,B20055A,ND Brad,62mm,14ga,ND Straight,Stainless Steel,2000
+Paslode,B20052A,ND Brad,70mm,14ga,ND Straight,Electro Galv,2000
+Paslode,B60035,PPN Nail,35mm,3.15mm,Positive Placement,Smooth Mech Galv,1600
+Paslode,B60040,PPN Nail,40mm,3.75mm,Positive Placement,Smooth Mech Galv,1600
+Paslode,B40025,Paslode Coil,27mm,2.5mm,0deg Coil,Ring HDG,2400
+Paslode,B40020,Paslode Coil,32mm,2.5mm,0deg Coil,Screw Galvanised,2400
+Paslode,B40027,Paslode Coil,32mm,2.7mm,0deg Coil,Smooth HDG,2400
+Paslode,B40021,Paslode Coil,45mm,2.5mm,0deg Coil,Ring HDG,2400
+Paslode,B40022,Paslode Coil,50mm,2.5mm,0deg Coil,Ring HDG,2400
+Paslode,B40024,Paslode Coil,50mm,2.5mm,0deg Coil,Ring Stainless Steel,1600
+Air BPD,C2227RB,15deg Coil,27mm,2.2mm,15deg Wire Coil,Ring Bright,14000
+Air BPD,C2232RB,15deg Coil,32mm,2.2mm,15deg Wire Coil,Ring Bright,14000
+Air BPD,C2535SHEG,15deg Coil,35mm,2.5mm,15deg Wire Coil,Screw Hardened Electro Galv,9000
+Air BPD,C2735SHDG,15deg Coil,35mm,2.7mm,15deg Wire Coil,Screw HDG,11000
+Air BPD,C2238B,15deg Coil,38mm,2.2mm,15deg Wire Coil,Smooth Bright,14000
+Air BPD,C2238RB,15deg Coil,38mm,2.2mm,15deg Wire Coil,Ring Bright,14000
+Air BPD,C2545RB,15deg Coil,45mm,2.5mm,15deg Wire Coil,Ring Bright,9000
+Air BPD,C2545SB,15deg Coil,45mm,2.5mm,15deg Wire Coil,Screw Bright,9000
+Air BPD,C2545RHDG,15deg Coil,45mm,2.5mm,15deg Wire Coil,Ring HDG,9000
+Air BPD,C2550RB,15deg Coil,50mm,2.5mm,15deg Wire Coil,Ring Bright,9000
+Air BPD,C2550SB,15deg Coil,50mm,2.5mm,15deg Wire Coil,Screw Bright,9000
+Air BPD,C2550REG,15deg Coil,50mm,2.5mm,15deg Wire Coil,Ring Electro Galv,9000
+Air BPD,C2550SEG,15deg Coil,50mm,2.5mm,15deg Wire Coil,Screw Electro Galv,9000
+Air BPD,C2550RHDG,15deg Coil,50mm,2.5mm,15deg Wire Coil,Ring HDG,9000
+Air BPD,C2557RB,15deg Coil,57mm,2.5mm,15deg Wire Coil,Ring Bright,9000
+Air BPD,C2557SB,15deg Coil,57mm,2.5mm,15deg Wire Coil,Screw Bright,9000
+Air BPD,C2857RB,15deg Coil,57mm,2.87mm,15deg Wire Coil,Ring Bright,7500
+Air BPD,C2857SB,15deg Coil,57mm,2.87mm,15deg Wire Coil,Screw Bright,7500
+Air BPD,C2557REG,15deg Coil,57mm,2.5mm,15deg Wire Coil,Ring Electro Galv,9000
+Air BPD,C2557SEG,15deg Coil,57mm,2.5mm,15deg Wire Coil,Screw Electro Galv,9000
+Air BPD,C2557RHDG,15deg Coil,57mm,2.5mm,15deg Wire Coil,Screw HDG,9000
+Air BPD,C2864RB,15deg Coil,64mm,2.8mm,15deg Wire Coil,Ring Bright,7500
+Air BPD,C2864SB,15deg Coil,64mm,2.8mm,15deg Wire Coil,Screw Bright,7500
+Ramset,P8C620,Ramset Direct Fix,20mm,2.6mm,10 Pin Strip,Zinc Electroplated,500
+Ramset,P8C625,Ramset Direct Fix,25mm,2.6mm,10 Pin Strip,Zinc Electroplated,500
+Ramset,P8C630,Ramset Direct Fix,30mm,2.6mm,10 Pin Strip,Zinc Electroplated,500
+Ramset,P8C635,Ramset Direct Fix,35mm,2.6mm,10 Pin Strip,Zinc Electroplated,500
+Ramset,P8HC615,Ramset Direct Fix,15mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC617,Ramset Direct Fix,17mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC622,Ramset Direct Fix,22mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC627,Ramset Direct Fix,27mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC632,Ramset Direct Fix,32mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC650,Ramset Direct Fix,50mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC657,Ramset Direct Fix,57mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Ramset,P8HC665,Ramset Direct Fix,65mm,Premium Pin,10 Pin Strip,Hard Concrete Steel,500
+Bosch,1600A02F4K,Bosch Concrete Pin,16mm,2.7mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4L,Bosch Concrete Pin,19mm,2.7mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4M,Bosch Concrete Pin,25mm,2.7mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4N,Bosch Concrete Pin,32mm,2.7mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4P,Bosch Concrete Pin,38mm,2.7mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4S,Bosch Steel Pin,13mm,3.0mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4T,Bosch Steel Pin,16mm,3.0mm,GNB Strip,Galvanised Carbon Steel,1000
+Bosch,1600A02F4U,Bosch Steel Pin,19mm,3.0mm,GNB Strip,Galvanised Carbon Steel,1000
