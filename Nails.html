@@ -51,10 +51,10 @@ async function auth(){
 }
 const guns=[
 ["Paslode","Framemaster","Cordless","framing"],
-["Paslode","PPN","Cordless","positive placement"],
+["Paslode","PPN","Cordless","ppn"],
 ["Paslode","Angled Trimmaster","Cordless","16ga angled"],
 ["Paslode","Straight Bradder","Cordless","18ga c1"],
-["Paslode","Coilmaster","Cordless","coil"],
+["Paslode","Coilmaster","Cordless","paslode coil"],
 ["Paslode","T250-16S","Pneumatic","16ga straight"],
 ["Paslode","ND 70.1 Bradder","Pneumatic","14ga nd"],
 ["Paslode","Liteline C1 30","Pneumatic","18ga c1"],
@@ -62,7 +62,7 @@ const guns=[
 ["Makita","DBN501","Cordless","18ga c1"],
 ["Makita","DBN601","Cordless","16ga straight"],
 ["Makita","DBN900","Cordless","framing"],
-["Makita","AN613","Pneumatic","coil"],
+["Makita","AN613","Pneumatic","15deg coil"],
 ["Milwaukee","M18FFN","Cordless","framing"],
 ["Milwaukee","M18FN18GS","Cordless","18ga c1"],
 ["Milwaukee","M18FN16GA","Cordless","16ga angled"],
@@ -75,15 +75,15 @@ const guns=[
 ["Bosch","GNH 18V-64-2 M","Cordless","16ga angled"],
 ["Bosch","GNH 18V-64 MD","Cordless","15ga da"],
 ["Bosch","GNH 18V-35","Cordless","23ga pin"],
-["Bosch","GNB 18V-38","Cordless","direct fix"],
+["Bosch","GNB 18V-38","Cordless","bosch direct"],
 ["DeWalt","DCN930","Cordless","framing"],
 ["DeWalt","DCN660","Cordless","16ga angled"],
 ["DeWalt","DCN650","Cordless","15ga da"],
 ["DeWalt","DCN680","Cordless","18ga c1"],
-["Ramset","TrakFast 800 Plus","Gas","direct fix"],
-["Ramset","TrakFast 65","Gas","direct fix"],
-["Ramset","TrakFast C-Plus","Gas","direct fix"],
-["Ramset","CableMaster C-Plus","Gas","direct fix"]
+["Ramset","TrakFast 800 Plus","Gas","ramset direct 40"],
+["Ramset","TrakFast 65","Gas","ramset direct 65"],
+["Ramset","TrakFast C-Plus","Gas","ramset direct 27"],
+["Ramset","CableMaster C-Plus","Gas","ramset direct 27"]
 ].map((x,i)=>({id:"g"+i,brand:x[0],name:x[1],type:x[2],family:x[3]}));
 let ref=[];
 async function loadRef(){
@@ -91,6 +91,7 @@ async function loadRef(){
  const lines=txt.trim().split(/\r?\n/),headers=lines.shift().split(",");
  ref=lines.map(line=>{const v=line.split(",");return Object.fromEntries(headers.map((h,i)=>[h,v[i]||""]))});
 }
+function mm(v){const m=String(v||"").match(/\d+(?:\.\d+)?/);return m?Number(m[0]):0}
 function refsFor(g){
  if(g.family==="18ga c1")return ref.filter(x=>x.family==="C1 Brad");
  if(g.family==="16ga straight")return ref.filter(x=>x.family==="C Series Brad");
@@ -98,6 +99,14 @@ function refsFor(g){
  if(g.family==="15ga da")return ref.filter(x=>x.family==="DA Brad");
  if(g.family==="framing")return ref.filter(x=>x.family==="Framing");
  if(g.family==="23ga pin")return ref.filter(x=>x.family==="Headless Pin");
+ if(g.family==="14ga nd")return ref.filter(x=>x.family==="ND Brad");
+ if(g.family==="ppn")return ref.filter(x=>x.family==="PPN Nail");
+ if(g.family==="paslode coil")return ref.filter(x=>x.family==="Paslode Coil");
+ if(g.family==="15deg coil")return ref.filter(x=>x.family==="15deg Coil" && mm(x.length)>=32 && mm(x.length)<=65);
+ if(g.family==="bosch direct")return ref.filter(x=>x.family==="Bosch Concrete Pin"||x.family==="Bosch Steel Pin");
+ if(g.family==="ramset direct 27")return ref.filter(x=>x.family==="Ramset Direct Fix"&&mm(x.length)<=27);
+ if(g.family==="ramset direct 40")return ref.filter(x=>x.family==="Ramset Direct Fix"&&mm(x.length)<=40);
+ if(g.family==="ramset direct 65")return ref.filter(x=>x.family==="Ramset Direct Fix"&&mm(x.length)<=65);
  return [];
 }
 const search=document.getElementById("search"),
