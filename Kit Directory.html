@@ -68,6 +68,13 @@ function kitHtml(code){
  const k=kitRows[0], comps=kitRows;
  return '<div class="mode">Kit contents</div><div class="hero"><div class="card-head"><div><div class="hero-code">'+safe(k.kit_code)+'</div><div class="hero-name">'+safe(k.brand)+' · '+safe(k.kit_name)+'</div><span class="status '+statusClass(k.status)+'">'+displayStatus(k.status)+'</span></div><button class="copy" data-copy="'+safe(k.kit_code)+'">COPY KIT CODE</button></div></div><div class="section-title">Included Components</div><div class="grid">'+comps.map(r=>'<div class="card"><div class="card-head"><div><div class="card-type">'+safe(r.component_type)+'</div><div class="card-code">'+safe(r.component_code)+'</div><div class="card-name">'+safe(r.component_name)+'</div></div><div class="qty">× '+safe(r.qty)+'</div></div></div>').join("")+'</div>';
 }
+function partialKitHtml(q){
+ const n=norm(q);
+ if(!n)return "";
+ const kits=uniqueKits(rows).filter(k=>norm(k.kit_code).startsWith(n));
+ if(!kits.length)return "";
+ return '<div class="mode">Kit code matches</div><div class="section-title">Matching Kits ('+kits.length+')</div><div class="grid">'+kits.map(k=>'<div class="card kit-card" data-kit="'+safe(k.kit_code)+'"><div class="card-type">'+safe(k.brand)+'</div><div class="card-code">'+safe(k.kit_code)+'</div><div class="card-name">'+safe(k.kit_name)+'</div><span class="status '+statusClass(k.status)+'">'+displayStatus(k.status)+'</span></div>').join("")+'</div>';
+}
 function modelHtml(q){
  const n=norm(q),b=baseModel(q);
  const matches=rows.filter(r=>{
@@ -81,9 +88,9 @@ function modelHtml(q){
 }
 function run(){
  const q=search.value.trim();
- if(!q){result.innerHTML='<div class="empty">Enter a kit number or tool model.</div>';return}
+ if(!norm(q)){result.innerHTML='<div class="empty">Enter a kit number or tool model.</div>';return}
  const exactKit=uniqueKits(rows).find(r=>norm(r.kit_code)===norm(q));
- result.innerHTML=exactKit?kitHtml(exactKit.kit_code):modelHtml(q);
+ result.innerHTML=exactKit?kitHtml(exactKit.kit_code):partialKitHtml(q)+modelHtml(q);
  if(!result.innerHTML)result.innerHTML='<div class="empty">No recorded kit or component matches <strong>'+safe(q)+'</strong>.</div>';
  result.querySelectorAll("[data-kit]").forEach(el=>el.onclick=()=>{search.value=el.dataset.kit;run();window.scrollTo({top:0,behavior:"smooth"})});
  result.querySelectorAll("[data-copy]").forEach(b=>b.onclick=()=>copyText(b.dataset.copy,b));
