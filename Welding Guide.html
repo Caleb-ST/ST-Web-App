@@ -28,14 +28,14 @@
 <section class="panel">
   <div class="eyebrow">Job setup / live reference</div>
   <h2>What are we working with?</h2>
-  <p class="muted">Set only the fields that matter. The guidance updates immediately.</p>
+  <p class="muted">Start with the material and job. The tool will steer the process, block incompatible combinations, and explain which machines actually fit.</p>
   <div class="tool-grid">
-    <label>Process<select id="process">
-      <option value="">Choose process…</option>
-      <option>MIG with shielding gas</option><option>Self-shielded flux-cored / gasless</option><option>TIG</option><option>Stick / MMA</option><option>Help me choose</option>
-    </select></label>
     <label>Metal<select id="metal">
       <option value="">Choose metal…</option><option>Mild steel</option><option>Stainless steel</option><option>Aluminium</option><option>Other / not sure</option>
+    </select></label>
+    <label>Process<select id="process">
+      <option value="Let the tool suggest">Let the tool suggest</option>
+      <option>MIG with shielding gas</option><option>Self-shielded flux-cored / gasless</option><option>TIG</option><option>Stick / MMA</option>
     </select></label>
     <label>Thickness<select id="thickness">
       <option value="">Choose thickness…</option><option>Thin sheet — under 2 mm</option><option>About 2–5 mm</option><option>Over 5 mm</option><option>A mixture / not sure</option>
@@ -51,10 +51,12 @@
     </select></label>
   </div>
 
+  <p id="selector-note" class="notice">Choose the material first. The process list will remove combinations that do not make sense.</p>
   <div class="quick-results">
-    <div class="result-card"><div class="eyebrow">Process / machine checks</div><h3>What matters</h3><div id="advice"></div></div>
+    <div class="result-card"><div class="eyebrow">Suggested approach</div><h3>What suits this job</h3><div id="advice"></div></div>
     <div class="result-card"><div class="eyebrow">Consumables / accessories</div><h3>What to check</h3><div id="quick-checks"></div></div>
   </div>
+  <div class="result-card" style="margin-top:16px"><div class="eyebrow">Machine selector</div><h3>Suitable machines</h3><div id="machine-recommendations"></div></div>
 </section>
 
 <section class="panel" id="duty-cycle">
@@ -252,30 +254,88 @@ COMPAT.unshift(
 
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let answers={process:'',metal:'',thickness:'',location:'',workload:'',power:''},checks={},lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
+let answers={process:'Let the tool suggest',metal:'',thickness:'',location:'',workload:'',power:''},checks={},lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
+
+const MACHINE_GUIDE=[
+ {name:'UNIMIG VIPER MULTI 180',sku:'U11638',brand:'UNIMIG',power:['240 V / 10 A outlet','240 V / 15 A outlet'],processes:['MIG with shielding gas','Self-shielded flux-cored / gasless','TIG','Stick / MMA'],materials:['Mild steel','Stainless steel'],alMig:true,acTig:false,maxA:180,level:'light',why:'10A, inexpensive multi-process option with synergic MIG. Spool-gun ready for aluminium MIG, but its TIG function is DC only.',url:'https://unimig.com.au/product/viper-multi-180-welder/'},
+ {name:'UNIMIG ENVY MULTI 195',sku:'U11204',brand:'UNIMIG',power:['240 V / 10 A outlet','240 V / 15 A outlet'],processes:['MIG with shielding gas','TIG','Stick / MMA'],materials:['Mild steel','Stainless steel'],alMig:true,acTig:false,maxA:195,level:'medium',why:'10A professional multi-process machine with pulse MIG and high-frequency DC TIG. Strong choice where domestic power is the limit; aluminium TIG still needs AC.',url:'https://unimig.com.au/product/envy-multi-195-welder/'},
+ {name:'UNIMIG RAZOR TIG 200 AC/DC',sku:'U12002K',brand:'UNIMIG',power:['240 V / 10 A outlet','240 V / 15 A outlet'],processes:['TIG','Stick / MMA'],materials:['Mild steel','Stainless steel','Aluminium'],alMig:false,acTig:true,maxA:200,level:'medium',why:'Dedicated 10A AC/DC TIG machine. This is the clean answer when aluminium TIG is required but only a domestic outlet is available.',url:'https://unimig.com.au/product/razor-tig-200-ac-dc-welder/'},
+ {name:'CIGWELD BlueVenom XF210-6',sku:'W1400210',brand:'CIGWELD',power:['240 V / 15 A outlet'],processes:['MIG with shielding gas','TIG','Stick / MMA'],materials:['Mild steel','Stainless steel','Aluminium'],alMig:true,acTig:true,maxA:210,level:'medium',why:'15A six-process machine with pulse/double-pulse MIG and AC/DC TIG. Particularly versatile when aluminium MIG and aluminium TIG both matter.',url:'https://www.cigweld.com.au/products/bluevenom-xf210-6/'},
+ {name:'Lincoln POWERCRAFT 250M',sku:'K69089-1',brand:'Lincoln Electric',power:['240 V / 15 A outlet'],processes:['MIG with shielding gas','Self-shielded flux-cored / gasless','TIG','Stick / MMA'],materials:['Mild steel','Stainless steel'],alMig:true,acTig:false,maxA:250,level:'heavy',why:'Higher-output 240V fabrication machine with a separate wire feeder and 250A capability. Suitable where heavier MIG work matters; do not choose it for aluminium TIG.',url:'https://powercraft-lincolnelectric.com.au/products/welder/multi-process-welders/powercraft-250m-4in1-multi-purpose-welder/'},
+ {name:'Kemppi Master M 355 Pulse',sku:'P505GXe4',brand:'Kemppi',power:['Three-phase supply'],processes:['MIG with shielding gas'],materials:['Mild steel','Stainless steel','Aluminium'],alMig:true,acTig:false,maxA:350,level:'production',why:'3-phase production-class pulse MIG/MAG machine. Rated 40% at 350A and 100% at 220A, so it makes sense for long runs where smaller single-phase machines spend too much time cooling.',url:'https://userdoc.kemppi.com/om/mastermig-353-355/en/content/topics/e_technical%20data%20and%20ordering/technical-data-mastermig-353-355-ps.htm'}
+];
 
 function sourceLinks(ids){return ids.map(id=>'<a href="'+esc(SOURCES[id][1])+'" target="_blank" rel="noopener">'+esc(SOURCES[id][0])+'</a>').join('<br>');}
 
-function processAdvice(){
- const p=answers.process,notes=[];
- if(!p){notes.push('Choose a process, or use “Help me choose”, to narrow the machine and consumable checks.');}
- if(p==='Help me choose'){
-  if(answers.metal==='Aluminium')notes.push('Compare AC TIG for controlled aluminium work with an aluminium-capable MIG setup for faster wire-fed work.');
-  else if(answers.location==='Outside / exposed to wind')notes.push('Start with stick or suitable self-shielded flux-cored wire for exposed outdoor work. Gas-shielded processes need wind control.');
-  else notes.push('Compare MIG for general wire-fed work, TIG for fine controlled work, and stick for simple electrode welding and maintenance.');
+function suggestedProcess(){
+ if(!answers.metal)return null;
+ if(answers.metal==='Aluminium'){
+   if(answers.location==='Outside / exposed to wind')return 'MIG with shielding gas';
+   if(answers.thickness==='Thin sheet — under 2 mm')return 'TIG';
+   return 'MIG with shielding gas';
  }
- if(p==='TIG'&&answers.metal==='Aluminium')notes.push('Check for AC TIG capability. A DC-only TIG function is not the straightforward aluminium setup.');
- if(p==='MIG with shielding gas'&&answers.metal==='Aluminium')notes.push('Confirm aluminium wire capability, drive rollers, liner and torch setup. Verify spool-gun compatibility against the exact machine.');
- if(p==='Self-shielded flux-cored / gasless')notes.push('Confirm the wire is genuinely self-shielded, then check the specified polarity and supported wire diameter.');
- if((p==='MIG with shielding gas'||p==='TIG')&&answers.location==='Outside / exposed to wind')notes.push('Resolve shielding-gas wind protection before treating this as a suitable outdoor setup.');
- if(answers.thickness==='Thin sheet — under 2 mm')notes.push('Prioritise low-end control and suitability for the actual sheet thickness.');
- if(answers.thickness==='Over 5 mm')notes.push('Check joint preparation, required output and duty cycle. Thickness alone does not choose the machine.');
- if(answers.workload==='Long runs / production')notes.push('Compare duty cycle at the required welding current, plus torch rating and cooling method.');
- if(answers.power==='Generator — model to confirm')notes.push('Check both the welder and generator manuals before promising compatibility or full output.');
- else if(answers.power)notes.push('Confirm the selected machine’s input-current and outlet requirements against the available supply.');
+ if(answers.location==='Outside / exposed to wind')return 'Self-shielded flux-cored / gasless';
+ if(answers.thickness==='Thin sheet — under 2 mm')return 'MIG with shielding gas';
+ if(answers.workload==='Long runs / production')return 'MIG with shielding gas';
+ return 'MIG with shielding gas';
+}
+function syncProcessOptions(){
+ const sel=$('process'),al=answers.metal==='Aluminium';
+ [...sel.options].forEach(o=>{o.disabled=false;o.title='';});
+ const gasless=[...sel.options].find(o=>o.value==='Self-shielded flux-cored / gasless');
+ if(al&&gasless){gasless.disabled=true;gasless.title='Self-shielded gasless wire is not a normal aluminium welding process.';}
+ if(al&&answers.process==='Self-shielded flux-cored / gasless'){answers.process='Let the tool suggest';sel.value=answers.process;}
+ const sug=suggestedProcess();
+ if(!answers.metal)$('selector-note').textContent='Choose the material first. The process list will remove combinations that do not make sense.';
+ else if(al)$('selector-note').innerHTML='<strong>Aluminium:</strong> gasless is blocked. Use gas-shielded aluminium MIG with the correct feed system, or AC TIG when TIG is required.';
+ else if(answers.location==='Outside / exposed to wind')$('selector-note').innerHTML='<strong>Outdoor/exposed work:</strong> stick or self-shielded flux-cored wire is usually easier to protect from wind than gas-shielded MIG/TIG.';
+ else $('selector-note').innerHTML='<strong>Suggested starting process:</strong> '+esc(sug||'Choose a process')+'. You can override it if the job calls for something else.';
+}
+function effectiveProcess(){return answers.process==='Let the tool suggest'?(suggestedProcess()||''):answers.process;}
+function machineFits(m){
+ const p=effectiveProcess();
+ if(!p||!answers.metal)return false;
+ if(answers.power&&answers.power!=='Not sure — check first'&&answers.power!=='Generator — model to confirm'&&!m.power.includes(answers.power))return false;
+ if(!m.processes.includes(p))return false;
+ if(answers.metal==='Aluminium'){
+   if(p==='TIG'&&!m.acTig)return false;
+   if(p==='MIG with shielding gas'&&!m.alMig)return false;
+   if(p==='Self-shielded flux-cored / gasless')return false;
+ }else if(!m.materials.includes(answers.metal)&&answers.metal!=='Other / not sure')return false;
+ if(answers.workload==='Long runs / production'&&m.level==='light')return false;
+ return true;
+}
+function scoreMachine(m){
+ let s=0;
+ if(m.power.includes(answers.power))s+=4;
+ if(answers.workload==='Long runs / production'){if(m.level==='production')s+=8;else if(m.level==='heavy')s+=4;}
+ if(answers.thickness==='Over 5 mm'){s+=m.maxA>=250?5:m.maxA>=200?2:0;}
+ if(answers.thickness==='Thin sheet — under 2 mm'&&effectiveProcess()==='TIG'&&m.acTig)s+=4;
+ if(answers.metal==='Aluminium'&&m.acTig&&effectiveProcess()==='TIG')s+=6;
+ if(answers.metal==='Aluminium'&&m.alMig&&effectiveProcess()==='MIG with shielding gas')s+=4;
+ return s;
+}
+function renderMachines(){
+ const p=effectiveProcess();
+ if(!answers.metal||!p){$('machine-recommendations').innerHTML='<p class="muted">Choose the material and enough job details to generate machine suggestions.</p>';return;}
+ const list=MACHINE_GUIDE.filter(machineFits).sort((a,b)=>scoreMachine(b)-scoreMachine(a)).slice(0,4);
+ if(!list.length){$('machine-recommendations').innerHTML='<p class="notice"><strong>No verified machine in the current recommendation set cleanly matches this combination.</strong> Change the supply/process or check the wider catalogue rather than forcing an unsuitable machine.</p>';return;}
+ $('machine-recommendations').innerHTML=list.map((m,i)=>'<article class="check"><div class="eyebrow">'+(i===0?'Strong match':'Also suitable')+' · '+esc(m.brand)+'</div><h3>'+esc(m.name)+' <span class="small muted">'+esc(m.sku)+'</span></h3><p>'+esc(m.why)+'</p><p class="small"><strong>Why it appears here:</strong> '+esc(p)+' · '+esc(answers.metal)+(answers.power?' · '+esc(answers.power):'')+(answers.workload?' · '+esc(answers.workload):'')+'</p><a href="'+esc(m.url)+'" target="_blank" rel="noopener">Verified manufacturer/specification page ↗</a></article>').join('');
+}
+function processAdvice(){
+ const p=effectiveProcess(),notes=[];
+ if(!answers.metal)notes.push('Choose the parent metal first. That determines which processes are genuinely available.');
+ if(answers.process==='Let the tool suggest'&&p)notes.push('Suggested process: '+p+'. This is based on the material, thickness, location and workload selected.');
+ if(answers.metal==='Aluminium'&&p==='MIG with shielding gas')notes.push('Use aluminium wire with external shielding gas and an aluminium-capable feed path such as suitable U-groove rolls/liner, spool gun or push-pull arrangement as required by the machine.');
+ if(answers.metal==='Aluminium'&&p==='TIG')notes.push('Aluminium TIG requires an AC-capable TIG machine. DC-only TIG machines are excluded from the recommendations.');
+ if((p==='MIG with shielding gas'||p==='TIG')&&answers.location==='Outside / exposed to wind')notes.push('This process needs shielding gas protection. Use screens/shelter or change to a process that tolerates exposed conditions better.');
+ if(p==='Self-shielded flux-cored / gasless')notes.push('Confirm the wire is genuinely self-shielded and follow its specified polarity. Gasless is not offered when aluminium is selected.');
+ if(answers.thickness==='Thin sheet — under 2 mm')notes.push('Prioritise low-end control and heat management. Pulse functions can help where the selected machine/process supports them.');
+ if(answers.thickness==='Over 5 mm')notes.push('Higher output, joint preparation and multiple passes may be required. The machine suggestions favour more output where the available supply permits it.');
+ if(answers.workload==='Long runs / production')notes.push('Duty cycle matters as much as maximum amps. Production selections favour machines with stronger continuous-output ratings.');
+ if(answers.power==='Generator — model to confirm')notes.push('Generator compatibility must be checked against the exact welder and generator ratings before supply.');
  return notes;
 }
-
 function checklist(){
  const p=answers.process,list=[];const add=(id,title,ask)=>list.push({id,title,ask});
  if(p==='MIG with shielding gas'||p==='Self-shielded flux-cored / gasless'){
@@ -428,10 +488,10 @@ function summary(){
  return lines.join('\n');
 }
 
-function renderAll(){renderAdvice();renderChecklist();renderLookup();}
+function renderAll(){syncProcessOptions();renderAdvice();renderMachines();renderChecklist();renderLookup();}
 function reset(){
- answers={process:'',metal:'',thickness:'',location:'',workload:'',power:''};checks={};lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
- for(const id of ['process','metal','thickness','location','workload','power'])$(id).value='';
+ answers={process:'Let the tool suggest',metal:'',thickness:'',location:'',workload:'',power:''};checks={};lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
+ for(const id of ['metal','thickness','location','workload','power'])$(id).value='';$('process').value='Let the tool suggest';
  for(const id of ['rated-current','rated-duty','target-current'])$(id).value='';
  $('manual-copy').hidden=true;calcDuty();renderAll();
 }
