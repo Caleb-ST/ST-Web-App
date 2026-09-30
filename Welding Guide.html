@@ -3,21 +3,120 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script><script src="config.js"></script>
 <style>
 :root{color-scheme:dark;--bg:#0a0a0d;--panel:#15151b;--line:#363640;--muted:#b2b2bc;--text:#f5f3ef;--red:#ff2230;--amber:#ffb020}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 'Work Sans',sans-serif}main{max-width:1000px;margin:auto;padding:28px 20px 64px}header,.row{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}h1,h2,h3{font-family:'Barlow Condensed',sans-serif;line-height:1.12}h1{font-size:clamp(38px,7vw,60px);text-transform:uppercase;margin:8px 0}h1 span{color:var(--red)}h2{font-size:clamp(29px,4vw,40px);margin:10px 0 16px}h3{font-size:25px;margin:12px 0}.eyebrow{font:11px 'JetBrains Mono',monospace;color:var(--amber);letter-spacing:.1em;text-transform:uppercase}.muted,.check p{color:var(--muted)}.small{font-size:12px}a{color:var(--amber)}.back{padding:9px 12px;border:1px solid var(--line);color:var(--muted);text-decoration:none}.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:28px;margin-top:24px}.wizard{max-width:760px;margin:24px auto}.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0}button,select,textarea{font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:4px;padding:12px;min-height:46px}button{cursor:pointer}button:hover{border-color:var(--red)}button:disabled{opacity:.45;cursor:default}button[aria-pressed="true"]{border-color:var(--amber);background:#302515}.choices button{text-align:left;min-height:64px}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--amber);outline-offset:3px}.primary{background:var(--red);border-color:var(--red);font-weight:600}progress{width:100%;height:6px;accent-color:var(--red);margin:16px 0}#selection{min-height:25px;color:var(--amber);font-size:13px}.recap{display:grid;grid-template-columns:1fr 1fr;gap:16px}.recap span,.recap strong{display:block}.recap span{font-size:12px}.check{padding:20px 0;border-bottom:1px solid var(--line)}.check label{font-weight:600}.check p{font-size:14px;margin:6px 0 12px}.check select{width:100%;max-width:350px}.notice{border-left:3px solid var(--amber);padding:12px 16px;background:#211d15}.filters{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}.filters label{display:block}.filters select{display:block;width:100%;margin-top:7px;max-width:100%}.torch-check{display:flex;gap:12px;align-items:flex-start;margin:18px 0}.torch-check input{width:20px;height:20px;margin-top:5px;accent-color:var(--red);flex-shrink:0}.table-scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}caption{text-align:left;padding:12px 0;font-weight:600}th,td{text-align:left;padding:14px;border:1px solid var(--line);overflow-wrap:anywhere}th{color:var(--amber)}li{margin:9px 0}#compat-result a{font-size:12px;overflow-wrap:anywhere}textarea{width:100%;min-height:200px}details{margin:18px 0}summary{cursor:pointer;color:var(--amber)}footer{font-size:12px;color:var(--muted);margin-top:26px}[hidden]{display:none!important}@media(max-width:620px){main{padding:20px 14px 40px}.panel{padding:20px}.choices,.recap,.filters{grid-template-columns:1fr}.choices button{min-height:54px}header{align-items:flex-start}th,td{padding:9px}}@media print{header a,button,select,#auth-status,#wizard{display:none}.panel{break-inside:avoid}body{background:white;color:black}}
-</style></head><body><main>
-<header><div><div class="eyebrow">Sales Guide / Welding</div><h1>One question.<br><span>One step closer.</span></h1></div><a class="back" href="Sales Guide.html">← SALES GUIDE</a></header>
-<p class="muted">A simple conversation helper for selling a welding setup, consumables or the useful extras.</p><p id="auth-status" role="status">Checking sign-in…</p>
-<div id="app" hidden><div class="row"><span class="small muted">Ask out loud. Choose their answer. Take your time.</span><button id="reset" type="button">New customer ↺</button></div>
-<section id="wizard" class="panel wizard" aria-labelledby="question"><div id="step-label" class="eyebrow"></div><progress id="progress" max="10" value="0" aria-label="Conversation progress"></progress><h2 id="question" tabindex="-1"></h2><p id="hint" class="muted"></p><div id="options" class="choices" role="group" aria-labelledby="question"></div><p id="selection" role="status"></p><div class="row"><button id="back" type="button">← Back</button><button id="next" class="primary" type="button" disabled>Next question →</button></div></section>
-<div id="results" hidden><section class="panel"><div class="eyebrow">Start with what we know</div><h2 id="result-title" tabindex="-1">Here’s the conversation so far</h2><div id="recap" class="recap"></div><div id="advice"></div><button id="edit" type="button">Review answers</button></section>
-<section class="panel"><div class="eyebrow">Ask what they already have</div><h2>Complete their setup</h2><p class="muted">Go down the list together. Only suggest an item when it helps with their job.</p><div id="checklist"></div></section>
-<section id="compat-wrap" class="panel"><div class="eyebrow">MIG &amp; TIG consumables / Check the fitted torch</div><h2>Will these torch parts fit?</h2><p>First find the welder. Then confirm the torch actually on it.</p><p class="small muted">Expanded library: ENVY first, then more UNIMIG, CIGWELD, Kemppi and Lincoln references. Choose TIG in the conversation to see TIG parts. This is a reference library, not a complete store stock list. Unlisted models need a supplier check. Sources checked 29 September 2026.</p>
-<details><summary>What am I looking at?</summary><p><strong>Contact tip:</strong> the small metal part the wire passes through.<br><strong>Gas nozzle / shroud:</strong> the outer sleeve directing shielding gas.<br><strong>Tip holder / diffuser:</strong> the part behind the tip; it also needs to match.<br><strong>TIG cup:</strong> the ceramic or glass outlet directing shielding gas around the tungsten.<br><strong>Torch:</strong> the gun and lead. Its front end determines the consumables.</p></details>
-<div class="filters"><label>1. Brand<select id="brand"></select></label><label>2. Recorded model or torch<select id="model"></select></label></div>
-<label id="torch-check" class="torch-check" hidden><input id="confirmed" type="checkbox"><span id="torch-label"></span></label>
-<div id="part-filters" class="filters" hidden><label>3. Wire material<select id="wire"><option value="steel">Steel — check exact wire type</option><option value="aluminium">Aluminium</option><option value="other">Other / unknown</option></select></label><label>4. Wire diameter<select id="diameter"><option value="">Check the spool label…</option><option>0.6</option><option>0.8</option><option>0.9</option><option>1.0</option><option>1.2</option><option>1.6</option></select></label><label>5. Shielding method<select id="shield"><option value="gas">External shielding gas</option><option value="gasless">Self-shielded / gasless</option></select></label></div><div id="compat-result" aria-live="polite"></div></section>
-<section class="panel"><div class="eyebrow">Finish the conversation</div><h2>Items to discuss</h2><div id="shopping-list" aria-live="polite"></div><p>“Let’s check the package contents, confirm these parts fit, and go through the total together.”</p><button id="copy" class="primary" type="button">Copy conversation & list</button><p id="copy-status" role="status"></p><textarea id="manual-copy" aria-label="Conversation to copy manually" readonly hidden></textarea></section>
-<details class="panel"><summary>Staff reference & further learning</summary><p>This guides a sales conversation. Machine choice still depends on the actual job, input supply and duty cycle. Confirm filler, gas and settings using the machine and consumable instructions. For structural or specified work, ask for the welding procedure rather than choosing a filler from appearance.</p><p><a href="https://www.unimig.com.au/blog/the-ultimate-guide-to-mig-welding/" target="_blank" rel="noopener">UNIMIG MIG guide</a><br><a href="https://unimig.com.au/blog/the-ultimate-guide-to-tig-welding/" target="_blank" rel="noopener">UNIMIG TIG guide</a><br><a href="Rep Directory.html">Supplier rep directory</a></p></details></div>
-<footer>Selections stay in this page only. Reloading or choosing New customer clears the conversation.</footer></div></main><script>
+
+.tool-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.tool-grid label,.calc-grid label{display:block;font-weight:600}
+.tool-grid select,.calc-grid input{width:100%;margin-top:7px}
+.quick-results{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.result-card{background:#0f0f13;border:1px solid var(--line);border-radius:5px;padding:18px}
+.result-card h3{margin-top:0}.result-card ul{padding-left:20px}
+.calc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;align-items:end}
+.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:18px}
+.metric{background:#0f0f13;border:1px solid var(--line);padding:16px;border-radius:5px}
+.metric strong{display:block;font:700 30px/1 'Barlow Condensed',sans-serif;color:var(--amber);margin-top:5px}
+.badge{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:4px 9px;font:11px 'JetBrains Mono',monospace;color:var(--muted);margin:2px 5px 2px 0}
+.ref-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.ref-tabs button[aria-pressed="true"]{border-color:var(--amber);background:#302515}
+#duty-note{margin-top:14px}
+@media(max-width:760px){.tool-grid,.calc-grid,.quick-results,.metric-row{grid-template-columns:1fr}}
+</style></head>
+<body><main>
+<header><div><div class="eyebrow">Sales Guide / Welding</div><h1>Welding<br><span>Reference Tool.</span></h1></div><a class="back" href="Sales Guide.html">← SALES GUIDE</a></header>
+<p class="muted">Pick what you know and use the page as a live reference. No ten-question pilgrimage required.</p><p id="auth-status" role="status">Checking sign-in…</p>
+
+<div id="app" hidden>
+<section class="panel">
+  <div class="eyebrow">Job setup / live reference</div>
+  <h2>What are we working with?</h2>
+  <p class="muted">Set only the fields that matter. The guidance updates immediately.</p>
+  <div class="tool-grid">
+    <label>Process<select id="process">
+      <option value="">Choose process…</option>
+      <option>MIG with shielding gas</option><option>Self-shielded flux-cored / gasless</option><option>TIG</option><option>Stick / MMA</option><option>Help me choose</option>
+    </select></label>
+    <label>Metal<select id="metal">
+      <option value="">Choose metal…</option><option>Mild steel</option><option>Stainless steel</option><option>Aluminium</option><option>Other / not sure</option>
+    </select></label>
+    <label>Thickness<select id="thickness">
+      <option value="">Choose thickness…</option><option>Thin sheet — under 2 mm</option><option>About 2–5 mm</option><option>Over 5 mm</option><option>A mixture / not sure</option>
+    </select></label>
+    <label>Work location<select id="location">
+      <option value="">Choose location…</option><option>Inside a workshop</option><option>Outside / exposed to wind</option><option>Both</option><option>Not sure</option>
+    </select></label>
+    <label>Workload<select id="workload">
+      <option value="">Choose workload…</option><option>Occasional small jobs</option><option>Regular trade work</option><option>Long runs / production</option><option>Not sure</option>
+    </select></label>
+    <label>Available power<select id="power">
+      <option value="">Choose supply…</option><option>240 V / 10 A outlet</option><option>240 V / 15 A outlet</option><option>Three-phase supply</option><option>Generator — model to confirm</option><option>Not sure — check first</option>
+    </select></label>
+  </div>
+
+  <div class="quick-results">
+    <div class="result-card"><div class="eyebrow">Process / machine checks</div><h3>What matters</h3><div id="advice"></div></div>
+    <div class="result-card"><div class="eyebrow">Consumables / accessories</div><h3>What to check</h3><div id="quick-checks"></div></div>
+  </div>
+</section>
+
+<section class="panel" id="duty-cycle">
+  <div class="eyebrow">Machine capacity / duty cycle</div>
+  <h2>Duty cycle calculator</h2>
+  <p class="muted">Use the machine’s stated duty cycle at a stated welding current, then estimate what happens at another current. This is a practical comparison tool, not a replacement for the manufacturer’s rating plate or manual.</p>
+  <div class="calc-grid">
+    <label>Rated welding current (A)<input id="rated-current" type="number" min="1" step="1" placeholder="e.g. 200"></label>
+    <label>Rated duty cycle (%)<input id="rated-duty" type="number" min="1" max="100" step="1" placeholder="e.g. 30"></label>
+    <label>Planned welding current (A)<input id="target-current" type="number" min="1" step="1" placeholder="e.g. 150"></label>
+  </div>
+  <div class="metric-row">
+    <div class="metric"><span class="small muted">Estimated duty cycle</span><strong id="duty-result">—</strong></div>
+    <div class="metric"><span class="small muted">Approx. weld time / 10 min</span><strong id="run-result">—</strong></div>
+    <div class="metric"><span class="small muted">Approx. cooling time / 10 min</span><strong id="rest-result">—</strong></div>
+  </div>
+  <p id="duty-note" class="notice">Enter the three values above. Example: 30% duty cycle means roughly 3 minutes welding and 7 minutes cooling in a 10-minute test period at the stated conditions.</p>
+  <details><summary>How duty cycle works</summary>
+    <p><strong>Duty cycle</strong> is the percentage of a standard test period that a welder can operate at a stated output before thermal limits require cooling. A rating of 200 A @ 30% means the machine is rated for about 3 minutes of welding and 7 minutes of cooling within the reference 10-minute cycle at those test conditions.</p>
+    <p>For a rough comparison at a different current, this tool uses the common thermal approximation <strong>D₂ = D₁ × (I₁ ÷ I₂)²</strong>, capped at 100%. Real performance can differ with ambient temperature, process, input supply, torch rating, fan behaviour and the manufacturer’s test standard. Use published machine data whenever it is available.</p>
+  </details>
+</section>
+
+<section id="compat-wrap" class="panel">
+  <div class="eyebrow">MIG &amp; TIG consumables / check the fitted torch</div>
+  <h2>Torch and consumable lookup</h2>
+  <p>Find the welder, confirm the torch actually fitted, then use the recorded manufacturer reference.</p>
+  <p class="small muted">Expanded library: ENVY first, then UNIMIG, CIGWELD, Kemppi and Lincoln references. This is a reference library, not a complete store stock list. Unlisted models need a supplier check. Sources checked 29 September 2026.</p>
+  <div class="filters"><label>1. Brand<select id="brand"></select></label><label>2. Recorded model or torch<select id="model"></select></label></div>
+  <label id="torch-check" class="torch-check" hidden><input id="confirmed" type="checkbox"><span id="torch-label"></span></label>
+  <div id="part-filters" class="filters" hidden>
+    <label>3. Wire material<select id="wire"><option value="steel">Steel — check exact wire type</option><option value="aluminium">Aluminium</option><option value="other">Other / unknown</option></select></label>
+    <label>4. Wire diameter<select id="diameter"><option value="">Check the spool label…</option><option>0.6</option><option>0.8</option><option>0.9</option><option>1.0</option><option>1.2</option><option>1.6</option></select></label>
+    <label>5. Shielding method<select id="shield"><option value="gas">External shielding gas</option><option value="gasless">Self-shielded / gasless</option></select></label>
+  </div>
+  <div id="compat-result" aria-live="polite"></div>
+</section>
+
+<section class="panel">
+  <div class="eyebrow">Setup builder</div>
+  <h2>Build the required kit</h2>
+  <p class="muted">Mark only what the customer actually needs. The list below becomes a quick quote/checklist.</p>
+  <div id="checklist"></div>
+</section>
+
+<section class="panel">
+  <div class="eyebrow">Quote / handover</div>
+  <h2>Items to discuss</h2>
+  <div id="shopping-list" aria-live="polite"></div>
+  <button id="copy" class="primary" type="button">Copy setup & list</button>
+  <button id="reset" type="button">Clear selections ↺</button>
+  <p id="copy-status" role="status"></p>
+  <textarea id="manual-copy" aria-label="Setup to copy manually" readonly hidden></textarea>
+</section>
+
+<details class="panel"><summary>Staff reference & further learning</summary>
+  <p>Machine choice still depends on the actual job, input supply and duty cycle. Confirm filler, gas and settings using the machine and consumable instructions. For structural or specified work, ask for the welding procedure rather than choosing a filler from appearance.</p>
+  <p><a href="https://www.unimig.com.au/blog/the-ultimate-guide-to-mig-welding/" target="_blank" rel="noopener">UNIMIG MIG guide</a><br><a href="https://unimig.com.au/blog/the-ultimate-guide-to-tig-welding/" target="_blank" rel="noopener">UNIMIG TIG guide</a><br><a href="Rep Directory.html">Supplier rep directory</a></p>
+</details>
+<footer>Reference selections stay in this page only. Reloading or clearing resets the tool.</footer>
+</div></main><script>
+
 const SOURCES={
  u165:['UNIMIG VIPER MULTI 165 manual · section 19.3','https://unimig.com.au/wp-content/uploads/2022/11/0801-VIPER-165-SYNERGIC-Manual-MAY24.pdf'],
  u195:['UNIMIG VIPER MULTI 195 MAX manual · M15 consumables','https://unimig.com.au/wp-content/uploads/2023/07/VIPER-MULTI-195-MAX-Manual-WEB.pdf'],
@@ -105,90 +204,89 @@ for(const [id,model] of [['kevo170','MinarcMig Evo 170 / AU · 61008170 / 610081
 added.push({id:'lin250',brand:'Lincoln Electric',models:['POWERCRAFT 250M · manual IM7908-14 · identify gun first'],pending:true,torch:'Supplied 3 m MIG gun — exact front end not verified',note:'The operator manual lists a 3 m MIG gun but does not establish the tip/nozzle ordering numbers here. Ask for the gun label and front-end photo, then confirm with Lincoln. Do not carry over the POWERCRAFT 200M parts.',sources:['lin250']});
 COMPAT.unshift(...added);
 
+
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let answers={},step=0,checks={},lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
-function steps(){
- if(answers.purpose==='Consumables for an existing welder')return ['purpose','process','existing'];
- if(answers.purpose==='Protection or workshop accessories')return ['purpose','process','location'];
- return ['purpose','experience','job','metal','thickness','location','workload','power','budget','process'];
-}
+let answers={process:'',metal:'',thickness:'',location:'',workload:'',power:''},checks={},lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
+
 function sourceLinks(ids){return ids.map(id=>'<a href="'+esc(SOURCES[id][1])+'" target="_blank" rel="noopener">'+esc(SOURCES[id][0])+'</a>').join('<br>');}
-function renderQuestion(focus=false){
- const route=steps();step=Math.min(step,route.length);const finished=step===route.length;
- $('wizard').hidden=finished;$('results').hidden=!finished;
- if(finished){renderResults();if(focus)$('result-title').focus();return;}
- const key=route[step],q=QUESTIONS[key];$('step-label').textContent='Question '+(step+1)+' of '+route.length;
- $('progress').max=route.length;$('progress').value=step;
- $('question').textContent=q.title;$('hint').textContent=q.hint;
- $('options').innerHTML=q.options.map((option,i)=>'<button type="button" data-answer="'+i+'" aria-pressed="'+(answers[key]===option)+'">'+esc(option)+'</button>').join('');
- $('next').disabled=!answers[key];$('next').textContent=step===route.length-1?'Build my checklist →':'Next question →';$('back').disabled=step===0;
- $('selection').textContent=answers[key]?'Selected: '+answers[key]:'';if(focus)$('question').focus();
-}
-function selectAnswer(index){const route=steps(),key=route[step],value=QUESTIONS[key].options[index];if(value===undefined)return;
- if(answers[key]!==value){route.slice(step+1).forEach(k=>delete answers[k]);checks={};lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:value==='Self-shielded flux-cored / gasless'?'gasless':'gas'};}
- answers[key]=value;renderQuestion();$('options').querySelector('[data-answer="'+index+'"]').focus();
-}
+
 function processAdvice(){
  const p=answers.process,notes=[];
+ if(!p){notes.push('Choose a process, or use “Help me choose”, to narrow the machine and consumable checks.');}
  if(p==='Help me choose'){
-  if(answers.metal==='Aluminium')notes.push('Start the discussion with AC TIG for controlled work, or an aluminium-capable MIG setup for wire-fed work. Confirm the actual job before choosing.');
-  else if(answers.location==='Outside / exposed to wind')notes.push('Discuss stick or a suitable self-shielded wire process for outdoor work. If considering gas-shielded welding, resolve wind protection first.');
-  else notes.push('Compare gas MIG for general wire-fed work, TIG for controlled fine work, and stick for electrode welding. Ask which best fits the job and their experience.');
-  notes.push('Choose the process with the customer or welding specialist before quoting process-specific consumables.');
+  if(answers.metal==='Aluminium')notes.push('Compare AC TIG for controlled aluminium work with an aluminium-capable MIG setup for faster wire-fed work.');
+  else if(answers.location==='Outside / exposed to wind')notes.push('Start with stick or suitable self-shielded flux-cored wire for exposed outdoor work. Gas-shielded processes need wind control.');
+  else notes.push('Compare MIG for general wire-fed work, TIG for fine controlled work, and stick for simple electrode welding and maintenance.');
  }
- if(p==='TIG'&&answers.metal==='Aluminium')notes.push('For a straightforward aluminium TIG recommendation, check for AC TIG capability. A DC-only lift-TIG feature is not the setup to offer for this job.');
- if(p==='MIG with shielding gas'&&answers.metal==='Aluminium')notes.push('Confirm aluminium capability, wire alloy, feed rollers, liner and torch setup. Check the exact machine interface before suggesting a spool gun.');
- if(p==='Self-shielded flux-cored / gasless')notes.push('Check the wire label: self-shielded wire needs no external shielding gas. Some flux-cored wires do require gas. Confirm the specified polarity and supported wire size.');
- if((p==='MIG with shielding gas'||p==='TIG')&&answers.location==='Outside / exposed to wind')notes.push('Resolve wind protection before recommending this gas-shielded setup.');
- if(answers.experience==='First time')notes.push('Offer a basic setup demonstration or training referral. Keep the explanation to the tool and consumables needed for the first job.');
- if(answers.workload==='Long runs / production')notes.push('Compare duty cycle at the required welding current, torch rating and cooling needs.');
- if(answers.thickness==='Thin sheet — under 2 mm')notes.push('Check low-end control and suitability for the actual sheet thickness.');
- if(answers.thickness==='Over 5 mm')notes.push('Confirm joint preparation, required output and duty cycle with a welding specialist. Thickness alone cannot choose the machine.');
- if(answers.power)notes.push('Confirm the chosen machine’s input supply and installation requirements. For generator use, verify both manuals before promising compatibility.');
+ if(p==='TIG'&&answers.metal==='Aluminium')notes.push('Check for AC TIG capability. A DC-only TIG function is not the straightforward aluminium setup.');
+ if(p==='MIG with shielding gas'&&answers.metal==='Aluminium')notes.push('Confirm aluminium wire capability, drive rollers, liner and torch setup. Verify spool-gun compatibility against the exact machine.');
+ if(p==='Self-shielded flux-cored / gasless')notes.push('Confirm the wire is genuinely self-shielded, then check the specified polarity and supported wire diameter.');
+ if((p==='MIG with shielding gas'||p==='TIG')&&answers.location==='Outside / exposed to wind')notes.push('Resolve shielding-gas wind protection before treating this as a suitable outdoor setup.');
+ if(answers.thickness==='Thin sheet — under 2 mm')notes.push('Prioritise low-end control and suitability for the actual sheet thickness.');
+ if(answers.thickness==='Over 5 mm')notes.push('Check joint preparation, required output and duty cycle. Thickness alone does not choose the machine.');
+ if(answers.workload==='Long runs / production')notes.push('Compare duty cycle at the required welding current, plus torch rating and cooling method.');
+ if(answers.power==='Generator — model to confirm')notes.push('Check both the welder and generator manuals before promising compatibility or full output.');
+ else if(answers.power)notes.push('Confirm the selected machine’s input-current and outlet requirements against the available supply.');
  return notes;
 }
+
 function checklist(){
- const p=answers.process,accessoriesOnly=answers.purpose==='Protection or workshop accessories';
- const list=[];const add=(id,title,ask)=>list.push({id,title,ask});
- if(!accessoriesOnly){
-  if(p==='MIG with shielding gas'||p==='Self-shielded flux-cored / gasless'){
-   add('wire','Welding wire','What metal, wire classification, diameter and spool size do they need? Check the machine’s capacity and the wire label.');
-   add('tips','Contact tips & torch front end','What torch is actually fitted? Match tip size and type, nozzle, holder and diffuser using the lookup below.');
-   add('feed','Liner & drive rollers','Does the existing feed setup suit this wire material and diameter?');
-   if(p==='MIG with shielding gas')add('gas','Shielding gas & regulator','Which gas does the wire/application specify? Have they got the cylinder, suitable regulator/flowmeter and hose?');
-   add('pliers','MIG pliers & torch care','Have they got suitable wire cutters and a way to maintain the torch front end?');
-  }else if(p==='TIG'){
-   add('torch','TIG torch & connections','What exact torch model, cooling type and machine connections do they have?');
-   add('tungsten','Tungsten & matching torch parts','Which tungsten type and diameter suit the process? Match the collet, body or gas lens, cup and back cap to the exact torch family.');
-   add('filler','TIG filler rods','What is the parent-metal grade, and which filler classification and size does the job require?');
-   add('gas','Shielding gas & flowmeter','Have they got the gas specified for the application, a suitable regulator/flowmeter and hose?');
-   add('control','Torch control / pedal','Would a compatible control help? Verify the exact machine support and connector before adding a pedal.');
-  }else if(p==='Stick / MMA'){
-   add('electrodes','Stick electrodes','Which electrode classification and diameter suit the metal, joint and machine? Check storage requirements on the pack.');
-   add('leads','Holder, return lead & connectors','Are the holder and leads sound, correctly rated and compatible with the machine sockets?');
-   add('slag','Slag cleanup','Have they got a chipping hammer and suitable wire brush?');
-  }else add('process','Confirm process first','Establish MIG, self-shielded wire, TIG or stick before selecting wire, gas or torch parts.');
+ const p=answers.process,list=[];const add=(id,title,ask)=>list.push({id,title,ask});
+ if(p==='MIG with shielding gas'||p==='Self-shielded flux-cored / gasless'){
+   add('wire','Welding wire','Match material, classification, diameter and spool size to the machine and job.');
+   add('tips','Contact tips & torch front end','Match the fitted torch, tip diameter, nozzle/shroud, holder and diffuser.');
+   add('feed','Liner & drive rollers','Confirm the liner and drive rolls suit the wire material and diameter.');
+   if(p==='MIG with shielding gas')add('gas','Shielding gas & regulator','Confirm the specified gas, cylinder, regulator/flowmeter and hose.');
+   add('pliers','MIG pliers & torch care','Wire cutters, tip/nozzle servicing and general torch maintenance.');
+ }else if(p==='TIG'){
+   add('torch','TIG torch & connections','Confirm exact torch family, cooling type and machine connection.');
+   add('tungsten','Tungsten & torch parts','Match tungsten diameter with collet, body/gas lens, cup and back cap.');
+   add('filler','TIG filler rods','Match filler classification and diameter to the parent material and job.');
+   add('gas','Shielding gas & flowmeter','Confirm the correct shielding gas, flowmeter/regulator and hose.');
+   add('control','Torch control / pedal','Verify machine support and connector before adding a remote or pedal.');
+ }else if(p==='Stick / MMA'){
+   add('electrodes','Stick electrodes','Match electrode classification and diameter to material, joint and machine.');
+   add('leads','Holder, return lead & connectors','Check condition, rating and machine connector compatibility.');
+   add('slag','Slag cleanup','Chipping hammer and suitable wire brush.');
+ }else{
+   add('process','Confirm welding process','Set the process first before choosing process-specific consumables.');
  }
- add('helmet','Welding helmet & spare lenses','Does the helmet suit the process and current range? Are the correct inner and outer cover lenses available?');
- add('clothing','Gloves, clothing & footwear','Have they got suitable welding gloves, protective clothing and footwear for the task?');
- add('fumes','Fume control','How will they control welding fumes? Discuss suitable extraction and any assessed respiratory protection needs.');
- add('screens','Work area & screens','How will nearby people be protected from arc light and sparks, and how will combustible materials be kept clear?');
- add('prep','Preparation & finishing','Do they have the right cleaning tools and abrasives for the metal? Keep stainless/aluminium preparation tools appropriate to the material.');
- add('layout','Measure, mark & clamp','Have they got a tape, square, marker and clamps to position the job?');
+ add('helmet','Welding helmet & spare lenses','Check shade/current suitability and cover-lens availability.');
+ add('clothing','Gloves, clothing & footwear','Suitable welding gloves, protective clothing and footwear.');
+ add('fumes','Fume control','Suitable extraction and any required respiratory protection.');
+ add('screens','Screens & work area','Protect nearby people from arc light, sparks and hot material.');
+ add('prep','Preparation & finishing','Correct cleaning, grinding and finishing tools for the material.');
+ add('layout','Measure, mark & clamp','Tape, square, marker, magnets/clamps and positioning gear.');
  return list;
 }
-function renderResults(){
- $('recap').innerHTML=steps().filter(k=>answers[k]).map(k=>'<div><span class="muted">'+esc(QUESTIONS[k].title)+'</span><strong>'+esc(answers[k])+'</strong></div>').join('');
- const advice=processAdvice();$('advice').innerHTML=advice.length?'<h3>Next conversation</h3><ul>'+advice.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>':'';
- $('checklist').innerHTML=checklist().map(x=>'<article class="check"><label for="check-'+x.id+'">'+esc(x.title)+'</label><p>'+esc(x.ask)+'</p><select id="check-'+x.id+'" data-check="'+x.id+'">'+[['','Ask customer…'],['need','Needed — discuss options'],['own','Already has suitable equipment'],['no','Not needed for this job']].map(([v,t])=>'<option value="'+v+'" '+(checks[x.id]===v?'selected':'')+'>'+t+'</option>').join('')+'</select></article>').join('');
- $('compat-wrap').hidden=answers.process==='Stick / MMA'||answers.purpose==='Protection or workshop accessories';
- renderLookup();updateList();
+
+function renderAdvice(){
+ const notes=processAdvice();
+ $('advice').innerHTML='<ul>'+notes.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>';
+ const top=checklist().slice(0,6);
+ $('quick-checks').innerHTML='<div>'+top.map(x=>'<span class="badge">'+esc(x.title)+'</span>').join('')+'</div>';
 }
-function processMatches(r){return answers.process==='TIG'?r.type==='TIG':r.type!=='TIG';}
+
+function renderChecklist(){
+ const list=checklist();
+ $('checklist').innerHTML=list.map(x=>'<article class="check"><label for="check-'+x.id+'">'+esc(x.title)+'</label><p>'+esc(x.ask)+'</p><select id="check-'+x.id+'" data-check="'+x.id+'">'+[
+  ['','Not set'],['need','Needed — discuss / quote'],['own','Already has suitable equipment'],['no','Not needed for this job']
+ ].map(([v,t])=>'<option value="'+v+'" '+(checks[x.id]===v?'selected':'')+'>'+t+'</option>').join('')+'</select></article>').join('');
+ updateList();
+}
+
+function processMatches(r){
+ if(answers.process==='TIG')return r.type==='TIG';
+ if(answers.process==='Stick / MMA')return false;
+ return r.type!=='TIG';
+}
 function currentRecord(){return COMPAT.find(r=>r.id===lookup.record&&r.brand===lookup.brand&&processMatches(r));}
 function lookupResult(){const r=currentRecord();if(!r||r.pending||!lookup.confirmed)return null;if(r.type==='TIG')return {r,parts:r.parts};const tip=r[lookup.wire]?.[lookup.size];const nozzle=lookup.shield==='gasless'?r.gasless:r.nozzle;return {r,tip:tip||null,nozzle:nozzle||null};}
 function renderLookup(){
+ const disabled=answers.process==='Stick / MMA';
+ $('compat-wrap').hidden=disabled;
+ if(disabled)return;
  $('brand').innerHTML='<option value="">Choose a brand…</option>'+['UNIMIG','CIGWELD','Kemppi','Lincoln Electric','Other / not listed'].map(b=>'<option '+(lookup.brand===b?'selected':'')+'>'+esc(b)+'</option>').join('');
  const records=COMPAT.filter(r=>r.brand===lookup.brand&&processMatches(r));
  $('model').innerHTML='<option value="">Choose a recorded model / torch…</option>'+records.map(r=>'<option value="'+r.id+'" '+(lookup.record===r.id?'selected':'')+'>'+esc(r.models.join(' / '))+'</option>').join('')+'<option value="unknown" '+(lookup.record==='unknown'?'selected':'')+'>My model is not listed / I am not sure</option>';
@@ -197,38 +295,76 @@ function renderLookup(){
  $('wire').value=lookup.wire;$('diameter').value=lookup.size;$('shield').value=lookup.shield;
  $('part-filters').hidden=!r||r.pending||r.type==='TIG'||!lookup.confirmed;
  const match=lookupResult();
- if(!lookup.brand){$('compat-result').innerHTML='<p class="muted">Choose a brand to start. We will ask you to confirm the torch before showing part numbers.</p>';return;}
- if(!r){$('compat-result').innerHTML='<p class="notice">No confirmed match selected. Get the machine model/code, torch model, wire label and a photo of the old part. Use the supplier’s parts diagram to confirm it before quoting.</p>';return;}
+ if(!lookup.brand){$('compat-result').innerHTML='<p class="muted">Choose a brand to start. Confirm the actual fitted torch before relying on a part number.</p>';return;}
+ if(!r){$('compat-result').innerHTML='<p class="notice">No confirmed match selected. Get the machine model/code, torch model, wire label and a photo of the old part, then confirm against the supplier parts diagram.</p>';return;}
  if(r.pending){$('compat-result').innerHTML='<p class="notice"><strong>Part numbers still need confirmation.</strong> '+esc(r.note)+'</p>'+sourceLinks(r.sources);return;}
- if(!match){$('compat-result').innerHTML='<p class="notice">The manual lists <strong>'+esc(r.torch)+'</strong>. Check the actual torch, including any replacement neck or front end.</p>'+sourceLinks(r.sources);return;}
- if(r.type==='TIG'){$('compat-result').innerHTML='<div class="table-scroll"><table><caption>TIG standard front-end references — choose the required size</caption><thead><tr><th scope="col">Part / size</th><th scope="col">Reference</th></tr></thead><tbody>'+r.parts.map(([label,part])=>'<tr><th scope="row">'+esc(label)+'</th><td>'+esc(part)+'</td></tr>').join('')+'</tbody></table></div><p class="notice">'+esc(r.note)+'</p>'+sourceLinks(r.sources);return;}
+ if(!match){$('compat-result').innerHTML='<p class="notice">The reference lists <strong>'+esc(r.torch)+'</strong>. Check the actual torch, including any replacement neck or front end.</p>'+sourceLinks(r.sources);return;}
+ if(r.type==='TIG'){$('compat-result').innerHTML='<div class="table-scroll"><table><caption>TIG front-end references</caption><thead><tr><th>Part / size</th><th>Reference</th></tr></thead><tbody>'+r.parts.map(([label,part])=>'<tr><th>'+esc(label)+'</th><td>'+esc(part)+'</td></tr>').join('')+'</tbody></table></div><p class="notice">'+esc(r.note)+'</p>'+sourceLinks(r.sources);return;}
  const missing='Not verified for this selection — check the manufacturer';
- $('compat-result').innerHTML='<div class="table-scroll"><table><caption>Manufacturer reference for the confirmed torch</caption><thead><tr><th scope="col">Part</th><th scope="col">Reference</th></tr></thead><tbody><tr><th scope="row">Contact tip'+(lookup.size?' · '+esc(lookup.size)+' mm':'')+'</th><td>'+esc(match.tip||(!lookup.size?'Choose wire diameter':missing))+'</td></tr><tr><th scope="row">'+(lookup.shield==='gasless'?'Gasless nozzle':'Gas nozzle / shroud')+'</th><td>'+esc(match.nozzle||missing)+'</td></tr></tbody></table></div><p class="notice">'+esc(r.note)+'</p><p class="small muted">Reference match for the stated torch only. Confirm wire type, machine wire range, front-end arrangement, pack quantity and supplier availability before supplying. No cross-brand equivalence is implied.</p>'+sourceLinks(r.sources);
+ $('compat-result').innerHTML='<div class="table-scroll"><table><caption>Manufacturer reference for the confirmed torch</caption><thead><tr><th>Part</th><th>Reference</th></tr></thead><tbody><tr><th>Contact tip'+(lookup.size?' · '+esc(lookup.size)+' mm':'')+'</th><td>'+esc(match.tip||(!lookup.size?'Choose wire diameter':missing))+'</td></tr><tr><th>'+(lookup.shield==='gasless'?'Gasless nozzle':'Gas nozzle / shroud')+'</th><td>'+esc(match.nozzle||missing)+'</td></tr></tbody></table></div><p class="notice">'+esc(r.note)+'</p><p class="small muted">Confirm wire type, machine wire range, front-end arrangement, pack quantity and supplier availability before supplying.</p>'+sourceLinks(r.sources);
 }
-function updateList(){const needed=checklist().filter(x=>checks[x.id]==='need');$('shopping-list').innerHTML=needed.length?'<ul>'+needed.map(x=>'<li>'+esc(x.title)+'</li>').join('')+'</ul>':'<p class="muted">Mark items as needed to build a list.</p>';$('copy-status').textContent='';}
+
+function updateList(){
+ const needed=checklist().filter(x=>checks[x.id]==='need');
+ $('shopping-list').innerHTML=needed.length?'<ul>'+needed.map(x=>'<li>'+esc(x.title)+'</li>').join('')+'</ul>':'<p class="muted">Mark items as “Needed” to build the list.</p>';
+ $('copy-status').textContent='';
+}
+
+function calcDuty(){
+ const i1=Number($('rated-current').value),d1=Number($('rated-duty').value),i2=Number($('target-current').value);
+ if(!(i1>0&&d1>0&&d1<=100&&i2>0)){
+  $('duty-result').textContent='—';$('run-result').textContent='—';$('rest-result').textContent='—';
+  $('duty-note').textContent='Enter a valid rated current, rated duty cycle and planned current.';
+  return;
+ }
+ const d2=Math.min(100,d1*Math.pow(i1/i2,2));
+ const run=10*d2/100,rest=10-run;
+ $('duty-result').textContent=d2.toFixed(d2<10?1:0)+'%';
+ $('run-result').textContent=run.toFixed(1)+' min';
+ $('rest-result').textContent=rest.toFixed(1)+' min';
+ if(d2>=100)$('duty-note').textContent='Approximation reaches 100% at this current. Treat that only as a comparison; use the manufacturer’s published continuous rating if one is provided.';
+ else $('duty-note').textContent='Approximate thermal comparison only. Manufacturer duty-cycle data, ambient-temperature rating and torch limits take precedence.';
+}
+
 function summary(){
- const lines=['Welding sales conversation',...steps().filter(k=>answers[k]).map(k=>QUESTIONS[k].title+' '+answers[k]),'', 'Items to discuss:',...checklist().filter(x=>checks[x.id]==='need').map(x=>'- '+x.title)];
+ const lines=['Welding reference setup'];
+ for(const [k,label] of [['process','Process'],['metal','Metal'],['thickness','Thickness'],['location','Location'],['workload','Workload'],['power','Power']])if(answers[k])lines.push(label+': '+answers[k]);
+ lines.push('','Items to discuss:',...checklist().filter(x=>checks[x.id]==='need').map(x=>'- '+x.title));
+ const i1=$('rated-current').value,d1=$('rated-duty').value,i2=$('target-current').value;
+ if(i1&&d1&&i2)lines.push('','Duty cycle inputs: '+i1+' A @ '+d1+'%; planned '+i2+' A','Estimated duty cycle: '+$('duty-result').textContent,'Estimated 10-minute cycle: '+$('run-result').textContent+' weld / '+$('rest-result').textContent+' cool');
  const m=lookupResult();
  if(m&&!$('compat-wrap').hidden){
-  lines.push('','Model: '+m.r.models.join(' / '),'Torch checked: '+m.r.torch);
-  if(m.parts)lines.push('TIG reference options (not a selected shopping list):',...m.parts.map(([label,part])=>label+': '+part));
-  else lines.push('Wire: '+lookup.wire+' / '+(lookup.size||'size not selected')+' mm','Tip reference: '+(m.tip||'NOT VERIFIED'),'Nozzle reference: '+(m.nozzle||'NOT VERIFIED'));
-  lines.push(m.r.note,'Confirm availability, pack size and machine suitability before supplying.',...m.r.sources.map(id=>SOURCES[id][1]));
+   lines.push('','Model: '+m.r.models.join(' / '),'Torch checked: '+m.r.torch);
+   if(m.parts)lines.push('TIG reference options:',...m.parts.map(([label,part])=>label+': '+part));
+   else lines.push('Wire: '+lookup.wire+' / '+(lookup.size||'size not selected')+' mm','Tip reference: '+(m.tip||'NOT VERIFIED'),'Nozzle reference: '+(m.nozzle||'NOT VERIFIED'));
+   lines.push(m.r.note,'Confirm availability, pack size and machine suitability before supplying.',...m.r.sources.map(id=>SOURCES[id][1]));
  }
  return lines.join('\n');
 }
-function reset(){answers={};checks={};step=0;lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};$('manual-copy').hidden=true;renderQuestion(true);}
-document.addEventListener('click',e=>{const answer=e.target.closest('[data-answer]');if(answer)selectAnswer(Number(answer.dataset.answer));});
+
+function renderAll(){renderAdvice();renderChecklist();renderLookup();}
+function reset(){
+ answers={process:'',metal:'',thickness:'',location:'',workload:'',power:''};checks={};lookup={brand:'',record:'',confirmed:false,wire:'steel',size:'',shield:'gas'};
+ for(const id of ['process','metal','thickness','location','workload','power'])$(id).value='';
+ for(const id of ['rated-current','rated-duty','target-current'])$(id).value='';
+ $('manual-copy').hidden=true;calcDuty();renderAll();
+}
+
+for(const id of ['process','metal','thickness','location','workload','power'])$(id).addEventListener('change',e=>{
+ answers[id]=e.target.value;
+ if(id==='process'){checks={};lookup.record='';lookup.confirmed=false;lookup.size='';lookup.shield=answers.process==='Self-shielded flux-cored / gasless'?'gasless':'gas';}
+ renderAll();
+});
 document.addEventListener('change',e=>{if(e.target.dataset.check){checks[e.target.dataset.check]=e.target.value;updateList();}});
-$('next').addEventListener('click',()=>{if(!answers[steps()[step]])return;step++;renderQuestion(true);});
-$('back').addEventListener('click',()=>{if(step>0)step--;renderQuestion(true);});
-$('edit').addEventListener('click',()=>{step=0;renderQuestion(true);});$('reset').addEventListener('click',reset);
+for(const id of ['rated-current','rated-duty','target-current'])$(id).addEventListener('input',calcDuty);
 $('brand').addEventListener('change',e=>{lookup.brand=e.target.value;lookup.record='';lookup.confirmed=false;lookup.size='';renderLookup();});
 $('model').addEventListener('change',e=>{lookup.record=e.target.value;lookup.confirmed=false;lookup.size='';renderLookup();});
 $('confirmed').addEventListener('change',e=>{lookup.confirmed=e.target.checked;renderLookup();});
 for(const [id,key] of [['wire','wire'],['diameter','size'],['shield','shield']])$(id).addEventListener('change',e=>{lookup[key]=e.target.value;renderLookup();});
-$('copy').addEventListener('click',async()=>{const text=summary();try{await navigator.clipboard.writeText(text);$('copy-status').textContent='Conversation copied.';}catch{$('manual-copy').hidden=false;$('manual-copy').value=text;$('manual-copy').focus();$('manual-copy').select();$('copy-status').textContent='Select and copy the text below.';}});
-async function start(){try{const cfg=window.ST_CONFIG;if(!cfg)throw Error();const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey);const {data:{session},error}=await sb.auth.getSession();if(error)throw error;if(!session||!String(session.user.email||'').endsWith(cfg.allowedEmailDomain||'@sydneytools.com.au')){location.href='index.html';return;}renderQuestion();$('app').hidden=false;$('auth-status').hidden=true;sb.auth.onAuthStateChange((event,s)=>{if(!s||!String(s.user.email||'').endsWith(cfg.allowedEmailDomain||'@sydneytools.com.au')){$('app').hidden=true;location.href='index.html';}});}catch{$('auth-status').textContent='Welding Guide could not start. Return to the index and sign in again.';}}
+$('copy').addEventListener('click',async()=>{const text=summary();try{await navigator.clipboard.writeText(text);$('copy-status').textContent='Setup copied.';}catch{$('manual-copy').hidden=false;$('manual-copy').value=text;$('manual-copy').focus();$('manual-copy').select();$('copy-status').textContent='Select and copy the text below.';}});
+$('reset').addEventListener('click',reset);
+
+async function start(){try{const cfg=window.ST_CONFIG;if(!cfg)throw Error();const sb=supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey);const {data:{session},error}=await sb.auth.getSession();if(error)throw error;if(!session||!String(session.user.email||'').endsWith(cfg.allowedEmailDomain||'@sydneytools.com.au')){location.href='index.html';return;}renderAll();calcDuty();$('app').hidden=false;$('auth-status').hidden=true;sb.auth.onAuthStateChange((event,s)=>{if(!s||!String(s.user.email||'').endsWith(cfg.allowedEmailDomain||'@sydneytools.com.au')){$('app').hidden=true;location.href='index.html';}});}catch{$('auth-status').textContent='Welding Guide could not start. Return to the index and sign in again.';}}
 start();
 
 </script></body></html>
