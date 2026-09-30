@@ -61,13 +61,13 @@ h1{ margin:2px 0 0; text-align:center; font-family:var(--display); font-weight:7
 
 .hairline{ height:1px; margin:26px 0 20px; background:linear-gradient(90deg, transparent, var(--line-bright) 30%, var(--line-bright) 70%, transparent); }
 
-.toolbar{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.toolbar{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:14px; position:sticky; top:0; z-index:20; padding:12px; background:rgba(10,10,13,.94); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:8px; box-shadow:0 12px 30px rgba(0,0,0,.22); }
 .toolbar-left{ display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
 .btn-back{ font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--steel); text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px; transition:border-color .15s,color .15s; white-space:nowrap; }
 .btn-back:hover{ border-color:var(--line-bright); color:var(--paper); }
-.search{ width:340px; max-width:92%; background:var(--graphite); border:1px solid var(--line); border-radius:3px; color:var(--paper); font:inherit; font-size:13.5px; padding:10px 13px; outline:none; }
+.search{ width:420px; max-width:100%; background:linear-gradient(180deg,#18181f,#111117); border:1px solid rgba(245,243,239,.16); border-radius:8px; color:var(--paper); font:inherit; font-size:14px; padding:12px 14px; outline:none; transition:border-color .15s,box-shadow .15s,background .15s; }
 .search::placeholder{ color:var(--steel); }
-.search:focus{ border-color:var(--line-bright); }
+.search:focus{ border-color:var(--spark); box-shadow:0 0 0 3px rgba(255,176,32,.10); background:#17171e; }
 .btn-pdf{ font-family:var(--mono); font-size:11.5px; letter-spacing:.03em; color:var(--steel); text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px; white-space:nowrap; transition:border-color .15s,color .15s; }
 .btn-pdf:hover{ border-color:var(--line-bright); color:var(--paper); }
 
@@ -169,6 +169,7 @@ tr:hover td{ background:rgba(245,243,239,.025); }
 <script>
   const csvUrl = "https://docs.google.com/spreadsheets/d/1_jJal02m_qbYwUtmwFfEB6_zr4FiH6Ew-678S6_AaPA/export?format=csv&gid=0";
   let suppliers = [];
+  let supplierType = "all";
 
   Papa.parse(csvUrl, {
     download: true,
@@ -236,47 +237,51 @@ tr:hover td{ background:rgba(245,243,239,.025); }
   }
 
   function renderTables(filter = "") {
-    const local = document.getElementById("localTable");
-    const imported = document.getElementById("importTable");
-    const localCount = document.getElementById("localCount");
-    const importCount = document.getElementById("importCount");
+    const grid = document.getElementById("supplierGrid");
+    const q = String(filter || "").trim().toLowerCase();
+    const filtered = suppliers.filter((item) => {
+      const brand = item["Brands"] || "";
+      const imported = (item["Import"] || "").toLowerCase() === "true";
+      if (q && !brand.toLowerCase().includes(q)) return false;
+      if (supplierType === "local" && imported) return false;
+      if (supplierType === "imported" && !imported) return false;
+      return true;
+    }).sort((a,b) => (a["Brands"] || "").localeCompare(b["Brands"] || ""));
 
-    local.innerHTML = "";
-    imported.innerHTML = "";
-    let lCount = 0, iCount = 0;
+    const localTotal = suppliers.filter(item => (item["Import"] || "").toLowerCase() !== "true").length;
+    const importTotal = suppliers.filter(item => (item["Import"] || "").toLowerCase() === "true").length;
+    document.getElementById("totalCount").innerHTML = "<strong>" + suppliers.length + "</strong> suppliers";
+    document.getElementById("localCount").innerHTML = "<strong>" + localTotal + "</strong> local";
+    document.getElementById("importCount").innerHTML = "<strong>" + importTotal + "</strong> imported";
 
-    suppliers.forEach((item, idx) => {
-      const brand = item["Brands"];
-      const isImported = (item["Import"] || "").toLowerCase() === "true";
-      if (!brand) return;
-      if (filter && !brand.toLowerCase().includes(filter.toLowerCase())) return;
+    if (!filtered.length) {
+      grid.innerHTML = '<div class="empty-row">No suppliers match the current search/filter.</div>';
+      return;
+    }
 
-      const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item[`Warranty Step ${i + 1}`]).some(Boolean);
-      const hasFufSteps = Array.from({ length: 6 }, (_, i) => item[`FUF Step ${i + 1}`]).some(Boolean);
+    grid.innerHTML = filtered.map(item => {
+      const idx = suppliers.indexOf(item);
+      const brand = item["Brands"] || "Supplier";
+      const imported = (item["Import"] || "").toLowerCase() === "true";
+      const hasWarrantySteps = Array.from({ length: 6 }, (_, i) => item["Warranty Step " + (i + 1)]).some(Boolean);
+      const hasFufSteps = Array.from({ length: 6 }, (_, i) => item["FUF Step " + (i + 1)]).some(Boolean);
       const hasWarrantyInfo = !!item["Warranty Information"];
-
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td class="supplier-name">${escapeHtml(brand)}</td>
-        <td>
-          <div class="button-group">
-            ${hasWarrantyInfo ? `<button class="row-btn primary" onclick="showModalByIndex(${idx}, 'info')">Warranty Info</button>` : ""}
-            ${hasWarrantySteps ? `<button class="row-btn" onclick="showModalByIndex(${idx}, 'process')">Warranty Process</button>` : ""}
-            ${hasFufSteps ? `<button class="row-btn" onclick="showModalByIndex(${idx}, 'fuf')">FUF Process</button>` : ""}
-          </div>
-        </td>
-      `;
-      if (isImported) { imported.appendChild(row); iCount++; }
-      else { local.appendChild(row); lCount++; }
-    });
-
-    localCount.textContent = `${lCount} suppliers`;
-    importCount.textContent = `${iCount} suppliers`;
-    if (!lCount) local.innerHTML = `<tr><td colspan="2" class="empty-row">No suppliers found.</td></tr>`;
-    if (!iCount) imported.innerHTML = `<tr><td colspan="2" class="empty-row">No suppliers found.</td></tr>`;
+      return '<article class="supplier-card">' +
+        '<div class="supplier-card-head"><div class="supplier-name">' + escapeHtml(brand) + '</div><span class="supplier-type ' + (imported ? 'imported' : '') + '">' + (imported ? 'Imported' : 'Local') + '</span></div>' +
+        '<div class="supplier-actions">' +
+        (hasWarrantyInfo ? '<button class="row-btn primary" onclick="showModalByIndex(' + idx + ', \'info\')">Warranty Info</button>' : '') +
+        (hasWarrantySteps ? '<button class="row-btn" onclick="showModalByIndex(' + idx + ', \'process\')">Warranty Process</button>' : '') +
+        (hasFufSteps ? '<button class="row-btn" onclick="showModalByIndex(' + idx + ', \'fuf\')">FUF Process</button>' : '') +
+        '</div></article>';
+    }).join("");
   }
-
   document.getElementById("searchInput").addEventListener("input", e => renderTables(e.target.value));
+  document.getElementById("supplierTabs").addEventListener("click", e => {
+    const btn = e.target.closest("[data-type]"); if (!btn) return;
+    supplierType = btn.dataset.type;
+    document.querySelectorAll(".filter-tab").forEach(b => b.classList.toggle("active", b === btn));
+    renderTables(document.getElementById("searchInput").value);
+  });
 
   function showModalByIndex(index, type) {
     const item = suppliers[index];
