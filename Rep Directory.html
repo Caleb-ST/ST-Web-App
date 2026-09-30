@@ -45,7 +45,7 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
 
 .hairline{ height:1px; margin:22px 0 20px; background:linear-gradient(90deg, var(--line-bright), transparent 60%); }
 
-.toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
+.toolbar{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:14px; position:sticky; top:0; z-index:20; padding:12px; background:rgba(10,10,13,.94); backdrop-filter:blur(12px); border:1px solid var(--line); border-radius:8px; box-shadow:0 12px 30px rgba(0,0,0,.22); }
 .btn-back{
   font-family:var(--mono); font-size:11.5px; letter-spacing:.04em; color:var(--steel);
   text-decoration:none; border:1px solid var(--line); padding:9px 14px; border-radius:3px;
@@ -59,7 +59,7 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
   color:var(--paper); font:inherit; font-size:13.5px; padding:10px 13px; outline:none;
 }
 .search::placeholder{ color:var(--steel); }
-.search:focus{ border-color:var(--line-bright); }
+.search:focus{ border-color:var(--spark); box-shadow:0 0 0 3px rgba(255,176,32,.10); background:#17171e; }
 
 .toggle{ display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--steel); cursor:pointer; user-select:none; }
 .toggle input{ accent-color:var(--signal); width:14px; height:14px; }
@@ -67,7 +67,9 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
 .meta-right{ margin-left:auto; display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:11.5px; color:var(--steel); }
 .dup-pill{ display:none; align-items:center; gap:5px; color:var(--spark); border:1px solid rgba(255,176,32,.3); border-radius:20px; padding:3px 10px; }
 
-.grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:2px; overflow:hidden; }
+.alpha-bar{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px}.alpha-btn{font-family:var(--mono);font-size:10.5px;min-width:30px;height:30px;border:1px solid var(--line);background:var(--graphite);color:var(--steel);border-radius:6px;cursor:pointer}.alpha-btn:hover,.alpha-btn.active{color:var(--paper);border-color:var(--signal);background:var(--signal-dim)}
+.summary-strip{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px}.summary-chip{background:var(--graphite);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-family:var(--mono);font-size:11px;color:var(--steel)}.summary-chip strong{color:var(--paper)}
+.grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; background:none; border:none; border-radius:0; overflow:visible; }
 @media (max-width:980px){ .grid{ grid-template-columns:repeat(3,1fr); } }
 @media (max-width:720px){ .grid{ grid-template-columns:repeat(2,1fr); } }
 @media (max-width:460px){ .grid{ grid-template-columns:1fr; } }
@@ -82,9 +84,9 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
   content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:var(--signal);
   transform:scaleY(0); transform-origin:top; transition:transform .2s cubic-bezier(.16,1,.3,1);
 }
-.company-tile:hover{ background:var(--graphite2); }
+.company-tile:hover{ background:#202028; border-color:rgba(255,34,48,.35); transform:translateY(-1px); }
 .company-tile:hover::before{ transform:scaleY(1); }
-.company-name{ font-family:var(--display); font-weight:600; font-size:16px; text-transform:uppercase; letter-spacing:.01em; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.company-name{ font-family:var(--display); font-weight:700; font-size:18px; text-transform:uppercase; letter-spacing:.01em; width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .company-meta{ display:flex; gap:7px; flex-wrap:wrap; }
 .pill{ font-family:var(--mono); font-size:10.5px; letter-spacing:.03em; color:var(--steel); border:1px solid var(--line); border-radius:20px; padding:2px 9px; }
 .pill.warn{ color:var(--spark); border-color:rgba(255,176,32,.3); }
@@ -110,7 +112,7 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
 .rep-list::-webkit-scrollbar{ width:6px; }
 .rep-list::-webkit-scrollbar-thumb{ background:var(--line-bright); border-radius:3px; }
 
-.rep-card{ background:var(--void); border:1px solid var(--line); border-radius:3px; padding:12px 13px; }
+.rep-card{ background:linear-gradient(180deg,#111117,#0d0d11); border:1px solid var(--line); border-radius:8px; padding:15px; box-shadow:0 8px 20px rgba(0,0,0,.16); }
 .rep-top{ display:flex; gap:9px; align-items:baseline; flex-wrap:wrap; margin-bottom:7px; }
 .rep-name{ font-weight:700; font-size:14px; }
 .rep-role{ color:var(--steel); font-size:12px; }
@@ -119,7 +121,7 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
 .rep-key{ font-family:var(--mono); color:var(--steel); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; }
 .rep-val{ white-space:nowrap; overflow:auto; font-size:13px; }
 .rep-val a{ color:#7aa6ff; text-decoration:underline; }
-.copy-btn{ background:none; border:1px solid var(--line); color:var(--steel); font:inherit; font-size:11px; padding:5px 9px; border-radius:3px; cursor:pointer; }
+.copy-btn{ background:var(--graphite2); border:1px solid var(--line); color:var(--paper); font:inherit; font-size:11px; padding:6px 10px; border-radius:6px; cursor:pointer; }
 .copy-btn:hover{ border-color:var(--line-bright); color:var(--paper); }
 .modal-foot{ display:flex; justify-content:flex-end; margin-top:14px; }
 .btn-close-modal{ background:var(--signal); border:none; color:#fff; font:inherit; font-weight:600; font-size:13px; padding:9px 18px; border-radius:3px; cursor:pointer; }
@@ -147,6 +149,8 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
     </div>
   </div>
 
+  <div class="summary-strip"><div class="summary-chip" id="summaryCompanies"><strong>—</strong> companies</div><div class="summary-chip" id="summaryReps"><strong>—</strong> reps</div></div>
+  <div class="alpha-bar" id="alphaBar" aria-label="Filter companies by first letter"></div>
   <div id="gridWrap"><div class="empty-state">Loading…</div></div>
 </div>
 
@@ -174,6 +178,7 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
 
   let allReps = [];
   let companies = [];
+  let activeLetter = "";
 
   const el = (id) => document.getElementById(id);
 
@@ -318,6 +323,8 @@ h1{ margin:2px 0 0; font-family:var(--display); font-weight:700; font-size:clamp
     const totalCompanies = list.length;
     const totalReps = list.reduce((sum, c) => sum + c.count, 0);
     el("countText").textContent = `${totalCompanies} companies · ${totalReps} reps`;
+    if (el("summaryCompanies")) el("summaryCompanies").innerHTML = '<strong>' + totalCompanies + '</strong> companies';
+    if (el("summaryReps")) el("summaryReps").innerHTML = '<strong>' + totalReps + '</strong> reps';
 
     if (!list.length){
       wrap.innerHTML = `<div class="empty-state">No companies found.</div>`;
