@@ -143,16 +143,17 @@ tr:hover td{ background:rgba(245,243,239,.025); }
     <a class="btn-pdf" href="Booking in repairs.pdf" target="_blank" rel="noopener noreferrer">📄 How to Book a Repair</a>
   </div>
 
-  <div class="tables">
-    <div class="table-card">
-      <div class="table-head"><h2>Local Suppliers</h2><span class="table-count" id="localCount"></span></div>
-      <table><thead><tr><th style="width:55%">Supplier</th><th>Options</th></tr></thead><tbody id="localTable"></tbody></table>
-    </div>
-    <div class="table-card">
-      <div class="table-head"><h2>Imported Suppliers</h2><span class="table-count" id="importCount"></span></div>
-      <table><thead><tr><th style="width:55%">Supplier</th><th>Options</th></tr></thead><tbody id="importTable"></tbody></table>
-    </div>
+  <div class="summary-strip">
+    <div class="summary-chip" id="totalCount"><strong>—</strong> suppliers</div>
+    <div class="summary-chip" id="localCount"><strong>—</strong> local</div>
+    <div class="summary-chip" id="importCount"><strong>—</strong> imported</div>
   </div>
+  <div class="filter-tabs" id="supplierTabs">
+    <button class="filter-tab active" data-type="all">All suppliers</button>
+    <button class="filter-tab" data-type="local">Local</button>
+    <button class="filter-tab" data-type="imported">Imported</button>
+  </div>
+  <div class="warranty-grid" id="supplierGrid"><div class="empty-row">Loading…</div></div>
 </div>
 
 <div id="modal" aria-hidden="true">
