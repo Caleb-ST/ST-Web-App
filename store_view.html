@@ -200,7 +200,9 @@ const STAGE_COLORS = {
   'Waiting on Warranty':'#e67e22','Customer Quoted':'#a855f7','Waiting on Parts':'#f59e0b','Repaired':'#2bb673',
   'Resolved - No Repair':'#a855f7','Ready for Pickup':'#16a085','Collected by Customer':'#6b6f7a'
 };
-const CLOSED_STAGES = new Set(['Collected by Customer']);
+// Jobs in these stages are no longer considered "open" workshop work.
+const NON_OPEN_STAGES = new Set(['Repaired','Resolved - No Repair','Ready for Pickup','Collected by Customer']);
+const COLLECTED_STAGES = new Set(['Collected by Customer']);
 const STORES = ['Regency Park','Windsor Gardens','Parafield','Munno Para','Lonsdale','Seaford Meadows'];
 
 let allJobs = [];
@@ -248,9 +250,9 @@ function render(){
   const hideCollected = document.getElementById('hide-collected').checked;
 
   const filtered = allJobs.filter(function(j){
-    if(hideCollected && CLOSED_STAGES.has(j.stage)) return false;
+    if(hideCollected && COLLECTED_STAGES.has(j.stage)) return false;
     if(store && j.current_location !== store) return false;
-    if(stage === '__open__' && CLOSED_STAGES.has(j.stage)) return false;
+    if(stage === '__open__' && NON_OPEN_STAGES.has(j.stage)) return false;
     else if(stage && stage !== '__open__' && j.stage !== stage) return false;
     if(q){
       const hay = (j.ref+' '+j.tool+' '+j.customer+' '+j.brand).toLowerCase();
@@ -347,10 +349,8 @@ function switchTab(name, el){
   document.getElementById('panel-'+name).classList.add('active');
 }
 
-const DONE_STAGES = new Set(['Repaired','Resolved - No Repair','Ready for Pickup','Collected by Customer']);
-
 function renderDashboard(){
-  const active = allJobs.filter(function(j){ return !DONE_STAGES.has(j.stage); });
+  const active = allJobs.filter(function(j){ return !NON_OPEN_STAGES.has(j.stage); });
 
   const byStore = {};
   STORES.forEach(function(s){ byStore[s] = {}; });
