@@ -48,7 +48,7 @@ function baseModel(v){
  return n;
 }
 async function load(){
- const txt=await fetch("kit-directory.csv",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("kit-directory.csv not found");return r.text()});
+ const txt=await fetch("../kit-directory.csv",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("kit-directory.csv not found");return r.text()});
  const lines=txt.trim().split(/\r?\n/),h=lines.shift().split(",");
  rows=lines.map(line=>{const v=line.split(",");return Object.fromEntries(h.map((k,i)=>[k,v[i]||""]))});
 }
